@@ -1,17 +1,26 @@
 "use strict";
 //handles collisions and physics
 class Entity{
-  constructor(x,y,r,density){
+  constructor(x = width/2,y = height/2,r = 50,a = 0,density = 1){
   this.x = x;
   this.y = y;
-  this.r = r;
+  this.radius = r;
+  this.angle = a; //angle
   this.density = density;
-  this.mass = this.r*this.density;
+  this.mass = this.radius*this.density;
+
+  this.xOff; //offset from ship's x/y/angle
+  this.yOff;
+  this.angleOff;
   }
 
 display(){
   stroke(255);
   fill(100);
-  ellipse(this.x,this.y,this.r);
+  ellipse(this.x,this.y,this.radius*2);
+  let xx = (cos(this.angle)*this.radius) + this.x;
+  let yy = (sin(this.angle)*this.radius) + this.y;
+
+  line(this.x,this.y,xx,yy);
   }
 }
