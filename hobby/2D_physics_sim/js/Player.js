@@ -2,7 +2,7 @@
 class Player{
   constructor(gp = null,x = random(width),y = random(height), angle = random(TWO_PI)){
     console.log("HEYY IM NEW SHIP");
-    this.gp = gamepadInterface; //gamepad associated witht inputs for this ship obj
+    this.gp = gp; //gamepad associated witht inputs for this ship obj
     this.child = [];
     this.x = x;
     this.y = y;
