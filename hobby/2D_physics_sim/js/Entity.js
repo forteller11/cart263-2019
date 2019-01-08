@@ -1,7 +1,7 @@
 "use strict";
 //handles collisions and physics
 class Entity{
-  constructor(x = width/2,y = height/2,r = 50,a = 0,density = 1){
+  constructor(x = width/2,y = height/2,r = 50,a = 0,density = 1, parent = null, child = null){
   this.x = x;
   this.y = y;
   this.radius = r;
@@ -13,7 +13,10 @@ class Entity{
   this.yOff;
   this.angleOff;
   }
-
+update(){
+  this.display();
+  console.log("updateentity");
+}
 display(){
   stroke(255);
   fill(100);
