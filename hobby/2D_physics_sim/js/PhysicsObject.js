@@ -5,6 +5,9 @@ class PhysicsObject{
   this.centerOfMassX = width/2;
   this.centerOfMassY = height/2;
   this.totalMass;
+
+  this.translationalVelocity = createVector(1,0);
+  this.rotationalVelocity = createVector(.01);
   }
 
   calculateCenterOfMass(){ //uses components positions and masses to calcualte center of mass
@@ -47,9 +50,6 @@ class PhysicsObject{
       console.log("angleToParent"+this.component[i].angleToParent);
     }
   }
-  checkCollisions(){
-
-  }
 
   alterComponents() {
 
@@ -57,14 +57,24 @@ class PhysicsObject{
     this.calculateComponentOffsets();
 
   }
+  addForce(originX,originY,direction,magnitude){
+    //determine how much translationalVel to change
+    //depending on how far from centerOfMass and moment of inertia, calc how much rotational vel change
+    //all calculate moment of inert
+  }
+  updatePosBasedOnVelocity(){
+    this.centerOfMassX += this.translationalVelocity.x;
+    this.centerOfMassY += this.translationalVelocity.y;
 
+    this.angle += this.rotationalVelocity.x;
+  }
   update(){
-    this.angle+= 0.01;
     //this.changePosBasedOnForce();
     fill(255,255,0);
     ellipse(this.centerOfMassX,this.centerOfMassY,20);
     for (let i = 0; i < this.component.length; i ++){ //cartesian to polar conversion
       this.component[i].update();
     }
+    this.updatePosBasedOnVelocity();
   }
 }
