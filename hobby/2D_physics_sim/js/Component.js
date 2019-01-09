@@ -3,8 +3,8 @@
 class Component{
   constructor(parent, x, y, angle, radius, density, child = null){
 
-  this.radiusOff; //dist (hypotonus) from parent
-  this.angleOff; //angle offset relative to parent
+  this.radiusOff = null; //dist (hypotonus) from parent
+  this.angleOff = null; //angle to parent offset relative to parent
 
   this.parent = parent;
   this.x = x;
@@ -22,7 +22,6 @@ update(){
 
 calcPos(){
   //calc angle based on parent angle and offset
-  // this.angle = this.parent.angle + this.angleOff;
   //calc position based using trig, radius offsets relative to parent, and angle
   this.x = this.parent.centerOfMassX + (cos(this.parent.angle + this.angleOff)*this.radiusOff);
   this.y = this.parent.centerOfMassY + (sin(this.parent.angle + this.angleOff)*this.radiusOff);
