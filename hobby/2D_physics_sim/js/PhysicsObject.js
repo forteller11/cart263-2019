@@ -13,6 +13,8 @@ class PhysicsObject{
     let numeratorY = 0;
     for (let i = 0; i < this.component.length; i ++){
       this.totalMass += this.component[i].mass; //will be used later to sort of normalize the equation (not precise explanation)
+      //calc polar offsets, then use parent.angle to find new x,y off on new ship
+
       numeratorX += this.component[i].x*this.component[i].mass; //in this way objects w/more mass will contribute more to CofM calculation
       numeratorY += this.component[i].y*this.component[i].mass;
     }
@@ -25,12 +27,24 @@ class PhysicsObject{
       let deltaX = this.component[i].x - this.centerOfMassX;
       let deltaY = this.component[i].y - this.centerOfMassY;
 
-      this.component[i].radiusOff = sqrt(sq(deltaX)+sq(deltaY));
-      this.component[i].angleOff = atan2(deltaY,deltaX);
+      let componentXRelative;
+      let componentYRelative;
+      if (!(this.angle === 0)){ //if parent angle isn't 0 recalculates cartesian position of component so it doesn't calc angle/dist to parent as if parent had a 0 angle
+      const distToParent = sqrt(sq(deltaX)+sq(deltaY));
+      const angleToParent = atan2(deltaY,deltaX);
+
+      componentXRelative = cos(angleToParent-this.angle)*distToParent;
+      componentYRelative = sin(angleToParent-this.angle)*distToParent;
+    } else{
+      componentXRelative = deltaX;
+      componentYRelative = deltaY;
+    }
+      this.component[i].distToParent = sqrt(sq(componentXRelative)+sq(componentYRelative));
+      this.component[i].angleToParent = atan2(componentYRelative,componentXRelative);
 
       console.log("deltaX"+deltaX);
-      console.log("radiusOff"+this.component[i].radiusOff);
-      console.log("angleOff"+this.component[i].angleOff);
+      console.log("distToParent"+this.component[i].distToParent);
+      console.log("angleToParent"+this.component[i].angleToParent);
     }
   }
   checkCollisions(){
@@ -38,17 +52,10 @@ class PhysicsObject{
   }
 
   alterComponents() {
-    // let angleStore = this.angle;
-    // this.angle = 0;
-    // for (let i = 0; i < this.component.length; i ++){ //cartesian to polar conversion
-    //   if (!(this.component[i].xOff === null)){
-    //     this.component[i].calcPos();
-    //     console.log("hey");
-    //   }
-    // }
+
     this.calculateCenterOfMass();
     this.calculateComponentOffsets();
-    // this.angle = angleStore;
+
   }
 
   update(){
