@@ -1,19 +1,19 @@
 "use strict";
 //handles collisions and physics
 class Component{
-  constructor(parent, radiusOff, angleOff, radius = 50, density = 1, child = null){
+  constructor(parent, x, y, angle, radius, density, child = null){
+
+  this.radiusOff; //dist (hypotonus) from parent
+  this.angleOff; //angle offset relative to parent
+
   this.parent = parent;
-  this.radiusOff = radiusOff; //dist (hypotonus) from parent
-  this.angleOff = angleOff; //angle offset relative to parent
+  this.x = x;
+  this.y = y;
+  this.angle = angle;
   this.radius = radius;
   this.density = density;
-  this.mass = this.radius*this.density;
   this.child = []; //all childed componenets
-
-  this.x;
-  this.y;
-  this.angle;
-
+  this.mass = this.radius*this.density;
   }
 update(){
   this.calcPos();
@@ -22,10 +22,11 @@ update(){
 
 calcPos(){
   //calc angle based on parent angle and offset
-  this.angle = this.parent.angle + this.angleOff;
+  // this.angle = this.parent.angle + this.angleOff;
   //calc position based using trig, radius offsets relative to parent, and angle
-  this.x = this.parent.x + (cos(this.angle)*this.radiusOff);
-  this.y = this.parent.y + (sin(this.angle)*this.radiusOff);
+  this.x = this.parent.centerOfMassX + (cos(this.parent.angle + this.angleOff)*this.radiusOff);
+  this.y = this.parent.centerOfMassY + (sin(this.parent.angle + this.angleOff)*this.radiusOff);
+
 }
 
 
