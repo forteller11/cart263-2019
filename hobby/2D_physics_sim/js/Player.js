@@ -4,7 +4,7 @@ player class contains entities, moves those entities with input and physics calc
 */
 class Player {
   constructor(gp = null,x = random(width),y = random(height), angle = random(TWO_PI)){
-    console.log("HEYY IM NEW SHIP");
+    console.log("PLAYER w/gp"+gp.index+" spawned");
     this.gp = gp; //gamepad associated witht inputs for this ship obj
     this.child = [];
     this.x = x;
@@ -32,20 +32,19 @@ class Player {
   }
 
   randomiseSpawnConfig(){ //generates random starting child-parent enttities
-    let spawnX = this.x;
-    let spawnY = this.y;
+    let radiusOffset = 0;
+    let angleOffset = 0;
     for (let i = 0; i < 8; i ++){
       let radius = random(20,60);
       let angle = random(TWO_PI);
-      this.child[i] = new Entity(spawnX,spawnY,radius,angle,null,null);
-      spawnX += random(-100,100);
-      spawnY += random(-100,100);
+      this.child[i] = new Component(this,radiusOffset,angleOffset,radius, 1, null);
+      radiusOffset += random(-100,100);
+      angleOffset += random(-1,1);
     }
+    // this.child[i] = new Thruster(spawnX,spawnY,radius,angle,null,null,1);
   }
 
   display(){
-    console.log(this.x,this.y);
-
     noFill();
     fill(255,255,0);
     ellipse(this.x,this.y,4);
@@ -54,7 +53,8 @@ class Player {
   }
 
   update(){
-    console.log("updateplayer");
+    this.angle += 0.01;
+    this.x ++;
     this.display();
     for (let i = 0; i < this.child.length; i ++){
       this.child[i].update();
