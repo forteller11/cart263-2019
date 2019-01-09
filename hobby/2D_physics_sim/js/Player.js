@@ -15,29 +15,28 @@ class Player {
 
     this.randomiseSpawnConfig();
   }
-  addForce(){ //cycle through all children, find thrusters, see if their forces should be added to direct of input
-    for (let i = 0; i < this.child.length; i ++){
-      if (this.child[i] instanceof Thruster){ //is child a thruster
-        //see if and how much force shud be added
-      }
-    }
+  addForceBasedOnGP(){ //cycle through all children, find thrusters, see if their forces should be added to direct of input
+    // for (let i = 0; i < this.child.length; i ++){
+    //   if (this.child[i] instanceof Thruster){ //is child a thruster
+    //     //see if and how much force shud be added
+    //   }
+    // }
   }
 
-  updateChildren(){
-    for (let i = 0; i < this.child.length; i ++){
-      this.child[i].x = this.x + this.child[i].xOff;
-      this.child[i].y = this.y+ this.child[i].yOff;
-      this.child[i].angle = this.angle + this.child[i].angleOff;
-    }
-  }
+  changePosBasedOnForce(){
 
+  }
   randomiseSpawnConfig(){ //generates random starting child-parent enttities
     let radiusOffset = 0;
     let angleOffset = 0;
-    for (let i = 0; i < 8; i ++){
-      let radius = random(20,60);
-      let angle = random(TWO_PI);
-      this.child[i] = new Component(this,radiusOffset,angleOffset,radius, 1, null);
+    let radius = random(20,60);
+    let angle = random(TWO_PI);
+    this.child[0] = new Component(this,radiusOffset,angleOffset,radius, 1, null); //spawn first ocmponent w/no child
+
+    for (let i = 1; i < 8; i ++){
+      radius = random(20,60);
+      angle = random(TWO_PI);
+      this.child[i] = new Component(this,radiusOffset,angleOffset,radius, 1, this.child[i-1]);
       radiusOffset += random(-100,100);
       angleOffset += random(-1,1);
     }
@@ -45,7 +44,7 @@ class Player {
   }
 
   display(){
-    noFill();
+    noStroke();
     fill(255,255,0);
     ellipse(this.x,this.y,4);
     text("angle:"+round(this.angle*100)/100,this.x+200,this.y);
@@ -53,8 +52,10 @@ class Player {
   }
 
   update(){
-    this.angle += 0.01;
-    this.x ++;
+    this.addForceBasedOnGP();
+    this.changePosBasedOnForce():
+    // this.angle += 0.01; //for testing
+    // this.x ++; //for testing
     this.display();
     for (let i = 0; i < this.child.length; i ++){
       this.child[i].update();
