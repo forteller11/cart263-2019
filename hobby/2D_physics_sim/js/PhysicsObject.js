@@ -76,7 +76,7 @@ class PhysicsObject{
     console.log("closest dist: " + closestDistToCenterOfMass);
     //if vector extended infinitely in R2 then what would be the point(x,y) on that line closest to the center of mass of phyObject (x,y)?
 
-    originX-this.centerOfMass
+  
     //determine how much translationalVel to change
     //depending on how far from centerOfMass and moment of inertia, calc how much rotational vel change
     //all calculate moment of inert
