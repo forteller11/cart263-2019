@@ -25,18 +25,12 @@ let avatar = {
   color: '#cccc55'
 }
 
-// Food is an object defined by its properties
-let food = {
-  x: 0,
-  y: 0,
-  size: 64,
-  color: '#55cccc'
-}
+
 
 // preload()
 //
 // Not needed
-
+let food;
 function preload() {
 
 }
@@ -48,7 +42,7 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth,windowHeight);
-  positionFood();
+  food = new Food()
   noCursor();
 }
 
@@ -60,17 +54,18 @@ function setup() {
 function draw() {
   // Make sure the avatar is still alive - if not, we don't run
   // the rest of the draw loop
-  if (!avatar.active) {
-    // By using "return" the draw() function exits immediately
-    return;
-  }
+  // if (!avatar.active) {
+  //   // By using "return" the draw() function exits immediately
+  //   return;
+  // }
 
   // Otherwise we handle the game
-  background(0);
+  background(51);
   updateAvatar();
   checkCollision();
   displayAvatar();
-  displayFood();
+  food.update();
+  food.display();
 }
 
 // updateAvatar()
@@ -112,25 +107,4 @@ function displayAvatar() {
   fill(avatar.color);
   ellipse(avatar.x,avatar.y,avatar.size);
   pop();
-}
-
-// displayFood()
-//
-// Draw the food in its current position, using its size and color
-// Use push() and pop() around it all to avoid affecting the rest of the program
-// with drawing commands
-function displayFood() {
-  push();
-  noStroke();
-  fill(food.color);
-  ellipse(food.x,food.y,food.size);
-  pop();
-}
-
-// positionFood()
-//
-// Set the food's position properties to random numbers within the canvas dimensions
-function positionFood() {
-  food.x = random(0,width);
-  food.y = random(0,height);
 }
