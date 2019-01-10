@@ -2,7 +2,7 @@
 
 /*****************
 
-Asignment 1
+Assignment 2
 Circle Eater
 Charly Yan Miller
 
