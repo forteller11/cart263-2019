@@ -1,9 +1,12 @@
 class Food{
   constructor(x = random(0,width),y = random(0,height),size = 64){
-    this.velocity = createVector(0,10);
-    this.maxSpeed = 19; //max magnitude of 0velocity vector
-    this.x = 0;
-    this.y = height/2;
+    this.velocity = createVector(0,0);
+    this.maxSpeed = 5; //max magnitude of 0velocity vector
+    this.x = x;
+    this.y = y;
+    this.noiseIncrement = 0.001;
+    this.noiseIndexX = random(1000);
+    this.noiseIndexY = random(1000);
     this.size = size; //diamatar of food
 
   }
@@ -29,8 +32,15 @@ class Food{
       this.y = width + this.size/2;
     }
   }
+  addForce(){
+    this.noiseIndexX += this.noiseIncrement;
+    this.noiseIndexY += this.noiseIncrement;
 
+    this.velocity.x += noise(this.noiseIndexX)-0.5;
+    this.velocity.y += noise(this.noiseIndexY)-0.5;
+  }
   update(){
+    this.addForce();
     //cart 253
     if (this.velocity.mag() > this.maxSpeed){
       this.velocity.setMag(this.maxSpeed);
@@ -39,6 +49,7 @@ class Food{
     this.y += this.velocity.y;
 
     this.screenWrap();
+
   }
 
 }
