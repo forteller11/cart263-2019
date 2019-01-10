@@ -58,6 +58,25 @@ class PhysicsObject{
 
   }
   addForce(originX,originY,direction,magnitude){
+    this.translationalVelocity.x += cos(direction)*magnitude;
+    this.translationalVelocity.y += sin(direction)*magnitude;
+
+    //find dist from origin of forceVec to CenterOfMass
+    const deltaX = originX - this.centerOfMassX;
+    const deltaY = originY - this.centerOfMassY;
+    const distFromForceOriginToCenterOfMass = sqrt(sq(deltaX)+sq(deltaY));
+
+    //find angle between dist from origin of forceVec to CofM and the forceVector
+    const angleToDistVec = atan2(deltaY,deltaX);
+    const angleToForceVec = direction;
+    const angleBetweenDistAndForceVec = angleToDistVec - angleToForceVec;
+
+    //find length of opposite side from hypotenous (line of 90 degree angle)
+    const closestDistToCenterOfMass = distFromForceOriginToCenterOfMass*sin(angleBetweenDistAndForceVec)
+    console.log("closest dist: " + closestDistToCenterOfMass);
+    //if vector extended infinitely in R2 then what would be the point(x,y) on that line closest to the center of mass of phyObject (x,y)?
+
+    originX-this.centerOfMass
     //determine how much translationalVel to change
     //depending on how far from centerOfMass and moment of inertia, calc how much rotational vel change
     //all calculate moment of inert
@@ -75,6 +94,11 @@ class PhysicsObject{
     for (let i = 0; i < this.component.length; i ++){ //cartesian to polar conversion
       this.component[i].update();
     }
+
+    //air resistance
+    this.translationalVelocity.div(1.01);
+    this.rotationalVelocity.div(1.01);
+
     this.updatePosBasedOnVelocity();
   }
 }

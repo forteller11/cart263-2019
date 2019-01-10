@@ -2,6 +2,8 @@ let phyObject;
 
 function setup(){
   createCanvas(windowWidth,windowHeight);
+  background(51);
+
   phyObject = new PhysicsObject();
     console.log(phyObject);
     console.log("setup");
@@ -27,4 +29,16 @@ function mousePressed(){
   console.log(phyObject);
 
   // phyObject.angle = angleStore;
+}
+
+function keyPressed(){ //add force
+  let dir = 0;
+  const force = 0;
+  phyObject.addForce(mouseX,mouseY,dir,force);
+  // const x2 = (cos(dir)*force*100)+mouseX;
+  // const y2 = (sin(dir)*force*100)+mouseY;
+  // strokeWeight(8);
+  // stroke(255,0,0);
+  // line(mouseX,mouseY,x2,y2);
+  // background(255);
 }
