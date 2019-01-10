@@ -8,6 +8,7 @@ Charly Yan Miller
 
 A simple game in which the player controls a shrinking circle with their mouse and tries
 to overlap another circle (food) in order to grow bigger.
+(also the food moves a little bit (with the help of perlin-noise!))
 
 ******************/
 
@@ -41,8 +42,8 @@ function preload() {
 // Create the canvas, position the food, remove the cursor
 
 function setup() {
-  createCanvas(windowWidth*.9,windowHeight*.9);
-  food = new Food()
+  createCanvas(windowWidth*.9,windowHeight*.9); //NEW
+  food = new Food() ///NEW
   noCursor();
 }
 
@@ -64,8 +65,8 @@ function draw() {
   updateAvatar();
   checkCollision();
   displayAvatar();
-  food.update();
-  food.display();
+  food.update(); //NEW
+  food.display(); //NEW
 }
 
 // updateAvatar()
@@ -92,8 +93,8 @@ function checkCollision() {
   let d = dist(avatar.x,avatar.y,food.x,food.y);
   if (d < avatar.size/2 + food.size/2) {
     avatar.size = constrain(avatar.size + AVATAR_SIZE_GAIN,0,avatar.maxSize);
-    food.x = random(width);
-    food.y = random(height);
+    food.x = random(width); //NEW
+    food.y = random(height); //NEW
   }
 }
 
