@@ -41,7 +41,7 @@ function preload() {
 // Create the canvas, position the food, remove the cursor
 
 function setup() {
-  createCanvas(windowWidth,windowHeight);
+  createCanvas(windowWidth*.9,windowHeight*.9);
   food = new Food()
   noCursor();
 }
