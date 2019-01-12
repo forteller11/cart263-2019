@@ -1,13 +1,23 @@
-class Food extends Entity{
-  constructor(x,y,size,color){
-    super(x,y,size,color);
-
+class Food { //NEWWW
+  constructor(x = random(0,width),y = random(0,height),size = 64){
     this.velocity = createVector(0,0); //velocity represented by p5 vector object
     this.maxSpeed = 5; //max magnitude of 0velocity vector
+    this.x = x; //position x
+    this.y = y; //position y
 
     this.noiseIncrement = 0.01; //rate at which to scan through perlin noise space (change input of perlin-noise function per frame)
     this.noiseIndexX = random(1000); //input to noise function which determines force to add to x component of velocity vector
     this.noiseIndexY = random(1000); //input to noise function which determines force to add to y component of velocity vector
+
+    this.size = size; //diamatar of food
+
+  }
+  display(){ //represent the foods position and size via an appropriate ellpise
+    push();
+    noStroke();
+    fill('#55cccc');
+    ellipse(this.x,this.y,this.size);
+    pop();
   }
 
   screenWrap(){
@@ -56,4 +66,7 @@ class Food extends Entity{
     this.screenWrap();
 
   }
+
 }
+
+//eo i fwn6 mwk4 twm4 mE

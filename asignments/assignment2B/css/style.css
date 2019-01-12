@@ -5,12 +5,15 @@ In this case it's just padding and margin to 0
 so the canvas is flush with the top left corner.
 
 **********************************************/
-
-* {
+*{
+  text-align:center;
+}
+body {
   padding: 0;
   margin: 0;
 }
-canvas{
-  border-radius: 0px;
-  display:block;
+
+canvas {
+  text-align:center;
+  display: inline-block;
 }

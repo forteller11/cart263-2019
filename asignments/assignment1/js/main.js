@@ -9,7 +9,7 @@ let food = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 1; i++) {
     food[i] = new Food(random(width), random(height), 32, "#96E58F");
   }
   avatar = new Avatar(mouseX, mouseY, 64, "#D08FE5");
@@ -29,7 +29,8 @@ function draw() {
   for (let i = 0; i < food.length; i++) {
     if (circleOverlap(avatar.x,avatar.y,avatar.size/2,food[i].x,food[i].y,food[i].size/2)){
       avatar.size += food[i].size;
-      food.splice(i,1);
+      food[i].x = random(width);
+      food[i].y = random(height);
     }
   }
   for (let i = 0; i < food.length; i++) {
