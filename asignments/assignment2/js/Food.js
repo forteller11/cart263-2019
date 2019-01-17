@@ -40,7 +40,13 @@ class Food extends Entity{
     this.velocity.x += noiseForceAddX;
     this.velocity.y += noiseForceAddY;
   }
-
+  reset(){
+    this.noiseIndexX = random(10000);
+    this.noiseIndexY = random(10000);
+    this.size = this.size*.75;
+    this.x = random(width);
+    this.y = random(height);
+  }
   update(){
     this.addForce();
 
@@ -54,6 +60,13 @@ class Food extends Entity{
     this.y += this.velocity.y;
 
     this.screenWrap();
+
+  }
+  display() {
+    noFill();
+    stroke(this.color);
+    strokeWeight(this.size/10);
+    super.display();
 
   }
 }

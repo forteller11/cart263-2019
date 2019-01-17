@@ -1,23 +1,23 @@
 "use strict"
 
 /*
-Assignment 1
+Assignment 2
 Charly Yan Miller
 */
 let avatar;
 let food = [];
-
+let part = [];
 function setup() {
   createCanvas(windowWidth, windowHeight);
   for (let i = 0; i < 10; i++) {
-    food[i] = new Food(random(width), random(height), 32, "#96E58F");
+    food[i] = new Food(random(width), random(height), random(20,60), "#FFFFFF");
   }
-  avatar = new Avatar(mouseX, mouseY, 64, "#D08FE5");
+  avatar = new Avatar(mouseX, mouseY, 64, "#FFFFFF");
   noCursor();
 }
 
 function draw() {
-  background(51);
+  background(0);
   if (avatar.alive) {
     avatar.update();
   }
@@ -26,10 +26,19 @@ function draw() {
     food[i].update();
   }
 
+  for (let i = 0; i < part.length; i++) {
+    part[i].update();
+  }
   for (let i = 0; i < food.length; i++) {
     if (circleOverlap(avatar.x,avatar.y,avatar.size/2,food[i].x,food[i].y,food[i].size/2)){
       avatar.size += food[i].size;
-      food.splice(i,1);
+      const partCreateNumber = round(food[i].size/3);
+      for (let i = 0; i < partCreateNumber; i ++){
+        // const partSize = random(food[i].size/3,food[i].size*3);
+        part.push(new Particle(avatar.x,avatar.y,random(partCreateNumber,partCreateNumber*3),avatar.velocity.x,avatar.velocity.y));
+      }
+      food[i].reset();
+      // food.splice(i,1);
     }
   }
   for (let i = 0; i < food.length; i++) {
