@@ -32,7 +32,7 @@ function mousePressed(){
 }
 
 function keyPressed(){ //add force
-  let dir = HALF_PI;
+  let dir = HALF_PI; //0 = horz (right), half_pi = vert (down)
   const force = 0;
   phyObject.addForce(mouseX,mouseY,dir,force);
   // const x2 = (cos(dir)*force*100)+mouseX;
