@@ -55,12 +55,26 @@ let text = [
 "still"
 ];
 let textIndex = 0;
-let paragraphs = document.getElementsByTagName("p");
-for (let i = 0; i < paragraphs.length; i ++){
-  changeInnerHTML(paragraphs[i]);
-  // paragraphs[i].innerHTML = "ahh";
-}
+// let paragraphs = document.getElementsByTagName("p");
+// for (let i = 0; i < paragraphs.length; i ++){
+//   changeInnerHTML(paragraphs[i]);
+//   // paragraphs[i].innerHTML = "ahh";
+// }
 
+let body =  [];
+body = document.getElementsByTagName("body");
+getChildrenOfElement(body[0]);
+
+function getChildrenOfElement(parentRef){
+  // changeInnerHTML(parentRef);
+    parentRef.style.color = "cyan";
+
+  for (let i = 0; i < parentRef.children.length; i ++){
+    if (parentRef.children[i].hasChildren === true){ //if has children, recusrively repeat fucniton
+      getChildrenOfElement(parentRef.children[i]);
+    }
+  }
+}
 // let element = document.childNodes;
 // for (let i = 0; i < document.childNodes.length; i ++){
 //   changeInnerHTML(document[i].childNodes);
@@ -69,7 +83,10 @@ for (let i = 0; i < paragraphs.length; i ++){
 
 function changeInnerHTML(elementRef){
 
-  let stringOfInnerHTML = elementRef.innerHTML.split(" ");
+  let stringOfInnerHTML = [];
+  stringOfInnerHTML = elementRef.innerHTML;
+  console.log("innerhtml");
+  console.log(stringOfInnerHTML);
   // console.log(stringOfInnerHTML);
   //create new string of text as many words long as the old innerHTML
   let newText = [];
@@ -80,7 +97,7 @@ function changeInnerHTML(elementRef){
     newText.push(text[textIndex]);
     textIndex ++;
   }
-  console.log(newText);
+
   //replace old innerHTML with new text
   elementRef.innerHTML = newText;
 }
