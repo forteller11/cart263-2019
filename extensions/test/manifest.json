@@ -1,21 +1,19 @@
 {
-  "name": "Chrome Extension Example",
+  "name": "Chrome Extension Test",
   "version": "1.0",
   "description": "Educating the masses in order to achieve the communist Utopia and the end of history.",
-  "permissions": ["storage","http://*/*","https://*/*"],
+  "permissions": ["storage", "http://*/*", "https://*/*", "file://*/*"],
   "manifest_version": 2,
 
-  "background": {
-    "scripts": [
-      "js/background.js"
+
+  "content_scripts": [{
+    "matches": [
+      "*://*/*",
+   "file://*/*"
     ],
-    "persistent": true
-  },
-  "content_scripts": {
-    "js": [
-      "js/content.js"
-    ],
-  },
+    "js": ["js/content.js"]
+  }],
+
 
   "browser_action": {
     "default_icon": {
