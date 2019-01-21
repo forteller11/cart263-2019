@@ -68,17 +68,17 @@ body = document.getElementsByTagName("body");
 getChildrenOfElement(body[0]);
 
 function getChildrenOfElement(parentRef){
-  // changeInnerHTML(parentRef);
-  // changeInnerHTML(parentRef);
-    parentRef.style.color = "cyan";
+
+  changeInnerHTML(parentRef);
+    // parentRef.style.color = "cyan";
 
   for (let i = 0; i < parentRef.children.length; i ++){ //loop through all children
     if (parentRef.children[i].children.length >= 1){ //if has children, recusrively repeat fucniton (style itself, then check to see if it has children)
       getChildrenOfElement(parentRef.children[i]);
       console.log(parentRef);
     } else { // if element has no children, style itself
-      // changeInnerHTML(parentRef.children[i]);
-      parentRef.style.color = "cyan";
+      changeInnerHTML(parentRef.children[i]);
+      parentRef.children[i].style.color = "cyan";
     }
   }
 }
@@ -106,5 +106,6 @@ function changeInnerHTML(elementRef){
   }
 
   //replace old innerHTML with new text
-  elementRef.innerHTML = newText;
+  // elementRef.innerHTML = newText;
+  elementRef.innerHTML = "ah";
 }

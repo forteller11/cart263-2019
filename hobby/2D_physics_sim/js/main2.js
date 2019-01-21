@@ -26,14 +26,14 @@ function mousePressed(){
   let component = new Component(phyObject,mouseX,mouseY,0,random(20,80),1,null);
   phyObject.component.push(component);
   phyObject.alterComponents();
-  console.log(phyObject);
+  // console.log(phyObject);
 
   // phyObject.angle = angleStore;
 }
 
 function keyPressed(){ //add force
   let dir = HALF_PI; //0 = horz (right), half_pi = vert (down)
-  const force = 0;
+  const force = 1;
   phyObject.addForce(mouseX,mouseY,dir,force);
   // const x2 = (cos(dir)*force*100)+mouseX;
   // const y2 = (sin(dir)*force*100)+mouseY;
