@@ -1,14 +1,15 @@
 "use strict";
 class PhysicsObject {
-  constructor(angle = 0) {
+  constructor(centerOfMassX = width/2, centerOfMassY = height/2, angle = 0) {
     this.component = [];
     this.angle = angle;
-    this.centerOfMassX = width / 2;
-    this.centerOfMassY = height / 2;
+    this.centerOfMassX = centerOfMassX ;
+    this.centerOfMassY = centerOfMassY ;
     this.totalMass;
     this.momentOfInertia = 1; //how hard is this thing to rotate? (higher = harder)
     this.translationalVelocity = createVector(1, 0);
     this.rotationalVelocity = createVector(.01);
+    this.baseConfig(); //min components
   }
 
   calculateCenterOfMass() { //uses components positions and masses to calcualte center of mass
@@ -69,6 +70,7 @@ class PhysicsObject {
     this.calculateComponentOffsets();
 
   }
+
   addForce(forceOriginX, forceOriginY, forceAngle, forceMag) {
     //calculate change in translational velocity using polar to cartesian conversion
     this.translationalVelocity.x += cos(forceAngle) * forceMag;
@@ -86,27 +88,38 @@ class PhysicsObject {
     const torque = rotationaAcceleration / this.momentOfInertia; //the higher the moment of inertia the harder it is to rotate
     this.rotationalVelocity.x += torque;
   }
+
   updatePosBasedOnVelocity() {
     this.centerOfMassX += this.translationalVelocity.x;
     this.centerOfMassY += this.translationalVelocity.y;
 
     this.angle += this.rotationalVelocity.x;
   }
+
+  baseConfig(){
+    //positions starting hull based on gamepad index
+    const newComponent = new Component(this,this.centerOfMassX ,this.centerOfMassY,this.angle,random(20,80),1,null);
+    this.component.push(newComponent);
+    this.alterComponents();
+
+  }
   update() {
-    //this.changePosBasedOnForce();
-    let dir = HALF_PI; //0 = horz (right), half_pi = vert (down)
-    const force = 0;
-    this.addForce(mouseX, mouseY, dir, force);
-    fill(255, 255, 0, 20);
-    ellipse(this.centerOfMassX, this.centerOfMassY, 20);
+    // if (gameMode === 1){ update physics for game
+      //air resistance
+      this.translationalVelocity.div(1.01);
+      this.rotationalVelocity.div(1.01);
+      this.updatePosBasedOnVelocity();
+    // }
+
     for (let i = 0; i < this.component.length; i++) { //cartesian to polar conversion
       this.component[i].update();
     }
 
-    //air resistance
-    this.translationalVelocity.div(1.01);
-    this.rotationalVelocity.div(1.01);
+    this.displayCenterOfMass();
+  }
 
-    this.updatePosBasedOnVelocity();
+  displayCenterOfMass(){
+    fill(255, 255, 0, 20);
+    ellipse(this.centerOfMassX, this.centerOfMassY, 20);
   }
 }

@@ -1,65 +1,79 @@
 "use strict";
 /*
-player class contains entities, moves those entities with input and physics calculations
+Player class contains an associated gamepad and a single physics object which
+ it is responsible to adding force to based on any existing comopnent thrusters
+ and the associated gamepad input
 */
 class Player {
-  constructor(gp = null, x = random(width), y = random(height), angle = random(TWO_PI)) {
+  constructor(gp = null, phyObject = null) {
+    this.cursorX = width/2;
+    this.cursorY = height/2;
+    this.cursorSize = 24;
+    this.cursorAngle = 0;
+    this.cursorSpeedChange = 8;
+    this.cursorAngleChange = .1;
+
     console.log("PLAYER w/gp" + gp.index + " spawned");
     this.gp = gp; //gamepad associated witht inputs for this ship obj
-    this.child = [];
-    this.x = x;
-    this.y = y;
-    this.angle = angle;
-    this.translationalVelocity = createVector(0, 0);
-    this.rotationalVelocity = createVector(0, 0);
-
-    this.randomiseSpawnConfig();
+    this.phyObject = phyObject;
+  }
+  receiveInputs(){
+    //then cycle through components, looking for thrusters
   }
 
-  addForceBasedOnGP() { //cycle through all children, find thrusters, see if their forces should be added to direct of input
-    // for (let i = 0; i < this.child.length; i ++){
-    //   if (this.child[i] instanceof Thruster){ //is child a thruster
-    //     //see if and how much force shud be added
-    //   }
+    addForceToPhyObjectBasedOnInputs(){
+      //cycle through to find all thrusters, see if they're pointed in same angle as thrusters (cos(theta) within 180)
+    }
+  update(){
+    this.receiveInputs();
+
+    if (gameMode === 0){ //if in build mode
+      this.updateCursor();
+      this.addComponentsBasedOnInputs();
+    }
+
+    if (gameMode === 1){ //if in play mode
+      this.addForceToPhyObjectBasedOnInputs();
+    }
+    this.phyObject.update();
+  }
+  updateCursor(){
+    // move cursor
+    const axesThreshold = 0.2;
+    if ((this.gp.axes[0] > axesThreshold) || (this.gp.axes[0] < -axesThreshold)) {
+      this.cursorX += this.gp.axes[0] * this.cursorSpeedChange;
+    }
+    if ((this.gp.axes[1] > axesThreshold) || (this.gp.axes[1] < -axesThreshold)) {
+      this.cursorY += this.gp.axes[1] * this.cursorSpeedChange;
+    }
+
+//create new phyObject just for displaying component on cursor object, splice it once player pressed A and create real component on perm physics obj
+    if (this.gp.buttons[2].value){ //if "X" button pressed
+    const newComponent = new Component(this.phyObject,this.cursorX ,this.cursorY,this.cursorAngle,random(20,80),1,null);
+    this.phyObject.component.push(newComponent);
+    this.phyObject.alterComponents();
+    console.log("lol");
+    }
+
+    if (this.gp.buttons[3].value){ //if "X" button pressed
+    const newComponent = new Thruster(this.phyObject,this.cursorX ,this.cursorY,this.cursorAngle,10,1,1);
+    this.phyObject.component.push(newComponent);
+    this.phyObject.alterComponents();
+    console.log("thruster");
+    }
+
+    //draw cursor
+    stroke(0);
+    strokeWeight(3);
+    fill(255,255,0);
+    ellipse(this.cursorX,this.cursorY,this.cursorSize);
+
+    // if (gamepadArr[i].buttons[2].pressed){
+    //   console.log("I've been pressed!");
     // }
   }
+  addComponentsBasedOnInputs(){
 
-  changePosBasedOnForce() {
-
-  }
-  randomiseSpawnConfig() { //generates random starting child-parent enttities
-    let radiusOffset = 0;
-    let angleOffset = 0;
-    let radius = random(20, 60);
-    let angle = random(TWO_PI);
-    this.child[0] = new Component(this, radiusOffset, angleOffset, radius, 1, null); //spawn first ocmponent w/no child
-
-    for (let i = 1; i < 8; i++) {
-      radius = random(20, 60);
-      angle = random(TWO_PI);
-      this.child[i] = new Component(this, radiusOffset, angleOffset, radius, 1, this.child[i - 1]);
-      radiusOffset += random(-100, 100);
-      angleOffset += random(-1, 1);
-    }
-    // this.child[i] = new Thruster(spawnX,spawnY,radius,angle,null,null,1);
-  }
-
-  display() {
-    noStroke();
-    fill(255, 255, 0);
-    ellipse(this.x, this.y, 4);
-    text("angle:" + round(this.angle * 100) / 100, this.x + 200, this.y);
-    text("GP:" + this.gp.index, this.x + 200, this.y + 40);
-  }
-
-  update() {
-    this.addForceBasedOnGP();
-    this.changePosBasedOnForce():
-      // this.angle += 0.01; //for testing
-      // this.x ++; //for testing
-      this.display();
-    for (let i = 0; i < this.child.length; i++) {
-      this.child[i].update();
-    }
+    // const component = new Component(this,this.cursorX,this.cursorY,this.cursorAngle,random(20,80),1,null);
   }
 }
