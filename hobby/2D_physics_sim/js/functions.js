@@ -33,7 +33,7 @@ function handleSpawningPlayerWithGamepads(){
     if (!(gamepadArr[i] === null)) { //if gamepad is connected in this slot
       if ((gamepadArr[i].buttons[0].pressed) && (player[i] === null)){ //if this button is pressed and no player with this controller exists...
 
-        player[i] = new Player(gamepadArr[i], new PhysicsObject(i*width/5,i*height/5,0));
+        player[i] = new Player(gamepadArr[i], new PhysicsObject((i+1)*width/5,(i+1)*height/5,0));
       }
     }
   }

@@ -1,8 +1,8 @@
 "use strict";
 class Thruster extends Component{
-  constructor(parent, x, y, angle = random(TWO_PI), radius, density){
-    super(parent, x, y, angle = random(TWO_PI), radius, density);
-    this.thrustForce = this.radius;
+  constructor(parent, x, y, angle, radius, density){
+    super(parent, x, y, angle, radius, density);
+    this.thrustForce = this.radius*.001;
   }
 
   display(){

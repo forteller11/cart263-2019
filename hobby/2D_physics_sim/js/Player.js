@@ -30,6 +30,27 @@ class Player {
       if (this.gp.buttons[4].value || this.gp.buttons[6].value){
         this.phyObject.rotationalVelocity.x -= this.phyObjectAngleChange/this.phyObject.momentOfInertia;
       }
+
+      const axesThreshold = 0.2;
+      //calculate contributing force of thrusters on movement of physics object given inputs
+      if ((this.gp.axes[0] > axesThreshold) || (this.gp.axes[0] < -axesThreshold) || (this.gp.axes[1] > axesThreshold) || (this.gp.axes[1] < -axesThreshold)) {
+        for (let i = 0; i < this.phyObject.component.length; i ++){
+          if (this.phyObject.component[i] instanceof Thruster){
+            const angleOfAxis = atan2(this.gp.axes[1],this.gp.axes[0]);
+            const thruster = this.phyObject.component[i];
+            //90 angle or more delta between angles would lead to 0-(-1) influence
+            let thrusterInfluence = cos(thruster.angle - angleOfAxis); //now 90angle or more delta wud lead to 0 influence
+            thrusterInfluence = constrain(thrusterInfluence,0,1);
+            const thrustForce = thruster.thrustForce * thrusterInfluence;
+            this.phyObject.addForce(thruster.x,thruster.y,thruster.angle,-thrustForce);
+            // this.phyObject += this.gp.axes[0] * this.cursorSpeedChange;
+          }
+        }
+      }
+      // if ((this.gp.axes[1] > axesThreshold) || (this.gp.axes[1] < -axesThreshold)) {
+
+        // this.cursorY += this.gp.axes[1] * this.cursorSpeedChange; //
+      // }
       //cycle through to find all thrusters, see if they're pointed in same angle as thrusters (cos(theta) within 180)
     }
   update(){
@@ -45,6 +66,7 @@ class Player {
     }
     this.phyObject.update();
   }
+
   updateCursor(){
     // move cursor
     const axesThreshold = 0.2;
@@ -70,14 +92,14 @@ class Player {
 
 //create new phyObject just for displaying component on cursor object, splice it once player pressed A and create real component on perm physics obj
     if (this.gp.buttons[2].value){ //if "X" button pressed
-    const newComponent = new Component(this.phyObject,this.cursorX ,this.cursorY,this.cursorAngle-this.phyObject.angle,random(20,80),1,null);
+    const newComponent = new Component(this.phyObject,this.cursorX ,this.cursorY,this.cursorAngle-this.phyObject.angle,random(20,80),1);
     this.phyObject.component.push(newComponent);
     this.phyObject.alterComponents();
-    console.log("lol");
+    console.log("component");
     }
 
     if (this.gp.buttons[3].value){ //if "X" button pressed
-    const newComponent = new Thruster(this.phyObject,this.cursorX ,this.cursorY,this.cursorAngle-this.phyObject.angle,random(10,20),1,1);
+    const newComponent = new Thruster(this.phyObject,this.cursorX ,this.cursorY,this.cursorAngle-this.phyObject.angle,random(10,20),1);
     this.phyObject.component.push(newComponent);
     this.phyObject.alterComponents();
     console.log("thruster");

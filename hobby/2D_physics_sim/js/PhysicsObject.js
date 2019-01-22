@@ -106,7 +106,7 @@ class PhysicsObject {
   update() {
     // if (gameMode === 1){ update physics for game
       //air resistance
-      this.translationalVelocity.div(1.01);
+      this.translationalVelocity.div(1.1);
       this.rotationalVelocity.div(1.3);
       this.updatePosBasedOnVelocity();
     // }
