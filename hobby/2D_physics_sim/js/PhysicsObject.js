@@ -27,7 +27,8 @@ class PhysicsObject {
   }
 
   calculateMomentOfInertia() { //uses components distance FromCenterOfMass and masses to calcualte momentOfINertia
-    this.momentOfInertia = 1; //min momentOfInertia
+    //moment of inertia increases the further mass is away from the axis of rotation
+    this.momentOfInertia = 1; //min momentOfInertia (to prevent ever dividing by 0)
     for (let i = 0; i < this.component.length; i++) {
       const deltaX = this.component[i].x - this.centerOfMassX;
       const deltaY = this.component[i].y - this.centerOfMassY;
@@ -35,7 +36,7 @@ class PhysicsObject {
       // console.log("dist")
       const distFromAxisOfRotationSquared = sq(deltaX) + sq(deltaY);
       this.momentOfInertia += this.component[i].mass * distFromAxisOfRotationSquared;
-      this.momentOfInertia *= .001; //lower = more likely to rotate
+      this.momentOfInertia *= .001; //lower = more likely to rotate (constant to manually ajjust numbers)
     }
 
   }
@@ -59,10 +60,6 @@ class PhysicsObject {
       }
       this.component[i].distToParent = sqrt(sq(componentXRelative) + sq(componentYRelative));
       this.component[i].angleToParent = atan2(componentYRelative, componentXRelative);
-
-      // console.log("deltaX"+deltaX);
-      // console.log("distToParent"+this.component[i].distToParent);
-      // console.log("angleToParent"+this.component[i].angleToParent);
     }
   }
 
@@ -85,9 +82,9 @@ class PhysicsObject {
     const distFromCenterOfMassToForceOrigin = sqrt(sq(deltaX) + sq(deltaY)); //dist from centerofmass to origin of vector
     const angleFromOriginToForce = atan2(deltaY, deltaX); //finding angle to imaginary radius which the force is applying itself to
     const deltaAnglefromOriginToForce = forceAngle - angleFromOriginToForce; //find angle difference of angle to imaginary radius relative to the angle of the vector
-    const torque = (distFromCenterOfMassToForceOrigin * sin(deltaAnglefromOriginToForce) * forceMag);
-    // console.log("moment of inertia in torque:" + this.momentOfInertia);
-    this.rotationalVelocity.x += torque / this.momentOfInertia;
+    const rotationaAcceleration = (distFromCenterOfMassToForceOrigin * sin(deltaAnglefromOriginToForce) * forceMag);
+    const torque = rotationaAcceleration / this.momentOfInertia; //the higher the moment of inertia the harder it is to rotate
+    this.rotationalVelocity.x += torque;
   }
   updatePosBasedOnVelocity() {
     this.centerOfMassX += this.translationalVelocity.x;
