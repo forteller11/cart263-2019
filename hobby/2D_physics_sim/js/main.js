@@ -22,6 +22,14 @@ function draw() {
       // console.log("updatingPlayer");
     }
   }
+  if (keyCode === 48){
+    gameMode = 0;
+    console.log("gameMode:"+gameMode);
+  }
+  if (keyCode === 49){
+    gameMode = 1;
+    console.log("gameMode:"+gameMode);
+  }
 
 //handle collisions
 }

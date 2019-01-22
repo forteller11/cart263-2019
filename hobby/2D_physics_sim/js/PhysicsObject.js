@@ -35,7 +35,7 @@ class PhysicsObject {
       const deltaY = this.component[i].y - this.centerOfMassY;
 
       // console.log("dist")
-      const distFromAxisOfRotationSquared = sq(deltaX) + sq(deltaY);
+      const distFromAxisOfRotationSquared = sqrt(sq(deltaX) + sq(deltaY));
       this.momentOfInertia += this.component[i].mass * distFromAxisOfRotationSquared;
       this.momentOfInertia *= .001; //lower = more likely to rotate (constant to manually ajjust numbers)
     }
@@ -107,7 +107,7 @@ class PhysicsObject {
     // if (gameMode === 1){ update physics for game
       //air resistance
       this.translationalVelocity.div(1.01);
-      this.rotationalVelocity.div(1.01);
+      this.rotationalVelocity.div(1.3);
       this.updatePosBasedOnVelocity();
     // }
 
