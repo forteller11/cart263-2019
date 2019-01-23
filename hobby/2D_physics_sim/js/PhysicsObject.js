@@ -35,9 +35,9 @@ class PhysicsObject {
       const deltaY = this.component[i].y - this.centerOfMassY;
 
       // console.log("dist")
-      const distFromAxisOfRotationSquared = sqrt(sq(deltaX) + sq(deltaY));
+      const distFromAxisOfRotationSquared = (sq(deltaX) + sq(deltaY));
       this.momentOfInertia += this.component[i].mass * distFromAxisOfRotationSquared;
-      this.momentOfInertia *= .001; //lower = more likely to rotate (constant to manually ajjust numbers)
+      this.momentOfInertia *= .0001; //lower = more likely to rotate (constant to manually ajjust numbers)
     }
 
   }
@@ -71,10 +71,14 @@ class PhysicsObject {
 
   }
 
-  addForce(forceOriginX, forceOriginY, forceAngle, forceMag) {
-    //calculate change in translational velocity using polar to cartesian conversion
+  addTranslationalForce(forceAngle, forceMag){     //calculate change in translational velocity using polar to cartesian conversion
     this.translationalVelocity.x += cos(forceAngle) * forceMag;
     this.translationalVelocity.y += sin(forceAngle) * forceMag;
+  }
+
+  addForceWithTorque(forceOriginX, forceOriginY, forceAngle, forceMag) {
+      //calculate change in translational velocity using polar to cartesian conversion
+    this.addTranslationalForce(forceAngle,forceMag);
 
     //calculate torque/change in rotational velocity
     //

@@ -39,10 +39,10 @@ class Player {
             const angleOfAxis = atan2(this.gp.axes[1],this.gp.axes[0]);
             const thruster = this.phyObject.component[i];
             //90 angle or more delta between angles would lead to 0-(-1) influence
-            let thrusterInfluence = cos(thruster.angle - angleOfAxis); //now 90angle or more delta wud lead to 0 influence
-            thrusterInfluence = constrain(thrusterInfluence,0,1);
+            let thrusterInfluence = cos(thruster.angle+this.phyObject.angle - angleOfAxis); //now 90angle or more delta wud lead to 0 influence
+            thrusterInfluence = constrain(thrusterInfluence,-1,0);
             const thrustForce = thruster.thrustForce * thrusterInfluence;
-            this.phyObject.addForce(thruster.x,thruster.y,thruster.angle,-thrustForce);
+            this.phyObject.addTranslationalForce(thruster.angle+this.phyObject.angle, thrustForce);
             // this.phyObject += this.gp.axes[0] * this.cursorSpeedChange;
           }
         }
