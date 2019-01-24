@@ -14,3 +14,10 @@ canvas{
   border-radius: 0px;
   display:block;
 }
+#textbox{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:256px;
+  height:32px;
+}

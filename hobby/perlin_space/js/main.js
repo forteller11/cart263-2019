@@ -2,16 +2,20 @@
 const noiseIndexXSeed = 100213;
 const noiseIndexYSeed = 8132;
 const charSize = 18;
-
+let textbox;
 function setup() {
+  textbox = document.getElementById("textbox");
   noiseSeed(0);
   // modcharsize
   noiseDetail(8);
-  createCanvas(500, 800);
+  createCanvas(windowWidth, windowHeight);
   textSize(charSize);
 }
 
 function draw() {
+  textbox.value = "I am a textbox";
+  textbox.style.left = mouseX + "px";
+  textbox.style.top = mouseY + "px";
   background(255);
   let noiseIndexX = noiseIndexXSeed + mouseX / width; //+ player.x
   let noiseIndexY = noiseIndexYSeed + mouseY / height;
