@@ -25,16 +25,26 @@ div {
   margin-bottom: 40px;
   font-size: 1.6em;
 }
-
+.secret{
+  color:black;
+  /* background-color:lightgrey; */
+}
+.found{
+  color:black;
+  background-color: yellow;
+}
 .redacted{
   user-select:none;
   color:transparent;
   background:black;
+  background-color:transparent;
+  color:black;
 }
 .highlighted{
   color:black;
   background:yellow;
 }
-.dog{
-  font-size:64px;
+
+#counter{
+    font-size: 1.9em;
 }
