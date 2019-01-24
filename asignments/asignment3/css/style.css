@@ -1,0 +1,50 @@
+/*********************************************
+
+Here is a description of any special CSS used.
+In this case it's just padding and margin to 0
+so the canvas is flush with the top left corner.
+
+**********************************************/
+
+* {
+  padding: 0;
+  margin: 0;
+  font-family:"courier";
+}
+canvas{
+  border-radius: 0px;
+  display:block;
+}
+
+body{
+  margin:200px;
+  margin-top:40px;
+}
+div {
+  color: black;
+  margin-bottom: 40px;
+  font-size: 1.6em;
+}
+.secret{
+  color:black;
+  /* background-color:lightgrey; */
+}
+.found{
+  color:black;
+  background-color: yellow;
+}
+.redacted{
+  user-select:none;
+  color:transparent;
+  background:black;
+  background-color:transparent;
+  color:black;
+}
+.highlighted{
+  color:black;
+  background:yellow;
+}
+
+#counter{
+    font-size: 1.9em;
+}
