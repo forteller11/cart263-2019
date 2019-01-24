@@ -33,18 +33,6 @@ div {
   color:black;
   background-color: yellow;
 }
-.redacted{
-  user-select:none;
-  color:transparent;
-  background:black;
-  background-color:transparent;
-  color:black;
-}
-.highlighted{
-  color:black;
-  background:yellow;
-}
-
 #counter{
     font-size: 1.9em;
 }
