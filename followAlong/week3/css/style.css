@@ -9,15 +9,32 @@ so the canvas is flush with the top left corner.
 * {
   padding: 0;
   margin: 0;
+  font-family:"courier";
 }
 canvas{
   border-radius: 0px;
   display:block;
 }
-#textbox{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:256px;
-  height:32px;
+
+body{
+  margin:200px;
+  margin-top:40px;
+}
+div {
+  color: black;
+  margin-bottom: 40px;
+  font-size: 1.6em;
+}
+
+.redacted{
+  user-select:none;
+  color:transparent;
+  background:black;
+}
+.highlighted{
+  color:black;
+  background:yellow;
+}
+.dog{
+  font-size:64px;
 }
