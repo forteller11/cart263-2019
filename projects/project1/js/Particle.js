@@ -9,7 +9,7 @@ class Particle {
 
     this.x = x;
     this.y = y;
-    console.log("IM X"+x);
+
     this.element.style.left = (this.x) + "px";
     this.element.style.top = (this.y) + "px";
 
