@@ -1,9 +1,9 @@
 "use strict";
 class Player {
-  constructor(parent, width = 32, height = 8, x = window.innerWidth / 2, y = window.innerHeight / 2) {
+  constructor(width = 32, height = 8, x = window.innerWidth / 2, y = window.innerHeight / 2) {
     this.element = document.createElement("INPUT");
     this.element.setAttribute("type","text");
-    parent.appendChild(this.element);
+    body[0].appendChild(this.element);
     this.element.value = "ah";
     this.element.style.position = "absolute";
     this.element.style.width = this.width + "px";
@@ -26,6 +26,11 @@ class Player {
         console.log(self.element.value);
         const charArr = self.element.value.split(''); //array of characters in the textboxes value;
         console.log(charArr);
+        for (let char of charArr){
+          const initialVelY = randomRange(1,5);
+          const initialVelX = 0;
+          particles.push(new Particle(char,16,self.x,self.y,initialVelX,initialVelY))
+        }
       }
     });
 
