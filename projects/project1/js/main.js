@@ -4,6 +4,7 @@ let player;
 let particles = [];
 let mouseX = 0;
 let mouseY = 0;
+let charSize = 16;
 let body = document.getElementsByTagName("body");
 
 function main() {

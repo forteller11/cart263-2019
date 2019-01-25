@@ -8,6 +8,7 @@ class Player {
     this.element.style.position = "absolute";
     this.element.style.width = this.width + "px";
     this.element.style.height = this.height + "px";
+    this.element.style.fontSize = charSize + "px";
 
     this.width = width;
     this.height = height;
@@ -23,13 +24,16 @@ class Player {
     const self = this;
     this.element.addEventListener("keypress",function(e){//trigger if key is pressed in the textbox
       if (e.keyCode === 13){ //if enter is pressed
-        console.log(self.element.value);
+        // console.log(self.element.value);
         const charArr = self.element.value.split(''); //array of characters in the textboxes value;
-        console.log(charArr);
-        for (let char of charArr){
-          const initialVelY = randomRange(1,5);
+        // console.log(charArr);
+        for (let i = 0; i < charArr.length; i ++){
+          const initialX = (self.x - self.width/2);
+          const additionalX = charSize/2*i;
+          const xx = initialX+additionalX;
+          const initialVelY = ((i+2)/8) + randomRange(-.1,.1) + 2;
           const initialVelX = 0;
-          particles.push(new Particle(char,16,self.x,self.y,initialVelX,initialVelY))
+          particles.push(new Particle(charArr[i],16,xx,self.y,initialVelX,initialVelY))
         }
       }
     });

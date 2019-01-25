@@ -3,8 +3,9 @@ class Particle {
     this.element = document.createElement("span");
     this.element.innerHTML = string;
     this.element.style.position = "absolute";
+    this.element.style.fontSize = charSize + "px";
     body[0].appendChild(this.element);
-    this.charSize = charSize;
+    this.charSize = charSize + "px";
 
     this.x = x;
     this.y = y;

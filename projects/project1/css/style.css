@@ -9,6 +9,7 @@ so the canvas is flush with the top left corner.
 * {
   padding: 0;
   margin: 0;
+  font-family: monospace,Courier;
 }
 canvas{
   border-radius: 0px;
