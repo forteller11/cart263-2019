@@ -15,11 +15,40 @@ function main(){
 
   player = new Player(textInput); //instatiate player with reference to newly created text input
   player.update();
+
+  setInterval(update,10);
 }
+
+function update(){
+player.update();
+}
+
 function trackMouseMovement(e){ //store position of mouse in global variables
   mouseX = e.clientX; //"client" means get pos of mouse relative to window pos (and not monitor pos)
   mouseY = e.clientY;
-  player.update();
-  console.log("mouseX"+mouseX);
-    console.log("window.innerWidth"+window.innerWidth);
+  //if mouse not current within textbox, begin moving textbox to mouse location
+  if (checkPointWithRectangleOverlap(mouseX,mouseY,player.x,player.y,player.width,player.height) === false){
+    player.targetX = e.clientX;
+    player.targetY = e.clientY;
+  }
+}
+
+function constrain(varr,min,max){ //same functionality as p5's constrain();
+  let varrConstrained = varr;
+  if (varr > max){
+    varrConstrained = max;
+  }
+  if (varr < min){
+    varrConstrained = min;
+  }
+  return varrConstrained;
+}
+
+function checkPointWithRectangleOverlap(pointX,pointY,rectX,rectY,rectWidth,rectHeight){
+  if ((pointX >= rectX-rectWidth/2) && ((pointX <= rectX+rectWidth/2))){ //horz collision?
+    if ((pointY >= rectY-rectHeight/2) && ((pointY <= rectY+rectHeight/2))){ //horz collision?
+      return true;
+    }
+  }
+  return false;
 }
