@@ -18,8 +18,8 @@ class Player {
 
     this.targetX = this.x;
     this.targetY = this.y;
-    this.toTargetMovespeed = .05; //percentage to transport to target per frame
-    this.toTagetMaxMovespeed = 5; //max movespeed in pixels to target per frame
+    this.toTargetMovespeed = .05; //max percentage to transport to target per frame
+    this.toTargetMaxMovespeed = 5; //max movespeed in pixels to target per frame
 
     const self = this;
     this.element.addEventListener("keypress",function(e){//trigger if key is pressed in the textbox
