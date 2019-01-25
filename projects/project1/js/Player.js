@@ -34,12 +34,15 @@ class Player {
           const initialX = (self.x - self.width/2);
           const additionalX = charSize/2*i;
           const xx = initialX+additionalX;
-          const initialVelY = ((i+2)/8) + randomRange(-.1,.1) + 2;
+          const initialRandom = + randomRange(-.1,.1);
+          const initialVelY = ((i+2)/8) + 2;
           const initialVelX = 0;
           particles.push(new Particle(charArr[i],16,xx,self.y,initialVelX,-initialVelY));
           self.velocity.y += initialVelY/10;
         }
-        self.velocity.y += 5;
+        if (!(self.element.value === "")){ //if textbox had any text when enter was pressed
+          self.velocity.y += 5;
+        }
         self.element.value = "";
       }
     });

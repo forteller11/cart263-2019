@@ -4,6 +4,8 @@ class Particle {
     this.element.innerHTML = string;
     this.element.style.position = "absolute";
     this.element.style.fontSize = charSize + "px";
+    this.opacity = 1;
+    this.opacityFade = randomRange(-0.0001,-0.00001)
     body[0].appendChild(this.element);
     this.charSize = charSize + "px";
 
@@ -17,11 +19,17 @@ class Particle {
     this.drag = 1.05;
   }
   update() {
-    this.velocity.div(this.drag);
-    this.x += this.velocity.x;
-    this.y += this.velocity.y;
+      this.opacity += this.opacityFade;
+      this.element.style.opacity = this.opacity;
+      this.velocity.div(this.drag);
+      this.x += this.velocity.x;
+      this.y += this.velocity.y;
 
-    this.element.style.left = (this.x) + "px";
-    this.element.style.top = (this.y) + "px";
+      this.element.style.left = (this.x) + "px";
+      this.element.style.top = (this.y) + "px";
+      }
+
+  deleteElement(){
+    this.element.remove();
   }
 }

@@ -18,8 +18,14 @@ function main() {
 
 function update() {
   player.update();
-  for (let part of particles) {
-    part.update();
+  for (let i = 0; i < particles.length; i++) {
+    particles[i].update();
+    if (particles[i].opacity <= 0){
+      console.log(particles);
+      particles[i].deleteElement();
+      particles.splice(i,1);
+      console.log("post"+particles);
+    }
   }
 }
 
