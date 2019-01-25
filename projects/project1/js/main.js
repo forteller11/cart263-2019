@@ -1,19 +1,16 @@
 "use strict";
 window.onload = main;
 let player;
+let particles = [];
 let mouseX = 0;
 let mouseY = 0;
-
+let body = document.getElementsByTagName("body");
 
 function main(){
   //create textinput and child it to the body
   document.addEventListener("click",trackMouseMovement);
-  let textInput = document.createElement("INPUT");
   let body = document.getElementsByTagName("body");
-  textInput.setAttribute("type","text");
-  body[0].appendChild(textInput);
-
-  player = new Player(textInput); //instatiate player with reference to newly created text input
+  player = new Player(body[0],128,16); //instatiate player with reference to newly created text input
   player.update();
 
   setInterval(update,10);

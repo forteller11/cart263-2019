@@ -1,19 +1,34 @@
 "use strict";
 class Player {
-  constructor(displayElement, width = 32, height = 8, x = window.innerWidth / 2, y = window.innerHeight / 2) {
-    this.element = displayElement;
+  constructor(parent, width = 32, height = 8, x = window.innerWidth / 2, y = window.innerHeight / 2) {
+    this.element = document.createElement("INPUT");
+    this.element.setAttribute("type","text");
+    parent.appendChild(this.element);
+    this.element.value = "ah";
+    this.element.style.position = "absolute";
+    this.element.style.width = this.width + "px";
+    this.element.style.height = this.height + "px";
+
     this.width = width;
     this.height = height;
+
     this.x = x;
     this.y = y;
+
     this.targetX = this.x;
     this.targetY = this.y;
     this.toTargetMovespeed = .05; //percentage to transport to target per frame
     this.toTagetMaxMovespeed = 5; //max movespeed in pixels to target per frame
 
-    this.element.style.position = "absolute";
-    this.element.style.width = this.width + "px";
-    this.element.style.height = this.height + "px";
+    const self = this;
+    this.element.addEventListener("keypress",function(e){//trigger if key is pressed in the textbox
+      if (e.keyCode === 13){ //if enter is pressed
+        console.log(self.element.value);
+        const charArr = self.element.value.split(''); //array of characters in the textboxes value;
+        console.log(charArr);
+      }
+    });
+
   }
   update() { //use x,y pos of element to style element (Using offsets to style it from center instead of top-left corner)
     this.moveTowardsTarget();
