@@ -19,8 +19,6 @@ class Particle {
     this.drag = 1.05;
   }
   update() {
-      this.opacity += this.opacityFade;
-      this.element.style.opacity = this.opacity;
       this.velocity.div(this.drag);
       this.x += this.velocity.x;
       this.y += this.velocity.y;
@@ -28,7 +26,10 @@ class Particle {
       this.element.style.left = (this.x) + "px";
       this.element.style.top = (this.y) + "px";
       }
-
+      fade(){
+        this.opacity += this.opacityFade;
+        this.element.style.opacity = this.opacity;
+      }
   deleteElement(){
     this.element.remove();
   }

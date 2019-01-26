@@ -11,7 +11,7 @@ let body = document.getElementsByTagName("body");
 function main() {
   //create textinput and child it to the body
   document.addEventListener("click", trackMouseMovement);
-  player = new Player(64, 16); //instatiate player with reference to newly created text input
+  player = new Player(charSize*3.2, 16); //instatiate player with reference to newly created text input
   player.update();
 
   setInterval(update, 10);
@@ -20,12 +20,11 @@ function main() {
 function update() {
   player.update();
   for (let i = 0; i < particles.length; i++) {
-    particles[i].update();
+    particles[i].fade();
     if (particles[i].opacity <= 0){
-      console.log(particles);
+      console.log("spliced particle "+i);
       particles[i].deleteElement();
       particles.splice(i,1);
-      console.log("post"+particles);
     }
   }
 }
