@@ -4,7 +4,7 @@ class Player {
     this.minWidth = width;
     this.maxWidth = 200;
     this.height = height;
-
+    this.posOffset = 2.1; //so that element isn't centered around center of textbox
     this.element = document.createElement("INPUT");
     this.element.setAttribute("type","text");
     body[0].appendChild(this.element);
@@ -16,7 +16,6 @@ class Player {
     this.element.style.height = this.height + "px";
     this.element.style.fontSize = charSize + "px";
     this.element.style.letterSpacing = letterKerningSpace + "px";
-    this.drag;
 
     this.x = x;
     this.y = y;
@@ -24,10 +23,8 @@ class Player {
     this.targetX = this.x;
     this.targetY = this.y;
 
-    this.velocity = new Vector(0,0);
-
-    this.toTargetMovespeed = .05; //max percentage to transport to target per frame
-    this.toTargetMaxMovespeed = 5; //max movespeed in pixels to target per frame
+    this.toTargetMovespeed = .085; //max percentage to transport to target per frame
+    this.toTargetMaxMovespeed = 8.5; //max movespeed in pixels to target per frame
 
     this.enterKeyForce = 5; //force appllied to textbox on press of enter
     this.arrowKeyForce = .5135; //force applied to textbox on left/right arrow key press
@@ -56,15 +53,14 @@ class Player {
           // const initialVelY = ((i+2)/8) + 2;
           const initialVelY = 0;
           const initialVelX = 0;
-          strings.push(new String(self.element.value,charSize,xx,yy,initialVelX,-initialVelY));
+          strings.push(new String(self.element.value,xx,yy,initialVelX,-initialVelY));
 
           if (strings.length > maxstrings){ //delete first strings so that there are never more than max
             strings[0].deleteElement();
             strings.splice(0,1);
           }
 
-        self.velocity.y += initialVelY/10;
-        self.velocity.y += self.enterKeyForce;
+        self.changeTargetBasedOnArrowKeys(0,lineSpace,1);
         self.element.value = "";
         self.element.style.width = self.minWidth + "px";
       }
@@ -72,16 +68,16 @@ class Player {
 
     this.element.addEventListener("keydown",function(e){
       if (e.keyCode === 37){ //left arrowkey
-        self.velocity.x -= self.arrowKeyForce;
+        self.changeTargetBasedOnArrowKeys(charSize,0,-1);
       }
       if (e.keyCode === 39){ //right arrowkey
-        self.velocity.x += self.arrowKeyForce;
+        self.changeTargetBasedOnArrowKeys(charSize,0,1);
       }
       if (e.keyCode === 38){ //up arrowkey
-        self.velocity.y -= self.enterKeyForce;
+        self.changeTargetBasedOnArrowKeys(0,lineSpace,-1);
       }
       if (e.keyCode === 40){ //down arrowkey
-        self.velocity.y += self.enterKeyForce;
+        self.changeTargetBasedOnArrowKeys(0,lineSpace,1);
       }
     });
 
@@ -98,18 +94,22 @@ class Player {
     })
 
   }
+
+  changeTargetBasedOnArrowKeys(amountToChangeX,amountToChangeY,sign){
+    if ((this.targetX === null)||(this.targetY === null)){ //if there is no target, have new target = current postiion + amountToChange
+      this.targetX = this.x-(this.minWidth/this.posOffset) + (amountToChangeX * sign);
+      this.targetY = this.y + amountToChangeY * sign;
+    } else { //if there is a target, offset it
+      this.targetX += amountToChangeX * sign;
+      this.targetY += amountToChangeY * sign;
+    }
+  }
   update() { //use x,y pos of element to style element (Using offsets to style it from center instead of top-left corner)
     if (this.retargeting){ //if targeting the mouse, change target to equal the mouse position
       this.targetX = mouseX;
       this.targetY = mouseY;
     }
     this.moveTowardsTarget();
-    this.x+= this.velocity.x;
-    this.y+= this.velocity.y;
-    this.velocity.div(this.drag);
-    this.velocity.constrainMag(1);
-    // console.log(this.velocity.y);
-
     this.element.style.left = (this.x - this.minWidth / 2) + "px";
     this.element.style.top = (this.y - this.height / 2) + "px";
   }
@@ -134,9 +134,8 @@ class Player {
   }
   moveTowardsTarget(){
     if (!((this.targetX || this.targetY ) === null)){
-      this.drag = 1.1;
       //find difference between target and current position
-      const deltaX = this.targetX-this.x+this.minWidth/2.1;
+      const deltaX = this.targetX-this.x+this.minWidth/this.posOffset;
       const deltaY = this.targetY-this.y;
       //use percentage of that delta to find movespeed in pixels
       let moveX = deltaX*this.toTargetMovespeed;
@@ -145,15 +144,10 @@ class Player {
       moveX = constrain(moveX,-this.toTargetMaxMovespeed,this.toTargetMaxMovespeed);
       moveY = constrain(moveY,-this.toTargetMaxMovespeed,this.toTargetMaxMovespeed);
       //actually moved based on these calculations...
-      this.velocity.x += moveX;
-      this.velocity.y += moveY;
+      this.x += moveX;
+      this.y += moveY;
 
-      this.velocity.div(1.1);
-
-      if (dist(deltaX,deltaY) < 6){ //if very close to target, stop moving towards target
-        this.drag = 1.05;
-        this.velocity.div(5);
-        // console.log("arrived");
+      if (dist(deltaX,deltaY) < .2){ //if very close to target, stop moving towards target
         this.targetX = null;
         this.targetY = null;
       }

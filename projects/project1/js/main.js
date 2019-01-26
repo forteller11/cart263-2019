@@ -5,6 +5,7 @@ let strings = [];
 let mouseX = 0;
 let mouseY = 0;
 const charSize = 16;
+const lineSpace = 32;
 const letterKerningSpace = 2;
 let body = document.getElementsByTagName("body");
 const maxstrings = 1200; //max character count of a page
@@ -15,7 +16,7 @@ function main() {
   player = new Player(charSize*3.3, charSize); //instatiate player with reference to newly created text input
   player.update();
 
-  setInterval(update, 10);
+  setInterval(update, 16.7);
 }
 
 function update() {
@@ -23,7 +24,7 @@ function update() {
   for (let i = 0; i < strings.length; i++) {
     strings[i].fade();
     if (strings[i].opacity <= 0){
-      console.log("spliced particle "+i);
+      // console.log("spliced particle "+i);
       strings[i].deleteElement();
       strings.splice(i,1);
     }
