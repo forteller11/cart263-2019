@@ -55,10 +55,10 @@ class Player {
     this.element.addEventListener("keypress",function(e){//trigger if key is pressed in the textbox
       self.element.style.transition = "width 0s"; //if typing, instantly increase width of textbox
       if (e.keyCode === 13){ //if enter is pressed
-          const xx = (self.x - self.minWidth/2)+2;
+          const xx = (self.x - self.posOffset)+2;
           // const additionalX = (charSize/2+letterKerningSpace+.79)*i;
           // const xx = initialX+additionalX;
-          const yy = self.y-self.height/2 + .5;
+          const yy = self.y-self.height/2 + .8;
           const initialRandom = + randomRange(-.1,.1);
           // const initialVelY = ((i+2)/8) + 2;
           const initialVelY = 0;
