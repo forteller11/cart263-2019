@@ -9,7 +9,7 @@ class Player {
     this.element.setAttribute("type","text");
     body[0].appendChild(this.element);
     this.element.value = "shout into the void";
-    this.element.style.position = "absolute";
+    this.element.style.position = "fixed";
     this.element.style.width = this.minWidth + "px";
     this.element.style.transition = "width 0s";
     this.element.style.transitionTimingFunction = "ease";
@@ -24,8 +24,8 @@ class Player {
     this.targetX = null;
     this.targetY = null;
 
-    this.toTargetMovespeed = .085; //max percentage to transport to target per frame
-    this.toTargetMaxMovespeed = 8.5; //max movespeed in pixels to target per frame
+    this.toTargetMovespeed = .085*updateTime/16.7; //max percentage to transport to target per frame
+    this.toTargetMaxMovespeed = 8.5*updateTime/16.7; //max movespeed in pixels to target per frame
 
     this.enterKeyForce = 5; //force appllied to textbox on press of enter
     this.arrowKeyForce = .5135; //force applied to textbox on left/right arrow key press
@@ -92,7 +92,7 @@ class Player {
 
     document.addEventListener("mousedown",function(e){ //on mouse click,
       //check to see if mouse overlaps textbox,
-      if (self.pointWithRectOverlap(mouseX, mouseY, self.x, self.y, self.currentWidth, self.height) === false){
+      if (self.pointWithRectOverlap(mouseX, mouseY, self.x+camera.x, self.y+camera.y, self.currentWidth, self.height) === false){
         self.retargeting = true; //if not, begin selecting mouse as target to travel to
       }
     })
@@ -119,13 +119,13 @@ class Player {
       this.targetY = mouseY;
     }
     this.moveTowardsTarget();
-    this.element.style.left = (this.x - this.posOffset) + "px";
-    this.element.style.top = (this.y - this.height / 2) + "px";
+    this.element.style.left = (this.x - this.posOffset) + camera.x + "px";
+    this.element.style.top = (this.y - this.height / 2) + camera.y + "px";
   }
 
   setTarget(pointX, pointY, rectX, rectY, rectWidth, rectHeight){   //if mouse not current within textbox, begin moving textbox to mouse location
     if (this.pointWithRectOverlap(pointX, pointY, rectX, rectY, rectWidth, rectHeight) === false){
-      this.targetX = mouseX - this.posOffset;
+      this.targetX = mouseX;
       this.targetY = mouseY;
     }
 
@@ -156,7 +156,9 @@ class Player {
       this.x += moveX;
       this.y += moveY;
 
-      if (dist(deltaX,deltaY) < .01){ //if very close to target, stop moving towards target
+      if (dist(deltaX,deltaY) < .5){ //if very close to target, snap to target and stop moving torwards target
+        this.x = this.targetX;
+        this.y = this.targetY;
         this.targetX = null;
         this.targetY = null;
       }
