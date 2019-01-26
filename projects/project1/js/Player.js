@@ -2,9 +2,9 @@
 class Player {
   constructor(width = 32, height = 8, x = window.innerWidth / 2, y = window.innerHeight / 2) {
     this.minWidth = width;
+    this.currentWidth = this.minWidth;
     this.maxWidth = 200;
     this.height = height;
-    this.posOffset = 2.1; //so that element isn't centered around center of textbox
     this.element = document.createElement("INPUT");
     this.element.setAttribute("type","text");
     body[0].appendChild(this.element);
@@ -17,11 +17,12 @@ class Player {
     this.element.style.fontSize = charSize + "px";
     this.element.style.letterSpacing = letterKerningSpace + "px";
 
-    this.x = x;
-    this.y = y;
+        this.posOffset = charSize/8; // so that when repositioning the textbox the mouse is still within it
+    this.x = x; //reffering to left of textbox + this.posOffset
+    this.y = y; // reffering the vertical center of the textbox
 
-    this.targetX = this.x;
-    this.targetY = this.y;
+    this.targetX = null;
+    this.targetY = null;
 
     this.toTargetMovespeed = .085; //max percentage to transport to target per frame
     this.toTargetMaxMovespeed = 8.5; //max movespeed in pixels to target per frame
@@ -38,13 +39,22 @@ class Player {
       const horzWidthOfText = (charSize/2+letterKerningSpace+.79)*self.element.value.length;
       if (horzWidthOfText > self.minWidth){
         self.element.style.width = horzWidthOfText + "px";
+        self.currentWidth = horzWidthOfText;
+      } else if (horzWidthOfText < self.minWidth){
+        self.element.style.transition = "width .3s"; //when enter is pressed, ease the textbox back to it's minSize
+        self.element.style.width = self.minWidth + "px";
+        self.currentWidth = self.minWidth;
       }
     }
 
+    this.element.addEventListener("keydown",function(e){
+      if (e.keyCode === 8){
+        ajustWidth();
+      }
+    });
     this.element.addEventListener("keypress",function(e){//trigger if key is pressed in the textbox
       self.element.style.transition = "width 0s"; //if typing, instantly increase width of textbox
       if (e.keyCode === 13){ //if enter is pressed
-        self.element.style.transition = "width .3s"; //when enter is pressed, ease the textbox back to it's minSize
           const xx = (self.x - self.minWidth/2)+2;
           // const additionalX = (charSize/2+letterKerningSpace+.79)*i;
           // const xx = initialX+additionalX;
@@ -59,31 +69,30 @@ class Player {
             strings[0].deleteElement();
             strings.splice(0,1);
           }
-
-        self.changeTargetBasedOnArrowKeys(0,lineSpace,1);
+        self.changeTargetBasedOnArrowKeys(0,lineSpace,1); //move down by one line space
         self.element.value = "";
-        self.element.style.width = self.minWidth + "px";
+        ajustWidth();
       }
     });
 
     this.element.addEventListener("keydown",function(e){
       if (e.keyCode === 37){ //left arrowkey
-        self.changeTargetBasedOnArrowKeys(charSize,0,-1);
+        self.changeTargetBasedOnArrowKeys(charSize,0,-1); //move one characterSPace left
       }
       if (e.keyCode === 39){ //right arrowkey
-        self.changeTargetBasedOnArrowKeys(charSize,0,1);
+        self.changeTargetBasedOnArrowKeys(charSize,0,1); //move one character right
       }
       if (e.keyCode === 38){ //up arrowkey
-        self.changeTargetBasedOnArrowKeys(0,lineSpace,-1);
+        self.changeTargetBasedOnArrowKeys(0,lineSpace,-1); //move one line up
       }
       if (e.keyCode === 40){ //down arrowkey
-        self.changeTargetBasedOnArrowKeys(0,lineSpace,1);
+        self.changeTargetBasedOnArrowKeys(0,lineSpace,1); //move one line down
       }
     });
 
     document.addEventListener("mousedown",function(e){ //on mouse click,
       //check to see if mouse overlaps textbox,
-      if (self.pointWithRectOverlap(mouseX, mouseY, self.x, self.y, self.width, self.height) === false){
+      if (self.pointWithRectOverlap(mouseX, mouseY, self.x, self.y, self.currentWidth, self.height) === false){
         self.retargeting = true; //if not, begin selecting mouse as target to travel to
       }
     })
@@ -97,7 +106,7 @@ class Player {
 
   changeTargetBasedOnArrowKeys(amountToChangeX,amountToChangeY,sign){
     if ((this.targetX === null)||(this.targetY === null)){ //if there is no target, have new target = current postiion + amountToChange
-      this.targetX = this.x-(this.minWidth/this.posOffset) + (amountToChangeX * sign);
+      this.targetX = this.x + (amountToChangeX * sign);
       this.targetY = this.y + amountToChangeY * sign;
     } else { //if there is a target, offset it
       this.targetX += amountToChangeX * sign;
@@ -110,13 +119,13 @@ class Player {
       this.targetY = mouseY;
     }
     this.moveTowardsTarget();
-    this.element.style.left = (this.x - this.minWidth / 2) + "px";
+    this.element.style.left = (this.x - this.posOffset) + "px";
     this.element.style.top = (this.y - this.height / 2) + "px";
   }
 
   setTarget(pointX, pointY, rectX, rectY, rectWidth, rectHeight){   //if mouse not current within textbox, begin moving textbox to mouse location
     if (this.pointWithRectOverlap(pointX, pointY, rectX, rectY, rectWidth, rectHeight) === false){
-      this.targetX = mouseX;
+      this.targetX = mouseX - this.posOffset;
       this.targetY = mouseY;
     }
 
@@ -125,7 +134,7 @@ class Player {
   }
 
   pointWithRectOverlap(pointX, pointY, rectX, rectY, rectWidth, rectHeight) {
-    if ((pointX >= rectX - rectWidth / 2) && ((pointX <= rectX + rectWidth / 2))) { //horz collision?
+    if ((pointX >= rectX) && ((pointX <= rectX + rectWidth))) { //horz collision?
       if ((pointY >= rectY - rectHeight / 2) && ((pointY <= rectY + rectHeight / 2))) { //horz collision?
         return true;
       }
@@ -135,7 +144,7 @@ class Player {
   moveTowardsTarget(){
     if (!((this.targetX || this.targetY ) === null)){
       //find difference between target and current position
-      const deltaX = this.targetX-this.x+this.minWidth/this.posOffset;
+      const deltaX = this.targetX-this.x;
       const deltaY = this.targetY-this.y;
       //use percentage of that delta to find movespeed in pixels
       let moveX = deltaX*this.toTargetMovespeed;
@@ -147,7 +156,7 @@ class Player {
       this.x += moveX;
       this.y += moveY;
 
-      if (dist(deltaX,deltaY) < .2){ //if very close to target, stop moving towards target
+      if (dist(deltaX,deltaY) < .01){ //if very close to target, stop moving towards target
         this.targetX = null;
         this.targetY = null;
       }
