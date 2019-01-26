@@ -11,7 +11,7 @@ let body = document.getElementsByTagName("body");
 function main() {
   //create textinput and child it to the body
   document.addEventListener("click", trackMouseMovement);
-  player = new Player(160, 16); //instatiate player with reference to newly created text input
+  player = new Player(64, 16); //instatiate player with reference to newly created text input
   player.update();
 
   setInterval(update, 10);

@@ -29,7 +29,7 @@ class Player {
     const self = this;
 
     this.element.addEventListener("input",ajustWidth);
-
+    ajustWidth();
     function ajustWidth(){
       const charArr = self.element.value.split('');
       const horzWidthOfText = (charSize/2+letterKerningSpace+.79)*charArr.length;
@@ -77,6 +77,7 @@ class Player {
   }
   moveTowardsTarget(){
     if (!((this.targetX || this.targetY ) === null)){
+      this.element.focus();
       this.drag = 1.1;
       //find difference between target and current position
       const deltaX = this.targetX-this.x+this.minWidth/2.1;
