@@ -1,18 +1,19 @@
 "use strict";
 class Player {
   constructor(width = 32, height = 8, x = window.innerWidth / 2, y = window.innerHeight / 2) {
+    this.minWidth = width;
+    this.height = height;
+
     this.element = document.createElement("INPUT");
     this.element.setAttribute("type","text");
     body[0].appendChild(this.element);
     this.element.value = "shout into the void";
     this.element.style.position = "absolute";
-    this.element.style.width = this.width + "px";
+    this.element.style.width = this.minWidth + "px";
     this.element.style.height = this.height + "px";
     this.element.style.fontSize = charSize + "px";
     this.element.style.letterSpacing = letterKerningSpace + "px";
     this.drag;
-    this.width = width;
-    this.height = height;
 
     this.x = x;
     this.y = y;
@@ -26,13 +27,24 @@ class Player {
     this.toTargetMaxMovespeed = 5; //max movespeed in pixels to target per frame
 
     const self = this;
+
+    this.element.addEventListener("input",ajustWidth);
+
+    function ajustWidth(){
+      const charArr = self.element.value.split('');
+      const horzWidthOfText = (charSize/2+letterKerningSpace+.79)*charArr.length;
+      if (horzWidthOfText > self.minWidth){
+        self.element.style.width = horzWidthOfText + "px";
+      }
+    }
+
     this.element.addEventListener("keypress",function(e){//trigger if key is pressed in the textbox
       if (e.keyCode === 13){ //if enter is pressed
         // console.log(self.element.value);
         const charArr = self.element.value.split(''); //array of characters in the textboxes value;
         // console.log(charArr);
         for (let i = 0; i < charArr.length; i ++){
-          const initialX = (self.x - self.width/2)+2;
+          const initialX = (self.x - self.minWidth/2)+2;
           const additionalX = (charSize/2+letterKerningSpace+.79)*i;
           const xx = initialX+additionalX;
           const yy = self.y-self.height/2 + 2;
@@ -47,6 +59,7 @@ class Player {
           self.velocity.y += 5;
         }
         self.element.value = "";
+        self.element.style.width = self.minWidth + "px";
       }
     });
 
@@ -59,14 +72,14 @@ class Player {
     this.velocity.constrainMag(1);
     // console.log(this.velocity.y);
 
-    this.element.style.left = (this.x - this.width / 2) + "px";
+    this.element.style.left = (this.x - this.minWidth / 2) + "px";
     this.element.style.top = (this.y - this.height / 2) + "px";
   }
   moveTowardsTarget(){
     if (!((this.targetX || this.targetY ) === null)){
       this.drag = 1.1;
       //find difference between target and current position
-      const deltaX = this.targetX-this.x;
+      const deltaX = this.targetX-this.x+this.minWidth/2.1;
       const deltaY = this.targetY-this.y;
       //use percentage of that delta to find movespeed in pixels
       let moveX = deltaX*this.toTargetMovespeed;
