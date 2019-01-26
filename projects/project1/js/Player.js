@@ -85,22 +85,21 @@ class Player {
       }
     });
 
-    document.addEventListener("mousedown",function(e){
-      console.log("click");
+    document.addEventListener("mousedown",function(e){ //on mouse click,
+      //check to see if mouse overlaps textbox,
       if (self.pointWithRectOverlap(mouseX, mouseY, self.x, self.y, self.width, self.height) === false){
-        self.retargeting = true;
-        console.log("retargeting");
+        self.retargeting = true; //if not, begin selecting mouse as target to travel to
       }
     })
 
-    document.addEventListener("mouseup",function(e){
-      self.element.focus();
-      self.retargeting = false;
+    document.addEventListener("mouseup",function(e){ //on release of mouse button
+      self.element.focus(); //automatically select textbox (place cursor inside of it so user can type right away)
+      self.retargeting = false; //stop targeting mouse position
     })
 
   }
   update() { //use x,y pos of element to style element (Using offsets to style it from center instead of top-left corner)
-    if (this.retargeting === true){
+    if (this.retargeting){ //if targeting the mouse, change target to equal the mouse position
       this.targetX = mouseX;
       this.targetY = mouseY;
     }
