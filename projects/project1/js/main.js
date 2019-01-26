@@ -11,7 +11,7 @@ const maxstrings = 1200; //max character count of a page
 
 function main() {
   //create textinput and child it to the body
-  document.addEventListener("mousedown", trackMouseMovement);
+  document.addEventListener("mousemove", trackMouseMovement);
   player = new Player(charSize*3.3, charSize); //instatiate player with reference to newly created text input
   player.update();
 
@@ -33,9 +33,6 @@ function update() {
 function trackMouseMovement(e) { //store position of mouse in global variables
   mouseX = e.clientX; //"client" means get pos of mouse relative to window pos (and not monitor pos)
   mouseY = e.clientY;
-
-  player.setTarget(mouseX, mouseY, player.x, player.y, player.width, player.height);
-
 }
 
 function constrain(varr, min, max) { //same functionality as p5's constrain();

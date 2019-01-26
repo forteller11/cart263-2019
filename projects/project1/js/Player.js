@@ -33,6 +33,8 @@ class Player {
     this.arrowKeyForce = .5135; //force applied to textbox on left/right arrow key press
     const self = this;
 
+    this.retargeting = false;
+
     this.element.addEventListener("input",ajustWidth);
     ajustWidth();
     function ajustWidth(){
@@ -83,8 +85,25 @@ class Player {
       }
     });
 
+    document.addEventListener("mousedown",function(e){
+      console.log("click");
+      if (self.pointWithRectOverlap(mouseX, mouseY, self.x, self.y, self.width, self.height) === false){
+        self.retargeting = true;
+        console.log("retargeting");
+      }
+    })
+
+    document.addEventListener("mouseup",function(e){
+      self.element.focus();
+      self.retargeting = false;
+    })
+
   }
   update() { //use x,y pos of element to style element (Using offsets to style it from center instead of top-left corner)
+    if (this.retargeting === true){
+      this.targetX = mouseX;
+      this.targetY = mouseY;
+    }
     this.moveTowardsTarget();
     this.x+= this.velocity.x;
     this.y+= this.velocity.y;
@@ -116,7 +135,6 @@ class Player {
   }
   moveTowardsTarget(){
     if (!((this.targetX || this.targetY ) === null)){
-      this.element.focus();
       this.drag = 1.1;
       //find difference between target and current position
       const deltaX = this.targetX-this.x+this.minWidth/2.1;
