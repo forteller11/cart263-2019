@@ -4,7 +4,8 @@ let player;
 let particles = [];
 let mouseX = 0;
 let mouseY = 0;
-let charSize = 16;
+const charSize = 16;
+const letterKerningSpace = 2;
 let body = document.getElementsByTagName("body");
 
 function main() {

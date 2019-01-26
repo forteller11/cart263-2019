@@ -1,5 +1,5 @@
 class Particle {
-  constructor(string, charSize, x, y, initialVelX, initialVelY) {
+  constructor(string, charSz, x, y, initialVelX, initialVelY) {
     this.element = document.createElement("span");
     this.element.innerHTML = string;
     this.element.style.position = "absolute";

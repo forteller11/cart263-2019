@@ -4,11 +4,12 @@ class Player {
     this.element = document.createElement("INPUT");
     this.element.setAttribute("type","text");
     body[0].appendChild(this.element);
-    this.element.value = "ah";
+    this.element.value = "shout into the void";
     this.element.style.position = "absolute";
     this.element.style.width = this.width + "px";
     this.element.style.height = this.height + "px";
     this.element.style.fontSize = charSize + "px";
+    this.element.style.letterSpacing = letterKerningSpace + "px";
     this.drag;
     this.width = width;
     this.height = height;
@@ -31,13 +32,15 @@ class Player {
         const charArr = self.element.value.split(''); //array of characters in the textboxes value;
         // console.log(charArr);
         for (let i = 0; i < charArr.length; i ++){
-          const initialX = (self.x - self.width/2);
-          const additionalX = charSize/2*i;
+          const initialX = (self.x - self.width/2)+2;
+          const additionalX = (charSize/2+letterKerningSpace+.79)*i;
           const xx = initialX+additionalX;
+          const yy = self.y-self.height/2 + 2;
           const initialRandom = + randomRange(-.1,.1);
-          const initialVelY = ((i+2)/8) + 2;
+          // const initialVelY = ((i+2)/8) + 2;
+          const initialVelY = 0;
           const initialVelX = 0;
-          particles.push(new Particle(charArr[i],16,xx,self.y,initialVelX,-initialVelY));
+          particles.push(new Particle(charArr[i],charSize,xx,yy,initialVelX,-initialVelY));
           self.velocity.y += initialVelY/10;
         }
         if (!(self.element.value === "")){ //if textbox had any text when enter was pressed
