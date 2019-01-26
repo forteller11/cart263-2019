@@ -2,6 +2,7 @@
 class Player {
   constructor(width = 32, height = 8, x = window.innerWidth / 2, y = window.innerHeight / 2) {
     this.minWidth = width;
+    this.maxWidth = 200;
     this.height = height;
 
     this.element = document.createElement("INPUT");
@@ -10,6 +11,8 @@ class Player {
     this.element.value = "shout into the void";
     this.element.style.position = "absolute";
     this.element.style.width = this.minWidth + "px";
+    this.element.style.transition = "width 0s";
+    this.element.style.transitionTimingFunction = "ease";
     this.element.style.height = this.height + "px";
     this.element.style.fontSize = charSize + "px";
     this.element.style.letterSpacing = letterKerningSpace + "px";
@@ -33,36 +36,33 @@ class Player {
     this.element.addEventListener("input",ajustWidth);
     ajustWidth();
     function ajustWidth(){
-      const charArr = self.element.value.split('');
-      const horzWidthOfText = (charSize/2+letterKerningSpace+.79)*charArr.length;
+      const horzWidthOfText = (charSize/2+letterKerningSpace+.79)*self.element.value.length;
       if (horzWidthOfText > self.minWidth){
         self.element.style.width = horzWidthOfText + "px";
       }
     }
 
     this.element.addEventListener("keypress",function(e){//trigger if key is pressed in the textbox
+      self.element.style.transition = "width 0s"; //if typing, instantly increase width of textbox
       if (e.keyCode === 13){ //if enter is pressed
-        // console.log(self.element.value);
-        const charArr = self.element.value.split(''); //array of characters in the textboxes value;
-        // console.log(charArr);
-        for (let i = 0; i < charArr.length; i ++){
-          const initialX = (self.x - self.minWidth/2)+2;
-          const additionalX = (charSize/2+letterKerningSpace+.79)*i;
-          const xx = initialX+additionalX;
+        self.element.style.transition = "width .3s"; //when enter is pressed, ease the textbox back to it's minSize
+          const xx = (self.x - self.minWidth/2)+2;
+          // const additionalX = (charSize/2+letterKerningSpace+.79)*i;
+          // const xx = initialX+additionalX;
           const yy = self.y-self.height/2 + .5;
           const initialRandom = + randomRange(-.1,.1);
           // const initialVelY = ((i+2)/8) + 2;
           const initialVelY = 0;
           const initialVelX = 0;
-          particles.push(new Particle(charArr[i],charSize,xx,yy,initialVelX,-initialVelY));
+          strings.push(new String(self.element.value,charSize,xx,yy,initialVelX,-initialVelY));
 
-          if (particles.length > maxParticles){ //delete first particles so that there are never more than max
-            particles[0].deleteElement();
-            particles.splice(0,1);
+          if (strings.length > maxstrings){ //delete first strings so that there are never more than max
+            strings[0].deleteElement();
+            strings.splice(0,1);
           }
-          self.velocity.y += initialVelY/10;
-        }
-          self.velocity.y += self.enterKeyForce;
+
+        self.velocity.y += initialVelY/10;
+        self.velocity.y += self.enterKeyForce;
         self.element.value = "";
         self.element.style.width = self.minWidth + "px";
       }
@@ -94,6 +94,25 @@ class Player {
 
     this.element.style.left = (this.x - this.minWidth / 2) + "px";
     this.element.style.top = (this.y - this.height / 2) + "px";
+  }
+
+  setTarget(pointX, pointY, rectX, rectY, rectWidth, rectHeight){   //if mouse not current within textbox, begin moving textbox to mouse location
+    if (this.pointWithRectOverlap(pointX, pointY, rectX, rectY, rectWidth, rectHeight) === false){
+      this.targetX = mouseX;
+      this.targetY = mouseY;
+    }
+
+
+
+  }
+
+  pointWithRectOverlap(pointX, pointY, rectX, rectY, rectWidth, rectHeight) {
+    if ((pointX >= rectX - rectWidth / 2) && ((pointX <= rectX + rectWidth / 2))) { //horz collision?
+      if ((pointY >= rectY - rectHeight / 2) && ((pointY <= rectY + rectHeight / 2))) { //horz collision?
+        return true;
+      }
+    }
+    return false;
   }
   moveTowardsTarget(){
     if (!((this.targetX || this.targetY ) === null)){

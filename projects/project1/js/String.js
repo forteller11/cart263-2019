@@ -1,9 +1,10 @@
-class Particle {
+class String {
   constructor(string, charSz, x, y, initialVelX, initialVelY) {
     this.element = document.createElement("span");
     this.element.innerHTML = string;
     this.element.style.position = "absolute";
     this.element.style.fontSize = charSize + "px";
+    this.element.style.letterSpacing = letterKerningSpace + "px";
     this.opacity = 1;
     this.opacityFade = randomRange(-0.0001,-0.00001)
     body[0].appendChild(this.element);

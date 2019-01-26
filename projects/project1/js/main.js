@@ -1,18 +1,18 @@
 "use strict";
 window.onload = main;
 let player;
-let particles = [];
+let strings = [];
 let mouseX = 0;
 let mouseY = 0;
 const charSize = 16;
 const letterKerningSpace = 2;
 let body = document.getElementsByTagName("body");
-const maxParticles = 1200;
+const maxstrings = 1200; //max character count of a page
 
 function main() {
   //create textinput and child it to the body
-  document.addEventListener("click", trackMouseMovement);
-  player = new Player(charSize*3.2, 16); //instatiate player with reference to newly created text input
+  document.addEventListener("mousedown", trackMouseMovement);
+  player = new Player(charSize*3.3, charSize); //instatiate player with reference to newly created text input
   player.update();
 
   setInterval(update, 10);
@@ -20,12 +20,12 @@ function main() {
 
 function update() {
   player.update();
-  for (let i = 0; i < particles.length; i++) {
-    particles[i].fade();
-    if (particles[i].opacity <= 0){
+  for (let i = 0; i < strings.length; i++) {
+    strings[i].fade();
+    if (strings[i].opacity <= 0){
       console.log("spliced particle "+i);
-      particles[i].deleteElement();
-      particles.splice(i,1);
+      strings[i].deleteElement();
+      strings.splice(i,1);
     }
   }
 }
@@ -33,11 +33,9 @@ function update() {
 function trackMouseMovement(e) { //store position of mouse in global variables
   mouseX = e.clientX; //"client" means get pos of mouse relative to window pos (and not monitor pos)
   mouseY = e.clientY;
-  //if mouse not current within textbox, begin moving textbox to mouse location
-  if (checkPointWithRectangleOverlap(mouseX, mouseY, player.x, player.y, player.width, player.height) === false) {
-    player.targetX = e.clientX;
-    player.targetY = e.clientY;
-  }
+
+  player.setTarget(mouseX, mouseY, player.x, player.y, player.width, player.height);
+
 }
 
 function constrain(varr, min, max) { //same functionality as p5's constrain();
