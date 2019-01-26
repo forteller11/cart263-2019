@@ -1,6 +1,6 @@
 "use strict";
 class Player {
-  constructor(width = 32, height = 8, x = window.innerWidth / 2, y = window.innerHeight / 2) {
+  constructor(width = 32, height = 8, x = window.innerWidth/2, y = window.innerHeight/2) {
     this.minWidth = width;
     this.currentWidth = this.minWidth;
     this.maxWidth = 200;
@@ -106,31 +106,21 @@ class Player {
 
   changeTargetBasedOnArrowKeys(amountToChangeX,amountToChangeY,sign){
     if ((this.targetX === null)||(this.targetY === null)){ //if there is no target, have new target = current postiion + amountToChange
-      this.targetX = this.x + (amountToChangeX * sign);
-      this.targetY = this.y + amountToChangeY * sign;
+      this.targetX = this.x  + (amountToChangeX * sign);
+      this.targetY = (this.y + (amountToChangeY * sign));
     } else { //if there is a target, offset it
-      this.targetX += amountToChangeX * sign;
-      this.targetY += amountToChangeY * sign;
+      this.targetX += (amountToChangeX * sign) ;
+      this.targetY += (amountToChangeY * sign) ;
     }
   }
   update() { //use x,y pos of element to style element (Using offsets to style it from center instead of top-left corner)
     if (this.retargeting){ //if targeting the mouse, change target to equal the mouse position
-      this.targetX = mouseX;
-      this.targetY = mouseY;
+      this.targetX = mouseX+camera.x;
+      this.targetY = mouseY+camera.y;
     }
     this.moveTowardsTarget();
-    this.element.style.left = (this.x - this.posOffset) + camera.x + "px";
-    this.element.style.top = (this.y - this.height / 2) + camera.y + "px";
-  }
-
-  setTarget(pointX, pointY, rectX, rectY, rectWidth, rectHeight){   //if mouse not current within textbox, begin moving textbox to mouse location
-    if (this.pointWithRectOverlap(pointX, pointY, rectX, rectY, rectWidth, rectHeight) === false){
-      this.targetX = mouseX;
-      this.targetY = mouseY;
-    }
-
-
-
+    this.element.style.left = (this.x - this.posOffset) - camera.x + "px";
+    this.element.style.top = (this.y - this.height / 2) - camera.y + "px";
   }
 
   pointWithRectOverlap(pointX, pointY, rectX, rectY, rectWidth, rectHeight) {

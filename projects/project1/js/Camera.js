@@ -3,7 +3,7 @@ class Camera{
     this.x = x;
     this.y = y;
 
-    this.toTargetMovespeed = .001 * updateTime;
+    this.toTargetMovespeed = .01 * updateTime;
     this.toTargetMaxMovespeed = Infinity;
     this.targetX = this.x;
     this.targetY = this.y;
@@ -16,8 +16,8 @@ class Camera{
   setTarget(){
     this.targetX = player.x - window.innerWidth/2;
     this.targetY = player.y - window.innerHeight/2;
-    this.targetX = 0;
-    this.targetY = 0;
+    // this.targetX = 0;
+    // this.targetY = 0;
   }
   moveTowardsTarget(){
     //find difference between target and current position

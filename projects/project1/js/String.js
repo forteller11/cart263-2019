@@ -18,8 +18,8 @@ class String {
     this.y = y;
   }
   update() {
-      this.element.style.left = (this.x + camera.x) + "px";
-      this.element.style.top = (this.y + camera.y) + "px";
+      this.element.style.left = (this.x - camera.x) + "px";
+      this.element.style.top = (this.y - camera.y) + "px";
       this.fade();
       }
       fade(){
