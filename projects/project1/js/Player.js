@@ -55,6 +55,11 @@ class Player {
           const initialVelY = 0;
           const initialVelX = 0;
           particles.push(new Particle(charArr[i],charSize,xx,yy,initialVelX,-initialVelY));
+
+          if (particles.length > maxParticles){ //delete first particles so that there are never more than max
+            particles[0].deleteElement();
+            particles.splice(0,1);
+          }
           self.velocity.y += initialVelY/10;
         }
           self.velocity.y += self.enterKeyForce;
