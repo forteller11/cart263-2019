@@ -16,7 +16,7 @@ function main() {
   //create textinput and child it to the body
   document.addEventListener("mousemove", trackMouseMovement);
   camera = new Camera(); //instantiate player
-  player = new Player(charSize*3.3, charSize); //instatiate player with reference to newly created text input
+  player = new Player(charSize*3.39, charSize); //instatiate player with reference to newly created text input
   camera.update();
   player.update();
 

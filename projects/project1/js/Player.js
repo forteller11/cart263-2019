@@ -25,7 +25,7 @@ class Player {
     this.targetY = null;
 
     this.toTargetMovespeed = .085*updateTime/16.7; //max percentage to transport to target per frame
-    this.toTargetMaxMovespeed = 8.5*updateTime/16.7; //max movespeed in pixels to target per frame
+    this.toTargetMaxMovespeed = 4.5*updateTime/16.7; //max movespeed in pixels to target per frame
 
     this.enterKeyForce = 5; //force appllied to textbox on press of enter
     this.arrowKeyForce = .5135; //force applied to textbox on left/right arrow key press
@@ -92,7 +92,7 @@ class Player {
 
     document.addEventListener("mousedown",function(e){ //on mouse click,
       //check to see if mouse overlaps textbox,
-      if (self.pointWithRectOverlap(mouseX, mouseY, self.x+camera.x, self.y+camera.y, self.currentWidth, self.height) === false){
+      if (self.pointWithRectOverlap(mouseX, mouseY, self.x-camera.x, self.y-camera.y, self.currentWidth, self.height) === false){
         self.retargeting = true; //if not, begin selecting mouse as target to travel to
       }
     })
