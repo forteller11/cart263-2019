@@ -12,27 +12,32 @@ class AreaOfInterest{
     this.y = y;
     this.radius = radius;
     this.strings = [];
+    this.totalChars = 0; //total contained characters
     this.strings.push(string);
     this.containedCharacters = string.length;
     this.stringAvgX = null;
     this.stringAvgY = null;
   }
-  addNewString(string){ //calcs avg center of all strings in this.stringsp[]
+  addNewString(element){ //calcs avg center of all strings in this.stringsp[]
+    console.log(element);
     if (this.stringAvgX === null){ //if first time executing this method on this object
-      this.stringAvgX = string.x + string.width/2;
-      this.stringAvgY = string.y + player.height/2;
-      console.log("string:"+string);
-      console.log(player.y);
-      console.log(this.stringAvgY);
-    } else {
-      this.stringAvgX += string.x + string.width/2;
-      this.stringAvgY += string.y - player.height/2;
+      this.totalChars += element.string.length;
+      this.stringAvgX = element.x + element.width/2;
+      this.stringAvgY = element.y + element.height/2;
 
-      this.stringAvgX = this.stringAvgX/2;
-      this.stringAvgY = this.stringAvgY/2;
-      console.log("player:"+Math.round(player.y));
-      console.log("string:"+Math.round(this.stringAvgY));
+    } else { //if adding a string
+      this.totalChars = this.totalChars += element.string.length;
+      const lerpAmount = element.string.length/(this.totalChars); //influence of new string
+      console.log("totalchars"+this.totalChars);
+      console.log("element char length"+element.string.length);
+      console.log("LERP AMOUNT:"+lerpAmount);
+      this.stringAvgX = linearInterpolate(element.x+element.width/2,this.stringAvgX,lerpAmount);
+      this.stringAvgY = linearInterpolate(element.y+element.height/2,this.stringAvgY,lerpAmount);
+      console.log(this.stringAvgX);
+      // console.log("string:"+Math.round(this.stringAvgY));
     }
+
+    this.strings.push(element.string);
   }
   draw(){
     noFill();

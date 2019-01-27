@@ -1,11 +1,13 @@
 "use strict";
 class String {
   constructor(string, x, y, initialVelX, initialVelY) {
+    this.string = string;
     this.element = document.createElement("span");
-    this.element.innerHTML = string;
+    this.element.innerHTML = this.string;
     this.element.style.position = "fixed";
     this.element.style.overFlow = "none";
     this.width = string.length*charSize/1.46;
+    this.height = charSize;
     this.element.style.width = this.width + "px"; //have to set width property so it doesn't wrap on edge of screen
     this.element.style.fontSize = charSize + "px";
     this.element.style.letterSpacing = letterKerningSpace + "px";

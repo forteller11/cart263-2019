@@ -78,9 +78,9 @@ function distFromDelta(xComponent,yComponent){
   return Math.sqrt((xComponent*xComponent)+(yComponent*yComponent))
 }
 
-function lerp(value1,value2,lerpAmount){
-  const valueDelta = value2 - value1; //find difference between values
+function linearInterpolate(value1,value2,lerpAmount){
+  const valueDelta = value1 - value2; //find difference between values
   const lerpAdd = lerpAmount * valueDelta
-  const lerpResult = lerpAdd + value1;
+  const lerpResult = lerpAdd + value2;
   return lerpResult;
 }

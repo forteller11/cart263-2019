@@ -79,7 +79,6 @@ class Player {
             if (distToAreaFromPlayer < area.radius/2) { //is string within radius of areaOfInterest? then...
               console.log("add to existing island");
               foundAreaForString = true; //remember that you find a suitable areaOfInterest
-              area.strings.push(newString); //add string to areaOfInterest
               area.addNewString(newString);
               areasOfInterest.push(area);
               break; //break out of for loop
@@ -87,7 +86,7 @@ class Player {
           }
           if (foundAreaForString === false) { //if you went through whole loop and didn't find any close enough areasOfInterest
             // create one and add string to it
-            let newArea = new AreaOfInterest(newString, newString.x, newString.y);
+            let newArea = new AreaOfInterest(newString.string, newString.x, newString.y);
             areasOfInterest.push(newArea);
             newArea.addNewString(newString);
             console.log("create new areaOfInterest because past dist");

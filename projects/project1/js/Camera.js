@@ -32,7 +32,7 @@ class Camera{
         // console.log(Math.round(distToArea) + "<" + distToAreaThreshold);
         areaAvgInfluence[i] = (distToAreaThreshold-distToArea)/distToAreaThreshold; //0
         areaAvgInfluence[i] = Math.sin(areaAvgInfluence[i]*Math.PI)/2; //make the 0,1 range turn into, 0,1,0, where output is 1 when input is .5 (so it fades influence when textbox is on top of text)
-        console.log("LERP:"+areaAvgInfluence[i]);
+        // console.log("LERP:"+areaAvgInfluence[i]);
         areaAvgInfluence[i] = constrain(areaAvgInfluence[i],0,.5);
         areaAvgX[i] = areasOfInterest[i].stringAvgX;
         areaAvgY[i] = areasOfInterest[i].stringAvgY;
