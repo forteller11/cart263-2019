@@ -1,3 +1,4 @@
+"use strict";
 /*
 responsible for storing all strings within a given area, and knowing how many characters
 in total it contains.
@@ -6,7 +7,7 @@ be expensive) to find areasOfInterest close enough to be of influence to the cam
 then when cam finds areasOfInterest close enough to matter it can itterate through individual strings
 */
 class AreaOfInterest{
-  constructor(string,x,y,radius){
+  constructor(string,x,y,radius =  window.innerHeight){
     this.x = x;
     this.y = y;
     this.radius = radius;
@@ -19,7 +20,7 @@ class AreaOfInterest{
   addNewString(string){ //calcs avg center of all strings in this.stringsp[]
     if (this.stringAvgX === null){ //if first time executing this method on this object
       this.stringAvgX = string.x + string.width/2;
-      this.stringAvgY = string.y - player.height/2;
+      this.stringAvgY = string.y + player.height/2;
       console.log("string:"+string);
       console.log(player.y);
       console.log(this.stringAvgY);
@@ -32,6 +33,12 @@ class AreaOfInterest{
       console.log("player:"+Math.round(player.y));
       console.log("string:"+Math.round(this.stringAvgY));
     }
+  }
+  draw(){
+    noFill();
+    ellipse(this.x-camera.x,this.y-camera.y,this.radius);
+    ellipse(this.stringAvgX-camera.x,this.stringAvgY-camera.y,16);
+
   }
   calculateCenterOfMass(){ //calculate avg string center, weighting strings depending on their length
     let stringSumX = 0;

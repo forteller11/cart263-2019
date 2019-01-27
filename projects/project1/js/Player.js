@@ -67,32 +67,34 @@ class Player {
         let newString = new String(self.element.value, xx, yy, initialVelX, -initialVelY);
         strings.push(newString);
 
-        const areaOfInterestRadius = window.innerHeight/1.5; //
         if (!(areasOfInterest.length === 0)) { // if there are areas of interest
-          let foundIslandForString = false;
-          for (let island of areasOfInterest) {
-            const deltaX = island.x - newString.x;
-            const deltaY = island.y - newString.y;
-            // console.log(deltaX + " " + deltaY);
-            if (dist(deltaX, deltaY) < island.radius) { //is string within radius of areaOfInterest? then...
+          let foundAreaForString = false;
+          for (let area of areasOfInterest) {
+            const deltaX = area.x - newString.x;
+            const deltaY = area.y - newString.y;
+            const distToAreaFromPlayer = distFromDelta(deltaX, deltaY);
+            console.log(deltaY);
+            console.log("dist:"+distToAreaFromPlayer + " < " + area.radius);
+
+            if (distToAreaFromPlayer < area.radius/2) { //is string within radius of areaOfInterest? then...
               console.log("add to existing island");
-              foundIslandForString = true; //remember that you find a suitable areaOfInterest
-              island.strings.push(newString); //add string to areaOfInterest
-              island.addNewString(newString);
-              areasOfInterest.push(island);
+              foundAreaForString = true; //remember that you find a suitable areaOfInterest
+              area.strings.push(newString); //add string to areaOfInterest
+              area.addNewString(newString);
+              areasOfInterest.push(area);
               break; //break out of for loop
             }
           }
-          if (foundIslandForString === false) { //if you went through whole loop and didn't find any close enough areasOfInterest
+          if (foundAreaForString === false) { //if you went through whole loop and didn't find any close enough areasOfInterest
             // create one and add string to it
-            let newArea = new AreaOfInterest(newString, newString.x, newString.y, areaOfInterestRadius);
+            let newArea = new AreaOfInterest(newString, newString.x, newString.y);
             areasOfInterest.push(newArea);
             newArea.addNewString(newString);
             console.log("create new areaOfInterest because past dist");
           }
 
         } else { //if there aren't any areas of interest
-            let newArea = new AreaOfInterest(newString, newString.x, newString.y, areaOfInterestRadius);
+            let newArea = new AreaOfInterest(newString, newString.x, newString.y);
             areasOfInterest.push(newArea);
             newArea.addNewString(newString);
             console.log("create first areaOfInterest");
@@ -179,7 +181,7 @@ class Player {
       this.x += moveX;
       this.y += moveY;
 
-      if (dist(deltaX, deltaY) < .5) { //if very close to target, snap to target and stop moving torwards target
+      if (distFromDelta(deltaX, deltaY) < .5) { //if very close to target, snap to target and stop moving torwards target
         this.x = this.targetX;
         this.y = this.targetY;
         this.targetX = null;

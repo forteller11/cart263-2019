@@ -23,14 +23,16 @@ class Camera{
     let areaAvgInfluence = [null]; //how much that area's avg influences cam
     let stringInfluence = 0;
     for (let i = 0; i < areasOfInterest.length; i ++){ //loop through all areas of interest,
-      const distToAreaThreshold = areasOfInterest[i].radius*2; //threshold dist within which area starts effecting camera
-      const deltaX = areasOfInterest[i].x - player.x;
-      const deltaY = areasOfInterest[i].y - player.y;
-      const distToArea = dist(deltaX,deltaY);
+      const distToAreaThreshold = areasOfInterest[i].radius; //threshold dist within which area starts effecting camera
+      const deltaX = areasOfInterest[i].stringAvgX - player.x;
+      const deltaY = areasOfInterest[i].stringAvgY - player.y;
+      const distToArea = distFromDelta(deltaX,deltaY);
       // console.log(distToArea);
       if (distToArea < distToAreaThreshold ){ //if player is within radius of circle
         // console.log(Math.round(distToArea) + "<" + distToAreaThreshold);
-        areaAvgInfluence[i] = (distToAreaThreshold-distToArea)/distToAreaThreshold; //0-0.5
+        areaAvgInfluence[i] = (distToAreaThreshold-distToArea)/distToAreaThreshold; //0
+        areaAvgInfluence[i] = Math.sin(areaAvgInfluence[i]*Math.PI)/2; //make the 0,1 range turn into, 0,1,0, where output is 1 when input is .5 (so it fades influence when textbox is on top of text)
+        console.log("LERP:"+areaAvgInfluence[i]);
         areaAvgInfluence[i] = constrain(areaAvgInfluence[i],0,.5);
         areaAvgX[i] = areasOfInterest[i].stringAvgX;
         areaAvgY[i] = areasOfInterest[i].stringAvgY;
@@ -45,13 +47,14 @@ class Camera{
       let areaAvgYSum = 0;
       let areaAvgInfluenceSum = 0;
       for (let i = 0; i < areaAvgX.length; i ++){ //total all influences of avgStringlocations of areas
-        areaAvgXSum += areaAvgX[i] ;
-        areaAvgYSum += areaAvgY[i] ;
+        areaAvgXSum += areaAvgX[i];
+        areaAvgYSum += areaAvgY[i];
         areaAvgInfluenceSum += areaAvgInfluence[i];
       }
       finalAreaAvgX = areaAvgXSum/areaAvgX.length;
       finalAreaAvgY = areaAvgYSum/areaAvgY.length;
       finalAreaAvgInfluence = areaAvgInfluenceSum/areaAvgY.length;
+      console.log()
 
     } else {
       finalAreaAvgX = player.x;

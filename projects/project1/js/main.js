@@ -23,6 +23,12 @@ function main() {
 
   setInterval(update, updateTime);
 }
+function draw(){
+  createCanvas(windowWidth,windowHeight);
+  for (let area of areasOfInterest){
+    area.draw();
+  }
+}
 
 function update() {
   camera.update();
@@ -68,7 +74,7 @@ function randomRange(min, max) {
   return (r * delta) + min;
 }
 
-function dist(xComponent,yComponent){
+function distFromDelta(xComponent,yComponent){
   return Math.sqrt((xComponent*xComponent)+(yComponent*yComponent))
 }
 
