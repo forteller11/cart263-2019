@@ -3,6 +3,7 @@ window.onload = main;
 let player;
 let camera;
 let strings = [];
+let areasOfInterest = []; //array of objects which contain close together strings
 const updateTime = 16.7; //~60fps
 let mouseX = 0;
 let mouseY = 0;

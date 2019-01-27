@@ -13,9 +13,11 @@ class Camera{
     this.setTarget();
     this.moveTowardsTarget();
   }
-  setTarget(){
-    this.targetX = player.x - window.innerWidth/2;
-    this.targetY = player.y - window.innerHeight/2;
+  setTarget(){ //perhaps only update every once in a while
+    let areasOfInterestInfluenceX = 0;
+    let areasOfInterestInfluenceY = 0;
+    this.targetX = (player.x + areasOfInterestInfluenceX) - window.innerWidth/2;
+    this.targetY = (player.y + areasOfInterestInfluenceY) - window.innerHeight/2;
     // this.targetX = 0;
     // this.targetY = 0;
   }

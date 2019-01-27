@@ -16,6 +16,9 @@ class String {
 
     this.x = x;
     this.y = y;
+
+    this.element.style.left = (this.x - camera.x) + "px";
+    this.element.style.top = (this.y - camera.y) + "px";
   }
   update() {
       this.element.style.left = (this.x - camera.x) + "px";
