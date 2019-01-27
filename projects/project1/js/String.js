@@ -5,7 +5,8 @@ class String {
     this.element.innerHTML = string;
     this.element.style.position = "fixed";
     this.element.style.overFlow = "none";
-    this.element.style.width = string.length*charSize/1.46 + "px"; //have to set width property so it doesn't wrap on edge of screen
+    this.width = string.length*charSize/1.46;
+    this.element.style.width = this.width + "px"; //have to set width property so it doesn't wrap on edge of screen
     this.element.style.fontSize = charSize + "px";
     this.element.style.letterSpacing = letterKerningSpace + "px";
     this.opacity = 1;

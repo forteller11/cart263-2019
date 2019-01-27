@@ -18,14 +18,19 @@ class AreaOfInterest{
   }
   addNewString(string){ //calcs avg center of all strings in this.stringsp[]
     if (this.stringAvgX === null){ //if first time executing this method on this object
-      this.stringAvgX = string.x;
-      this.stringAvgY = string.y;
+      this.stringAvgX = string.x + string.width/2;
+      this.stringAvgY = string.y - player.height/2;
+      console.log("string:"+string);
+      console.log(player.y);
+      console.log(this.stringAvgY);
     } else {
-      this.stringAvgX += string.x;
-      this.stringAvgY += string.y;
+      this.stringAvgX += string.x + string.width/2;
+      this.stringAvgY += string.y - player.height/2;
 
       this.stringAvgX = this.stringAvgX/2;
-      this.stringAvgX = this.stringAvgY/2;
+      this.stringAvgY = this.stringAvgY/2;
+      console.log("player:"+Math.round(player.y));
+      console.log("string:"+Math.round(this.stringAvgY));
     }
   }
   calculateCenterOfMass(){ //calculate avg string center, weighting strings depending on their length

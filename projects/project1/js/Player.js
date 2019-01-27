@@ -85,16 +85,16 @@ class Player {
           }
           if (foundIslandForString === false) { //if you went through whole loop and didn't find any close enough areasOfInterest
             // create one and add string to it
-            let newArea = new AreaOfInterest(newString, newString.x, newString.y, areaOfInterestRadius)
-            newArea.addNewString(newString);
+            let newArea = new AreaOfInterest(newString, newString.x, newString.y, areaOfInterestRadius);
             areasOfInterest.push(newArea);
+            newArea.addNewString(newString);
             console.log("create new areaOfInterest because past dist");
           }
 
         } else { //if there aren't any areas of interest
-            let newArea = new AreaOfInterest(newString, newString.x, newString.y, areaOfInterestRadius)
-            newArea.addNewString(newString);
+            let newArea = new AreaOfInterest(newString, newString.x, newString.y, areaOfInterestRadius);
             areasOfInterest.push(newArea);
+            newArea.addNewString(newString);
             console.log("create first areaOfInterest");
         }
 

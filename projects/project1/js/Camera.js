@@ -21,43 +21,44 @@ class Camera{
     let areaAvgX = [null];
     let areaAvgY = [null];
     let areaAvgInfluence = [null]; //how much that area's avg influences cam
-    let sumCalculations = 0;
     let stringInfluence = 0;
     for (let i = 0; i < areasOfInterest.length; i ++){ //loop through all areas of interest,
       const distToAreaThreshold = areasOfInterest[i].radius*2; //threshold dist within which area starts effecting camera
       const deltaX = areasOfInterest[i].x - player.x;
       const deltaY = areasOfInterest[i].y - player.y;
       const distToArea = dist(deltaX,deltaY);
-      console.log(distToArea);
+      // console.log(distToArea);
       if (distToArea < distToAreaThreshold ){ //if player is within radius of circle
-        areaAvgInfluence[i] = (distToAreaThreshold-distToArea)/distToAreaThreshold/2; //0-0.5
+        // console.log(Math.round(distToArea) + "<" + distToAreaThreshold);
+        areaAvgInfluence[i] = (distToAreaThreshold-distToArea)/distToAreaThreshold; //0-0.5
+        areaAvgInfluence[i] = constrain(areaAvgInfluence[i],0,.5);
         areaAvgX[i] = areasOfInterest[i].stringAvgX;
         areaAvgY[i] = areasOfInterest[i].stringAvgY;
-        sumCalculations ++;
       }
     }
 
     let finalAreaAvgInfluence;
     let finalAreaAvgX;
     let finalAreaAvgY;
-    if (areaAvgX[0] === null){ //if there are areas within threshold
+    if (!(areaAvgX[0] === null)){ //if there are areas within threshold
       let areaAvgXSum = 0;
       let areaAvgYSum = 0;
       let areaAvgInfluenceSum = 0;
       for (let i = 0; i < areaAvgX.length; i ++){ //total all influences of avgStringlocations of areas
-        areaAvgXSum += areaAvgX * areaAvgInfluence;
-        areaAvgYSum += areaAvgY * areaAvgInfluence;
-        areaAvgInfluenceSum += areaAvgInfluence;
+        areaAvgXSum += areaAvgX[i] ;
+        areaAvgYSum += areaAvgY[i] ;
+        areaAvgInfluenceSum += areaAvgInfluence[i];
       }
       finalAreaAvgX = areaAvgXSum/areaAvgX.length;
-      finalAreaAvgY = areaAvgXSum/areaAvgY.length;
+      finalAreaAvgY = areaAvgYSum/areaAvgY.length;
       finalAreaAvgInfluence = areaAvgInfluenceSum/areaAvgY.length;
 
     } else {
-      finalAreaAvgX = 0;
-      finalAreaAvgY = 0;
+      finalAreaAvgX = player.x;
+      finalAreaAvgY = player.y;
       finalAreaAvgInfluence = 0;
     }
+
 
     let playerInfluence = 1-finalAreaAvgInfluence;
 
