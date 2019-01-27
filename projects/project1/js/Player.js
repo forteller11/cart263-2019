@@ -78,18 +78,24 @@ class Player {
               console.log("add to existing island");
               foundIslandForString = true; //remember that you find a suitable areaOfInterest
               island.strings.push(newString); //add string to areaOfInterest
+              island.addNewString(newString);
+              areasOfInterest.push(island);
               break; //break out of for loop
             }
           }
           if (foundIslandForString === false) { //if you went through whole loop and didn't find any close enough areasOfInterest
-          // create one and add string to it
-            areasOfInterest.push(new AreaOfInterest(newString, newString.x, newString.y, areaOfInterestRadius));
+            // create one and add string to it
+            let newArea = new AreaOfInterest(newString, newString.x, newString.y, areaOfInterestRadius)
+            newArea.addNewString(newString);
+            areasOfInterest.push(newArea);
             console.log("create new areaOfInterest because past dist");
           }
 
         } else { //if there aren't any areas of interest
-          areasOfInterest.push(new AreaOfInterest(newString, newString.x, newString.y, areaOfInterestRadius));
-          console.log("create first areaOfInterest");
+            let newArea = new AreaOfInterest(newString, newString.x, newString.y, areaOfInterestRadius)
+            newArea.addNewString(newString);
+            areasOfInterest.push(newArea);
+            console.log("create first areaOfInterest");
         }
 
         if (strings.length > maxstrings) { //delete first strings so that there are never more than max

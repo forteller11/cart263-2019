@@ -71,3 +71,10 @@ function randomRange(min, max) {
 function dist(xComponent,yComponent){
   return Math.sqrt((xComponent*xComponent)+(yComponent*yComponent))
 }
+
+function lerp(value1,value2,lerpAmount){
+  const valueDelta = value2 - value1; //find difference between values
+  const lerpAdd = lerpAmount * valueDelta
+  const lerpResult = lerpAdd + value1;
+  return lerpResult;
+}
