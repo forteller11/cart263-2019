@@ -1,10 +1,13 @@
 "use strict";
+let socket;
 
-function setup(){
-createCanvas(500,500);
+function setup() {
+  createCanvas(200, 200);
+
+  socket = io.connect('http://localhost:3000');
 }
 
-function draw(){
+function draw() {
   background(51);
-  ellipse(mouseX,mouseY,30,30);
+  ellipse(mouseX, mouseY, 30, 30);
 }
