@@ -13,7 +13,7 @@ class String {
     this.element.style.letterSpacing = letterKerningSpace + "px";
     this.opacity = 1;
     // this.opacityFade = randomRange(-0.0001,-0.00001);
-    this.opacityFade = -0.005;
+    this.opacityFade = -0.00005;
     body[0].appendChild(this.element);
     this.charSize = charSize + "px";
 

@@ -7,7 +7,7 @@ be expensive) to find areasOfInterest close enough to be of influence to the cam
 then when cam finds areasOfInterest close enough to matter it can itterate through individual strings
 */
 class AreaOfInterest{
-  constructor(element,x,y,radius =  window.innerHeight){
+  constructor(element,x,y,radius =  window.innerWidth){
     this.x = x;
     this.y = y;
     this.elements = [];

@@ -20,13 +20,13 @@ function main() {
   update();
   setInterval(update, updateTime);
 }
-function draw(){
-  createCanvas(windowWidth,windowHeight);
-  for (let area of areasOfInterest){
-    area.draw();
-  }
-  camera.draw();
-}
+// function draw(){
+//   createCanvas(windowWidth,windowHeight);
+//   for (let area of areasOfInterest){
+//     area.draw();
+//   }
+//   camera.draw();
+// }
 
 function update() {
   camera.update();

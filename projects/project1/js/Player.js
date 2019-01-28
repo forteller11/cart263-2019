@@ -26,7 +26,7 @@ class Player {
 
     this.toTargetMovespeed = .085 * updateTime / 16.7; //max percentage to transport to target per frame
     this.toTargetMaxMovespeed = 4.5 * updateTime / 16.7; //max movespeed in pixels to target per frame
-
+    this.toTargetMoveVector = new Vector(0,0);
     this.enterKeyForce = 5; //force appllied to textbox on press of enter
     this.arrowKeyForce = .5135; //force applied to textbox on left/right arrow key press
     const self = this;
@@ -36,7 +36,7 @@ class Player {
     this.element.addEventListener("input", ajustWidth);
     ajustWidth();
 
-    function ajustWidth() {
+    function ajustWidth()  {
       const horzWidthOfText = (charSize / 2 + letterKerningSpace + .79) * self.element.value.length;
       if (horzWidthOfText > self.minWidth) {
         self.element.style.width = horzWidthOfText + "px";
@@ -48,7 +48,7 @@ class Player {
       }
     }
 
-    this.element.addEventListener("keydown", function(e) {
+    this.element.addEventListener("keydown", (e) => {
       if (e.keyCode === 8) {
         ajustWidth();
       }
@@ -166,12 +166,13 @@ class Player {
       //use percentage of that delta to find movespeed in pixels
       let moveX = deltaX * this.toTargetMovespeed;
       let moveY = deltaY * this.toTargetMovespeed;
-      //constrain that movespeed to set bounds in pixels
-      moveX = constrain(moveX, -this.toTargetMaxMovespeed, this.toTargetMaxMovespeed);
-      moveY = constrain(moveY, -this.toTargetMaxMovespeed, this.toTargetMaxMovespeed);
+      this.toTargetMoveVector.x = moveX;
+      this.toTargetMoveVector.y = moveY;
+
+      this.toTargetMoveVector.constrainMag(this.toTargetMaxMovespeed); //constrain mag (and coressponding components) of vector
       //actually moved based on these calculations...
-      this.x += moveX;
-      this.y += moveY;
+      this.x += this.toTargetMoveVector.x;
+      this.y += this.toTargetMoveVector.y;
 
       if (distFromDelta(deltaX, deltaY) < .5) { //if very close to target, snap to target and stop moving torwards target
         this.x = this.targetX;
