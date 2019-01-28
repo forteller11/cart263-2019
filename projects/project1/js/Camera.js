@@ -5,7 +5,7 @@ class Camera{
     this.x = x;
     this.y = y;
 
-    this.toTargetMovespeed = .01 * updateTime;
+    this.toTargetMovespeed = .001 * updateTime;
     this.toTargetMaxMovespeed = Infinity;
     this.targetX = this.x;
     this.targetY = this.y;
@@ -15,6 +15,7 @@ class Camera{
     this.setTarget();
     this.moveTowardsTarget();
   }
+
   setTarget(){ //perhaps only update every once in a while
 
     //have camera system work for n number of areas and
@@ -67,8 +68,16 @@ class Camera{
 
     this.targetX = ((player.x*playerInfluence) + (finalAreaAvgX*finalAreaAvgInfluence)) - window.innerWidth/2;
     this.targetY = ((player.y*playerInfluence) + (finalAreaAvgY*finalAreaAvgInfluence)) - window.innerHeight/2;
-    // this.targetX = 0;
-    // this.targetY = 0;
+  }
+
+  draw(){
+    noFill();
+    stroke(255,0,0);
+    const xx = this.targetX+window.innerWidth/2;
+    const yy = this.targetY+window.innerHeight/2;
+    ellipse(xx,yy,20);
+    fill(255,0,0);
+    ellipse(this.x+window.innerWidth/2,this.y+window.innerHeight/2,10);
   }
   moveTowardsTarget(){
     //find difference between target and current position

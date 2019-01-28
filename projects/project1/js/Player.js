@@ -64,14 +64,13 @@ class Player {
         // const initialVelY = ((i+2)/8) + 2;
         const initialVelY = 0;
         const initialVelX = 0;
-        let newString = new String(self.element.value, xx, yy, initialVelX, -initialVelY);
-        strings.push(newString);
+        let newStringElement = new String(self.element.value, xx, yy, initialVelX, -initialVelY);
 
         if (!(areasOfInterest.length === 0)) { // if there are areas of interest
           let foundAreaForString = false;
           for (let area of areasOfInterest) {
-            const deltaX = area.x - newString.x;
-            const deltaY = area.y - newString.y;
+            const deltaX = area.x - newStringElement.x;
+            const deltaY = area.y - newStringElement.y;
             const distToAreaFromPlayer = distFromDelta(deltaX, deltaY);
             console.log(deltaY);
             console.log("dist:"+distToAreaFromPlayer + " < " + area.radius);
@@ -79,30 +78,24 @@ class Player {
             if (distToAreaFromPlayer < area.radius/2) { //is string within radius of areaOfInterest? then...
               console.log("add to existing island");
               foundAreaForString = true; //remember that you find a suitable areaOfInterest
-              area.addNewString(newString);
+              area.addNewString(newStringElement);
               areasOfInterest.push(area);
               break; //break out of for loop
             }
           }
           if (foundAreaForString === false) { //if you went through whole loop and didn't find any close enough areasOfInterest
             // create one and add string to it
-            let newArea = new AreaOfInterest(newString.string, newString.x, newString.y);
+            let newArea = new AreaOfInterest(newStringElement, newStringElement.x, newStringElement.y);
             areasOfInterest.push(newArea);
-            newArea.addNewString(newString);
             console.log("create new areaOfInterest because past dist");
           }
 
         } else { //if there aren't any areas of interest
-            let newArea = new AreaOfInterest(newString, newString.x, newString.y);
+            let newArea = new AreaOfInterest(newStringElement, newStringElement.x, newStringElement.y);
             areasOfInterest.push(newArea);
-            newArea.addNewString(newString);
             console.log("create first areaOfInterest");
         }
 
-        if (strings.length > maxstrings) { //delete first strings so that there are never more than max
-          strings[0].deleteElement();
-          strings.splice(0, 1);
-        }
         self.changeTargetBasedOnArrowKeys(0, lineSpace, 1); //move down by one line space
         self.element.value = "";
         ajustWidth();

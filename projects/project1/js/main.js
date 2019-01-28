@@ -2,7 +2,6 @@
 window.onload = main;
 let player;
 let camera;
-let strings = [];
 let areasOfInterest = []; //array of objects which contain close together strings
 const updateTime = 16.7; //~60fps
 let mouseX = 0;
@@ -18,9 +17,7 @@ function main() {
   document.addEventListener("mousemove", trackMouseMovement);
   camera = new Camera(); //instantiate player
   player = new Player(charSize*3.39, charSize); //instatiate player with reference to newly created text input
-  camera.update();
-  player.update();
-
+  update();
   setInterval(update, updateTime);
 }
 function draw(){
@@ -28,17 +25,16 @@ function draw(){
   for (let area of areasOfInterest){
     area.draw();
   }
+  camera.draw();
 }
 
 function update() {
   camera.update();
   player.update();
-  for (let i = 0; i < strings.length; i++) {
-    strings[i].update();
-    if (strings[i].opacity <= 0){
-      // console.log("spliced particle "+i);
-      strings[i].deleteElement();
-      strings.splice(i,1);
+  for (let i = 0; i < areasOfInterest.length; i ++){ //update areas
+    areasOfInterest[i].update();
+    if (areasOfInterest[i].elements.length <= 0){ //if areas contain no string objects, splice
+      areasOfInterest.splice(i,1);
     }
   }
 }
