@@ -23,10 +23,11 @@ function main (){
     sessionID = socket.id; //save session id
     console.log("sessionID:"+sessionID);
     //fill up array with all current players,  also fill up screen with all current text
-    // socket.players = players;
+    socket.players = players;
+    console.log(players);
     let newPlayer = new Player(random(200),random(200),sessionID);
     players.push(newPlayer);
-    // socket.emit('pushPlayer',data);
+    socket.emit('newPlayer',newPlayer);
 
   //   //if receive data that other player has moved
   //   socket.on('playerMoved',function(data){ //find player ID which matches data, then set players pos to that data's pos
@@ -39,16 +40,16 @@ function main (){
   //   });
   // });
   //
-  // socket.on('playerMoved', function(data){
-  //   for (let i = 0; i < players.length; i ++){ //move current player (for immediate response)
-  //     if (data.id === players[i].id){
-  //       players[i].x = data.x;
-  //       players[i].y = data.y;
-  //       break; //break out of loop
-  //     }
-  //     console.log("received player movements");
-  //   }
-  // });
+  socket.on('playerMoved', function(data){
+    for (let i = 0; i < players.length; i ++){ //move current player (for immediate response)
+      if (data.id === players[i].id){
+        players[i].x = data.x;
+        players[i].y = data.y;
+        break; //break out of loop
+      }
+      console.log("received player movements");
+    }
+  });
   document.addEventListener("mousemove",function (e){
     console.log("mouseDownFunction");
     for (let i = 0; i < players.length; i ++){ //move current player (for immediate response)
