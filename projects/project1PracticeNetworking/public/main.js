@@ -22,9 +22,8 @@ function main() {
   socket.on('connect', function() { //on connection with server...
     socket.on('initPlayers', function(initPlayersData) { //before doing anything, wait for server to tell client where all existing players are
       console.log('initPlayersData');
-      console.log(initPlayersData);
-      console.log(initPlayersData.legnth);
-      if (initPlayersData.length > 0){
+      console.log(initPlayersData.length);
+      if (!(initPlayersData.length === 0)){
         for (let i = 0; i < initPlayersData.length; i ++){ //using initPlayesData create fully fledged player data with methods and all
           players.push(new Player(initPlayersData[i].x,initPlayersData[i].y,initPlayersData[i].id));
           console.log("pushPlayer!");
@@ -34,6 +33,7 @@ function main() {
       } else {
         console.log("there are no players ")
       }
+
       sessionID = socket.id; //save session id
       console.log("sessionID:" + sessionID);
       //fill up array with all current players,  also fill up screen with all current text
