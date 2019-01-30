@@ -41,27 +41,20 @@ function main() {
       players.push(newPlayer);
       socket.emit('newPlayer', newPlayer);
 
-      //   //if receive data that other player has moved
-      //   socket.on('playerMoved',function(data){ //find player ID which matches data, then set players pos to that data's pos
-      //     for (let i = 0; i < players.length; i ++){
-      //       if (data.id === players[i].id){
-      //         players[i].x = data.x;
-      //         players[i].y = data.y;
-      //       }
-      //     }
-      //   });
-      // });
-      //
+
+      //if receive data that other player has moved
       socket.on('playerMoved', function(data) {
+        console.log("received player movements");
         for (let i = 0; i < players.length; i++) { //move current player (for immediate response)
           if (data.id === players[i].id) {
             players[i].x = data.x;
             players[i].y = data.y;
             break; //break out of loop
           }
-          console.log("received player movements");
+
         }
       });
+
       document.addEventListener("mousemove", function(e) {
         console.log("mouseDownFunction");
         for (let i = 0; i < players.length; i++) { //move current player (for immediate response)
@@ -69,8 +62,8 @@ function main() {
             players[i].x = e.clientX;
             players[i].y = e.clientY;
             let data = {
-              x: e.clientX,
-              y: e.clientY,
+              x:  players[i].x,
+              y:  players[i].y,
               id: players[i].id
             }
             socket.emit('playerMoved', data);
@@ -79,6 +72,13 @@ function main() {
         }
 
       });
+
+      //if receive data that other player has moved
+      socket.on('newPlayer', function(data) {
+        console.log("NEW PLAYER JOINED FROM OTHER SESSION");
+        players.push(new Player(data.x,data.y,data.id));
+      });
+
     });
   });
 }

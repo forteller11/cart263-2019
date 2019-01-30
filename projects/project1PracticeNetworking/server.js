@@ -25,26 +25,23 @@ io.sockets.on('connection',function(socket){
   console.log('new connection:' + socket.id);
 
   socket.on('playerMoved',function(data){ //when a msg is received by client called mouseMove
+    console.log("Player moved.on (data:)")
     console.log(data);
-    // for (let i = 0; i < players.length; i ++){ //move current player (for immediate response)
-    //   if (data.id === players[i].id){
-    //     players[i].x = data.x;
-    //     players[i].y = data.y;
-    //     let data = {
-    //       x: data.x,
-    //       y: data.y,
-    //       id: data.id
-    //     }
-    //     socket.emit('playerMoved',data);
-    //     break; //break out of loop
-    //   }
-    // }
+    for (let i = 0; i < players.length; i ++){ //move current player (for immediate response)
+      if (data.id === players[i].id){ //find corresponding id, and change the position, then emit data
+        players[i].x = data.x;
+        players[i].y = data.y;
+        socket.emit('playerMoved',data); //send back to players that the player has moved
+        break; //break out of loop
+      }
+    }
   });
 
   socket.on('newPlayer', function(newPlayer) {
     console.log("NEW PLAYER");
     players.push(newPlayer); //data = new player instance
     console.log(players);
+    socket.emit('newPlayer',newPlayer);
   });
 
 });
