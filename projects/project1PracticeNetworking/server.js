@@ -8,8 +8,11 @@ console.log("socket server running");
 let socket = require('socket.io');
 let io = socket(server);
 
-//on new connection, call anynomous function
+//on new connection, call anynomous function with socket as event
 io.sockets.on('connection',function(socket){
   console.log('new connection:' + socket.id);
+  socket.on('emitData',function(data){ //when a msg is received by client called mouseMove
+    console.log(data);
+  });
 
 });
