@@ -40,12 +40,15 @@ function main() {
       players.push(newPlayer);
       socket.emit('newPlayer', newPlayer);
 
-      socket.on('disconnect', function() { //tell server on disconnect
-        console.log('RECIEVED DISCONNECT');
-            socket.emit('disconnect', sessionID);
-        });
+      // socket.on('disconnect', function() { //tell server on disconnect
+      //   console.log('RECIEVED DISCONNECT');
+      //       socket.emit('disconnect', sessionID);
+      //   });
 
-        socket.on('playerDisonnect', function(dataID) { //splice player when server tells you it disconnected
+        socket.on('playerDisconnect', function(dataID) { //splice player when server tells you it disconnected
+          console.log("player disconnect event");
+          console.log("dataID");
+          console.log(dataID);
           for (let i = 0; i < players.length; i ++){
             if (dataID === players[i].id){ //find corresponding id, and change the position, then emit data
               players.splice(i,1);
