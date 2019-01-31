@@ -21,9 +21,18 @@ io.on('connection',function(socket){
   console.log("server side playerobj array");
     console.log(players);
   socket.emit('initPlayers',players); //immediately after connection tell client the state of all player objs
-
-
   console.log('new connection:' + socket.id);
+
+  socket.on('dissconnect',function(dataID){ //when a msg is received by client called mouseMove
+    console.log("Player disconnect:" + dataID);
+    for (let i = 0; i < players.length; i ++){
+      if (dataID === players[i].id){ //find corresponding id, and change the position, then emit data
+        players.splice(i,1);
+        socket.broadcast.emit('playerDisconnect',data); //send back to players that the player has moved
+        break; //break out of loop
+      }
+    }
+  });
 
   socket.on('playerMoved',function(data){ //when a msg is received by client called mouseMove
     console.log("Player moved.on (data:)")

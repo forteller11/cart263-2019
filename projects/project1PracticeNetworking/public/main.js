@@ -33,13 +33,26 @@ function main() {
       } else {
         console.log("there are no players ");
       }
-
       sessionID = socket.id; //save session id
       console.log("sessionID:" + sessionID);
       //fill up array with all current players,  also fill up screen with all current text
       let newPlayer = new Player(random(200), random(200), sessionID);
       players.push(newPlayer);
       socket.emit('newPlayer', newPlayer);
+
+      socket.on('disconnect', function() { //tell server on disconnect
+        console.log('RECIEVED DISCONNECT');
+            socket.emit('disconnect', sessionID);
+        });
+
+        socket.on('playerDisonnect', function(dataID) { //splice player when server tells you it disconnected
+          for (let i = 0; i < players.length; i ++){
+            if (dataID === players[i].id){ //find corresponding id, and change the position, then emit data
+              players.splice(i,1);
+              break; //break out of loop
+            }
+          }
+          });
 
       document.addEventListener('mousemove', function(e) {
         console.log("mouseDownFunction");
