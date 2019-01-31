@@ -45,17 +45,17 @@ function main() {
       //       socket.emit('disconnect', sessionID);
       //   });
 
-        socket.on('playerDisconnect', function(socketID) { //splice player when server tells you it disconnected
-          console.log("player disconnect event");
-          console.log("socketID");
-          console.log(socketID);
-          for (let i = 0; i < players.length; i ++){
-            if (socketID === players[i].id){ //find corresponding id, and change the position, then emit data
-              players.splice(i,1);
-              console.log("DISCONNECTED PLAYER REMOVED");
-            }
+      socket.on('playerDisconnect', function(socketID) { //splice player when server tells you it disconnected
+        console.log("player disconnect event");
+        console.log("socketID");
+        console.log(socketID);
+        for (let i = 0; i < players.length; i++) {
+          if (socketID === players[i].id) { //find corresponding id, and change the position, then emit data
+            players.splice(i, 1);
+            console.log("DISCONNECTED PLAYER REMOVED");
           }
-          });
+        }
+      });
 
       document.addEventListener('mousemove', function(e) {
         console.log("mouseDownFunction");
