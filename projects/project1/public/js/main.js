@@ -1,6 +1,7 @@
 "use strict";
 window.onload = main;
 let player;
+let sessionID;
 let camera;
 let areasOfInterest = []; //array of objects which contain close together strings
 const updateTime = 16.7; //~60fps
@@ -20,13 +21,7 @@ function main() {
   update();
   setInterval(update, updateTime);
 }
-// function draw(){
-//   createCanvas(windowWidth,windowHeight);
-//   for (let area of areasOfInterest){
-//     area.draw();
-//   }
-//   camera.draw();
-// }
+
 
 function update() {
   camera.update();
