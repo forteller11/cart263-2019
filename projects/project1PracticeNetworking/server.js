@@ -23,15 +23,15 @@ io.on('connection',function(socket){
   socket.emit('initPlayers',players); //immediately after connection tell client the state of all player objs
   console.log('new connection:' + socket.id);
 
-  socket.on('disconnect',function(dataID){ //when a msg is received by client called mouseMove
-    console.log("Player disconnect:" + dataID);
+  socket.on('disconnect',function(data){ //when a msg is received by client called mouseMove
+    console.log(data);
     for (let i = 0; i < players.length; i ++){
-      if (dataID === players[i].id){ //find corresponding id, and change the position, then emit data
+      if (socket.id === players[i].id){ //find corresponding id, and change the position, then emit data
         players.splice(i,1);
+        socket.broadcast.emit('playerDisconnect',socket.id) //ack to players that the player has moved
         break; //break out of loop
       }
     }
-      socket.broadcast.emit('playerDisconnect',dataID) //ack to players that the player has moved
   });
 
   socket.on('playerMoved',function(data){ //when a msg is received by client called mouseMove

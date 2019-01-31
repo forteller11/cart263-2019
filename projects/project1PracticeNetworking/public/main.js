@@ -45,14 +45,14 @@ function main() {
       //       socket.emit('disconnect', sessionID);
       //   });
 
-        socket.on('playerDisconnect', function(dataID) { //splice player when server tells you it disconnected
+        socket.on('playerDisconnect', function(socketID) { //splice player when server tells you it disconnected
           console.log("player disconnect event");
-          console.log("dataID");
-          console.log(dataID);
+          console.log("socketID");
+          console.log(socketID);
           for (let i = 0; i < players.length; i ++){
-            if (dataID === players[i].id){ //find corresponding id, and change the position, then emit data
+            if (socketID === players[i].id){ //find corresponding id, and change the position, then emit data
               players.splice(i,1);
-              break; //break out of loop
+              console.log("DISCONNECTED PLAYER REMOVED");
             }
           }
           });
