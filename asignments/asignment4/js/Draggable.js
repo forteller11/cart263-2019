@@ -12,16 +12,16 @@ class Draggable extends Image{
 
     document.addEventListener('mouseover',(e)=>{
       console.log('hover');
-      if (!(this.currentUrl === this.pickedUpUrl)){
-        this.currentUrl = this.onHoverUrl;
-      }
+      // if (!(this.currentUrl === this.pickedUpUrl)){
+        // this.currentUrl = this.onHoverUrl;
+      // }
     });
 
     document.addEventListener('mousedown',(e)=>{
       console.log('PRESS');
       if ((e.clientX < this.x+this.width)&&(e.clientX > this.x)){ //if mouse on image
         if ((e.clientY < this.y+this.height)&&(e.clientY > this.y)){
-          this.currentUrl = this.onHoverUrl;
+          this.currentUrl = this.pickedUpHoverUrl;
           this.dragging = true; //start dragging
           this.deltaMouseX = this.x - e.clientX;
           this.deltaMouseY = this.y - e.clientY;
@@ -51,5 +51,6 @@ class Draggable extends Image{
   updateStyle(){
     super.updateStyle();
     this.element.src = this.currentUrl;
+
   }
 }

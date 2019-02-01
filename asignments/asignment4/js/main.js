@@ -9,6 +9,10 @@ function main(){
   console.log("main");
   body = document.getElementsByTagName('body');
     console.log(body);
-  fly = new Draggable('../assets/fly.png');
+  fly = new Draggable('../assets/faceIdle.png');
+  fly.pickedUpUrl = '../assets/faceDrag.png';
+  fly.onHoverUrl = '../assets/faceHover.png';
+  fly.idleUrl = '../assets/faceIdle.png';
+
 
 }
