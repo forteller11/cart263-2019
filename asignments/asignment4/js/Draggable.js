@@ -5,23 +5,39 @@ class Draggable extends Image{
     this.dragging = false;
     this.deltaMouseX = null;
     this.deltaMouseY = null;
-    this.currentUrl = imageUrl;
-    this.pickedUpUrl = imageUrl;
-    this.onHoverUrl = imageUrl;
-    this.idleUrl = imageUrl;
+    for (let element of this.elements){
+        element.style.display = "none";
+    }
+    this.elements[0].style.display = "block";
 
-    document.addEventListener('mouseover',(e)=>{
+    this.container.addEventListener('mouseover',(e)=>{
       console.log('hover');
-      // if (!(this.currentUrl === this.pickedUpUrl)){
-        // this.currentUrl = this.onHoverUrl;
-      // }
+      if (this.dragging === false){ //dont overide dragg image
+        for (let element of this.elements){
+            element.style.display = "none";
+        }
+        this.elements[1].style.display = "block";
+      }
     });
 
-    document.addEventListener('mousedown',(e)=>{
+    this.container.addEventListener('mouseleave',(e)=>{ //mouse off
+      console.log('mouseout');
+      for (let element of this.elements){
+          element.style.display = "none";
+      }
+      this.elements[0].style.display = "block";
+    });
+
+    this.container.addEventListener('mousedown',(e)=>{
       console.log('PRESS');
       if ((e.clientX < this.x+this.width)&&(e.clientX > this.x)){ //if mouse on image
         if ((e.clientY < this.y+this.height)&&(e.clientY > this.y)){
           this.currentUrl = this.pickedUpHoverUrl;
+          for (let element of this.elements){
+              element.style.display = "none";
+          }
+          this.elements[2].style.display = "block";
+
           this.dragging = true; //start dragging
           this.deltaMouseX = this.x - e.clientX;
           this.deltaMouseY = this.y - e.clientY;
@@ -29,13 +45,16 @@ class Draggable extends Image{
       }
     });
 
-    document.addEventListener('mouseup',()=>{
+    this.container.addEventListener('mouseup',()=>{
       console.log("RELEASE");
       this.dragging = false;
-      this.currentUrl = this.idleUrl;
+      for (let element of this.elements){
+          element.style.display = "none";
+      }
+      this.elements[0].style.display = "block";
     });
 
-    document.addEventListener('mousemove',(e)=>{
+    this.container.addEventListener('mousemove',(e)=>{
       this.drag(e);
     });
   }
@@ -50,7 +69,5 @@ class Draggable extends Image{
 
   updateStyle(){
     super.updateStyle();
-    this.element.src = this.currentUrl;
-
   }
 }

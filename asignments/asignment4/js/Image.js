@@ -1,11 +1,19 @@
 "use strict";
-class Image{
-  constructor(imageUrl,x=randomRange(0,window.innerWidth),y=randomRange(0,window.innerHeight),width=200,height=200){
-    this.element = document.createElement("IMG");
-    body[0].appendChild(this.element);
-        this.element.draggable = false;
-    this.element.src = imageUrl;
-    this.element.style.position = "absolute";
+class Image {
+  constructor(imageUrl, x = randomRange(0, window.innerWidth), y = randomRange(0, window.innerHeight), width = 200, height = 200) {
+    let idle = document.createElement("IMG");
+    idle.src = '../assets/faceIdle.png';
+    let hover = document.createElement("IMG");
+    hover.src = '../assets/faceHover.png';
+    let drag = document.createElement("IMG");
+    drag.src = '../assets/faceDrag.png';
+    this.elements = [idle, hover, drag];
+    this.container = document.getElementById("head");
+    for (let element of this.elements) {
+      this.container.appendChild(element);
+      element.draggable = false;
+      element.style.position = "absolute";
+    }
     this.x = x;
     this.y = y;
     this.width = width;
@@ -13,10 +21,13 @@ class Image{
     this.updateStyle();
   }
 
-  updateStyle(){ //update position and scale of image based on this.x,y,width,height vars
-    this.element.style.left = this.x + "px";
-    this.element.style.top = this.y + "px";
-    this.element.style.width = this.width + "px";
-    this.element.style.height = this.height + "px";
+  updateStyle() { //update position and scale of image based on this.x,y,width,height vars
+    for (let element of this.elements) {
+      element.style.left = this.x + "px";
+      element.style.top = this.y + "px";
+      element.style.width = this.width + "px";
+      element.style.height = this.height + "px";
+    }
+
   }
 }
