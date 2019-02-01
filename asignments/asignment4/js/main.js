@@ -2,13 +2,13 @@
 
 window.onload = main;
 let fly;
+let mouth;
+let body = [];
 
 function main(){
-
   console.log("main");
-  let flyElement = document.getElementById('flyElement');
-  console.log(flyElement);
-  fly = new Fly(flyElement);
+  body = document.getElementsByTagName('body');
+    console.log(body);
+  fly = new Draggable('../assets/fly.png');
 
 }
- 
