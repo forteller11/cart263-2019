@@ -14,5 +14,5 @@ function main(){
   fly.onHoverUrl = '../assets/faceHover.png';
   fly.idleUrl = '../assets/faceIdle.png';
 
-
+console.log(min(-50,300,509900,200));
 }

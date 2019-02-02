@@ -1,6 +1,6 @@
 "use strict";
 class Image {
-  constructor(imageUrl, x = randomRange(0, window.innerWidth), y = randomRange(0, window.innerHeight), width = 200, height = 200) {
+  constructor(imageUrl, x = ran(window.innerWidth), y = ran(window.innerHeight), width = 200, height = 200) {
     let idle = document.createElement("IMG");
     idle.src = '../assets/faceIdle.png';
     let hover = document.createElement("IMG");
