@@ -2,28 +2,29 @@
 class Player {
   constructor(width = 32, height = 8, x = window.innerWidth / 2, y = window.innerHeight / 2) {
     this.minWidth = width;
-    this.currentWidth = this.minWidth;
     this.maxWidth = 200;
+    this.currentWidth = this.minWidth;
     this.height = height;
+    //creating and initialising textbox
     this.element = document.createElement("INPUT");
     this.element.setAttribute("type", "text");
     body[0].appendChild(this.element);
     this.element.value = "shout into the void";
-    this.element.style.position = "fixed";
-    this.element.style.width = this.minWidth + "px";
+    this.element.style.position = "fixed"; //like postiion absolute but doesn't scroll
+    this.element.style.width = this.currentWidth + "px";
     this.element.style.transition = "width 0s";
     this.element.style.transitionTimingFunction = "ease";
     this.element.style.height = this.height + "px";
     this.element.style.fontSize = charSize + "px";
     this.element.style.letterSpacing = letterKerningSpace + "px";
 
-    this.posOffset = charSize / 8; // so that when repositioning the textbox the mouse is still within it
     this.x = x; //reffering to left of textbox + this.posOffset
     this.y = y; // reffering the vertical center of the textbox
 
     this.targetX = null;
     this.targetY = null;
 
+        this.posOffset = charSize / 8; // so that when repositioning the textbox the mouse is still within it
     this.toTargetMovespeed = .085 * updateTime / 16.7; //max percentage to transport to target per frame
     this.toTargetMaxMovespeed = 4.5 * updateTime / 16.7; //max movespeed in pixels to target per frame
     this.toTargetMoveVector = new Vector(0, 0);
@@ -39,7 +40,6 @@ class Player {
     });
 
     this.element.addEventListener('input', (e) => { //if textbox.value changes, ajust width
-      console.log('input');
       this.ajustWidth();
     });
 
@@ -51,14 +51,13 @@ class Player {
       this.mouseOverTextBox = false;
     });
 
+    //handle retargeting with the mouse
     document.addEventListener("mousedown", (e) => { //on mouse click,
-      //if mouse clicks and it is not current over textbox, retarget
       if (!(this.mouseOverTextBox)) {
         this.retargeting = true;
       }
     })
-
-    document.addEventListener("mouseup", () => { //on release of mouse button
+    document.addEventListener("mouseup", (e) => { //on release of mouse button
       this.element.focus(); //automatically select textbox (place cursor inside of it so user can type right away)
       this.retargeting = false; //stop targeting mouse position
     })
@@ -117,6 +116,19 @@ class Player {
     }
   }
 
+  ajustWidth() { //changes width of textbox, either with a css transition or instantly
+    const horzWidthOfText = (charSize / 2 + letterKerningSpace + .79) * this.element.value.length;
+    if (horzWidthOfText > this.minWidth) { //if increasing in size, instantly become the new width
+      this.element.style.transition = "width 0s";
+      this.currentWidth = horzWidthOfText;
+      this.element.style.width = this.currentWidth + "px";
+    } else if (horzWidthOfText < this.minWidth) { //if decreasing in size, transition to that size smoothly
+      this.element.style.transition = "width .3s"; //when enter is pressed, ease the textbox back to it's minSize
+      this.currentWidth = this.minWidth;
+      this.element.style.width = this.currentWidth + "px";
+    }
+  }
+
   update() { //use x,y pos of element to style element (Using offsets to style it from center instead of top-left corner)
     if (this.retargeting) { //if targeting the mouse, change target to equal the mouse position
       this.targetX = mouseX + camera.x;
@@ -127,14 +139,6 @@ class Player {
     this.element.style.top = (this.y - this.height / 2) - camera.y + "px";
   }
 
-  pointWithRectOverlap(pointX, pointY, rectX, rectY, rectWidth, rectHeight) {
-    if ((pointX >= rectX) && ((pointX <= rectX + rectWidth))) { //horz collision?
-      if ((pointY >= rectY - rectHeight / 2) && ((pointY <= rectY + rectHeight / 2))) { //horz collision?
-        return true;
-      }
-    }
-    return false;
-  }
   moveTowardsTarget() {
     if (!((this.targetX || this.targetY) === null)) {
       //find difference between target and current position
@@ -160,17 +164,5 @@ class Player {
     }
   }
 
-  ajustWidth() {
-    const horzWidthOfText = (charSize / 2 + letterKerningSpace + .79) * this.element.value.length;
-    if (horzWidthOfText > this.minWidth) { //if increasing in size, instantly become the new width
-      this.element.style.transition = "width 0s";
-      this.element.style.width = horzWidthOfText + "px";
-      this.currentWidth = horzWidthOfText;
-    } else if (horzWidthOfText < this.minWidth) { //if decreasing in size, transition to that size smoothly
-      this.element.style.transition = "width .3s"; //when enter is pressed, ease the textbox back to it's minSize
-      this.element.style.width = this.minWidth + "px";
-      this.currentWidth = this.minWidth;
-    }
-  }
 
 }
