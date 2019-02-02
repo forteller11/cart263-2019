@@ -1,12 +1,13 @@
 "use strict";
 class Draggable extends Image {
-  constructor(imageUrl, x = randomRange(0, window.innerWidth), y = randomRange(0, window.innerHeight), width = 200, height = 200) {
+  constructor(imageUrl, x = ran(window.innerWidth), y = ran(window.innerHeight), width = 200, height = 200) {
     super(imageUrl, x, y, width, height);
     this.cooked = 1;
     this.hueMult = 90;
     this.dragging = false;
     this.deltaMouseX = null;
     this.deltaMouseY = null;
+    console.log(this.x);
     for (let element of this.elements) {
       element.style.display = "none";
       element.draggable = false;
