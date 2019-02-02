@@ -1,5 +1,6 @@
 "use strict";
 window.onload = main;
+let players = [];
 let player;
 let sessionID;
 let camera;
@@ -11,21 +12,23 @@ const charSize = 16;
 const lineSpace = 32;
 const letterKerningSpace = 2;
 let body = document.getElementsByTagName("body");
-const maxstrings = 1200; //max character count of a page
+
+let socket;
+
 
 function main() {
   //create textinput and child it to the body
   document.addEventListener("mousemove", trackMouseMovement);
-  camera = new Camera(); //instantiate player
-  player = new Player(charSize*3.39, charSize); //instatiate player with reference to newly created text input
+  player = new Avatar();
+  camera = new Camera(player);
   update();
   setInterval(update, updateTime);
 }
 
 
 function update() {
-  camera.update();
   player.update();
+  camera.update();
   for (let i = 0; i < spans.length; i ++){ //update spans
     spans[i].update();
     if (spans[i].opacity <= 0){

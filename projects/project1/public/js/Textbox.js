@@ -1,6 +1,6 @@
 "use strict";
-class Player {
-  constructor(width = 32, height = 8, x = window.innerWidth / 2, y = window.innerHeight / 2) {
+class Textbox {
+  constructor(value='i am a stranger',width = 32, height = 8, x = ran(window.innerWidth), y = ran(window.innerHeight)) {
     this.minWidth = width;
     this.maxWidth = 200;
     this.currentWidth = this.minWidth;
@@ -9,12 +9,12 @@ class Player {
     this.element = document.createElement("INPUT");
     this.element.setAttribute("type", "text");
     body[0].appendChild(this.element);
-    this.element.value = "shout into the void";
+    this.element.value = value;
     this.element.style.position = "fixed"; //like postiion absolute but doesn't scroll
     this.element.style.width = this.currentWidth + "px";
+    this.element.style.height = "auto";
     this.element.style.transition = "width 0s";
-    this.element.style.transitionTimingFunction = "ease";
-    this.element.style.height = this.height + "px";
+    this.element.style.transitionTimingFunction = "ease";;
     this.element.style.fontSize = charSize + "px";
     this.element.style.letterSpacing = letterKerningSpace + "px";
 
@@ -24,44 +24,12 @@ class Player {
     this.targetX = null;
     this.targetY = null;
 
-        this.posOffset = charSize / 8; // so that when repositioning the textbox the mouse is still within it
+    this.posOffset = charSize / 8; // so that when repositioning the textbox the mouse is still within it
     this.toTargetMovespeed = .085 * updateTime / 16.7; //max percentage to transport to target per frame
     this.toTargetMaxMovespeed = 4.5 * updateTime / 16.7; //max movespeed in pixels to target per frame
     this.toTargetMoveVector = new Vector(0, 0);
-    const self = this;
-
-    this.mouseOverTextBox = false; //is mouse over text input element?
-    this.retargeting = false;
 
     this.ajustWidth();
-
-    document.addEventListener("keydown", (e) => { //trigger if key is pressed in the textbox
-      this.handleKeyboardInputs(e.keyCode);
-    });
-
-    this.element.addEventListener('input', (e) => { //if textbox.value changes, ajust width
-      this.ajustWidth();
-    });
-
-    //hitbox handling
-    this.element.addEventListener('mouseenter', () => {
-      this.mouseOverTextBox = true;
-    });
-    this.element.addEventListener('mouseleave', () => {
-      this.mouseOverTextBox = false;
-    });
-
-    //handle retargeting with the mouse
-    document.addEventListener("mousedown", (e) => { //on mouse click,
-      if (!(this.mouseOverTextBox)) {
-        this.retargeting = true;
-      }
-    })
-    document.addEventListener("mouseup", (e) => { //on release of mouse button
-      this.element.focus(); //automatically select textbox (place cursor inside of it so user can type right away)
-      this.retargeting = false; //stop targeting mouse position
-    })
-
   }
 
   handleKeyboardInputs(keyCode) {
@@ -130,10 +98,6 @@ class Player {
   }
 
   update() { //use x,y pos of element to style element (Using offsets to style it from center instead of top-left corner)
-    if (this.retargeting) { //if targeting the mouse, change target to equal the mouse position
-      this.targetX = mouseX + camera.x;
-      this.targetY = mouseY + camera.y;
-    }
     this.moveTowardsTarget();
     this.element.style.left = (this.x - this.posOffset) - camera.x + "px";
     this.element.style.top = (this.y - this.height / 2) - camera.y + "px";

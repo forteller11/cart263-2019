@@ -1,7 +1,8 @@
 "use strict";
 
 class Camera{
-  constructor(x=0,y=0){
+  constructor(avatar, x=0,y=0){
+    this.avatar = avatar;
     this.x = x;
     this.y = y;
 
@@ -26,11 +27,11 @@ class Camera{
   //
   //   for (let i = 0; i < areasOfInterest.length; i ++){ //loop through all areas of interest,
   //     const distToAreaThreshold = areasOfInterest[i].radius; //threshold dist within which area starts effecting camera
-  //     const deltaX = areasOfInterest[i].stringAvgX - player.x;
-  //     const deltaY = areasOfInterest[i].stringAvgY - player.y;
+  //     const deltaX = areasOfInterest[i].stringAvgX - avatar.x;
+  //     const deltaY = areasOfInterest[i].stringAvgY - avatar.y;
   //     const distToArea = distFromDelta(deltaX,deltaY);
   //     // console.log(distToArea);
-  //     if (distToArea < distToAreaThreshold ){ //if player is within radius of circle
+  //     if (distToArea < distToAreaThreshold ){ //if avatar is within radius of circle
   //       // console.log(Math.round(distToArea) + "<" + distToAreaThreshold);
   //       areaAvgInfluence[i] = (distToAreaThreshold-distToArea)/distToAreaThreshold; //0
   //       areaAvgInfluence[i] = Math.sin(areaAvgInfluence[i]*Math.PI)/2; //make the 0,1 range turn into, 0,1,0, where output is 1 when input is .5 (so it fades influence when textbox is on top of text)
@@ -59,19 +60,19 @@ class Camera{
   //     console.log()
   //
   //   } else {
-  //     finalAreaAvgX = player.x;
-  //     finalAreaAvgY = player.y;
+  //     finalAreaAvgX = avatar.x;
+  //     finalAreaAvgY = avatar.y;
   //     finalAreaAvgInfluence = 0;
   //   }
   //
   //
-  //   let playerInfluence = 1-finalAreaAvgInfluence;
+  //   let avatarInfluence = 1-finalAreaAvgInfluence;
   //
-  //   this.targetX = ((player.x*playerInfluence) + (finalAreaAvgX*finalAreaAvgInfluence)) - window.innerWidth/2;
-  //   this.targetY = ((player.y*playerInfluence) + (finalAreaAvgY*finalAreaAvgInfluence)) - window.innerHeight/2;
+  //   this.targetX = ((avatar.x*avatarInfluence) + (finalAreaAvgX*finalAreaAvgInfluence)) - window.innerWidth/2;
+  //   this.targetY = ((avatar.y*avatarInfluence) + (finalAreaAvgY*finalAreaAvgInfluence)) - window.innerHeight/2;
 
-  this.targetX = (player.x) - window.innerWidth/2;
-  this.targetY = (player.y) - window.innerHeight/2;
+  this.targetX = (this.avatar.x) - window.innerWidth/2;
+  this.targetY = (this.avatar.y) - window.innerHeight/2;
   }
 
   draw(){
