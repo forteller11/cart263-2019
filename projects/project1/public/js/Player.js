@@ -26,7 +26,7 @@ class Player {
 
     this.toTargetMovespeed = .085 * updateTime / 16.7; //max percentage to transport to target per frame
     this.toTargetMaxMovespeed = 4.5 * updateTime / 16.7; //max movespeed in pixels to target per frame
-    this.toTargetMoveVector = new Vector(0,0);
+    this.toTargetMoveVector = new Vector(0, 0);
     this.enterKeyForce = 5; //force appllied to textbox on press of enter
     this.arrowKeyForce = .5135; //force applied to textbox on left/right arrow key press
     const self = this;
@@ -36,7 +36,7 @@ class Player {
     this.element.addEventListener("input", ajustWidth);
     ajustWidth();
 
-    function ajustWidth()  {
+    function ajustWidth() {
       const horzWidthOfText = (charSize / 2 + letterKerningSpace + .79) * self.element.value.length;
       if (horzWidthOfText > self.minWidth) {
         self.element.style.width = horzWidthOfText + "px";
@@ -57,44 +57,11 @@ class Player {
       self.element.style.transition = "width 0s"; //if typing, instantly increase width of textbox
       if (e.keyCode === 13) { //if enter is pressed
         const xx = (self.x - self.posOffset) + 2;
-        // const additionalX = (charSize/2+letterKerningSpace+.79)*i;
-        // const xx = initialX+additionalX;
         const yy = self.y - self.height / 2 + .8;
-        const initialRandom = +randomRange(-.1, .1);
-        // const initialVelY = ((i+2)/8) + 2;
         const initialVelY = 0;
         const initialVelX = 0;
         let newStringElement = new String(self.element.value, xx, yy, initialVelX, -initialVelY);
-
-        if (!(areasOfInterest.length === 0)) { // if there are areas of interest
-          let foundAreaForString = false;
-          for (let area of areasOfInterest) {
-            const deltaX = area.x - newStringElement.x;
-            const deltaY = area.y - newStringElement.y;
-            const distToAreaFromPlayer = distFromDelta(deltaX, deltaY);
-            console.log(deltaY);
-            console.log("dist:"+distToAreaFromPlayer + " < " + area.radius);
-
-            if (distToAreaFromPlayer < area.radius/2) { //is string within radius of areaOfInterest? then...
-              console.log("add to existing island");
-              foundAreaForString = true; //remember that you find a suitable areaOfInterest
-              area.addNewString(newStringElement);
-              areasOfInterest.push(area);
-              break; //break out of for loop
-            }
-          }
-          if (foundAreaForString === false) { //if you went through whole loop and didn't find any close enough areasOfInterest
-            // create one and add string to it
-            let newArea = new AreaOfInterest(newStringElement, newStringElement.x, newStringElement.y);
-            areasOfInterest.push(newArea);
-            console.log("create new areaOfInterest because past dist");
-          }
-
-        } else { //if there aren't any areas of interest
-            let newArea = new AreaOfInterest(newStringElement, newStringElement.x, newStringElement.y);
-            areasOfInterest.push(newArea);
-            console.log("create first areaOfInterest");
-        }
+        spans.push(newStringElement);
 
         self.changeTargetBasedOnArrowKeys(0, lineSpace, 1); //move down by one line space
         self.element.value = "";
@@ -102,20 +69,10 @@ class Player {
       }
     });
 
-    this.element.addEventListener("keydown", function(e) {
-      if (e.keyCode === 37) { //left arrowkey
-        self.changeTargetBasedOnArrowKeys(charSize, 0, -1); //move one characterSPace left
-      }
-      if (e.keyCode === 39) { //right arrowkey
-        self.changeTargetBasedOnArrowKeys(charSize, 0, 1); //move one character right
-      }
-      if (e.keyCode === 38) { //up arrowkey
-        self.changeTargetBasedOnArrowKeys(0, lineSpace, -1); //move one line up
-      }
-      if (e.keyCode === 40) { //down arrowkey
-        self.changeTargetBasedOnArrowKeys(0, lineSpace, 1); //move one line down
-      }
+    this.element.addEventListener("keydown", (e) => {
+      this.changeTargetBasedOnArrowKeys(e.keyCode); //move one characterSPace left
     });
+
 
     document.addEventListener("mousedown", function(e) { //on mouse click,
       //check to see if mouse overlaps textbox,
@@ -131,57 +88,84 @@ class Player {
 
   }
 
-  changeTargetBasedOnArrowKeys(amountToChangeX, amountToChangeY, sign) {
+  changeTargetBasedOnArrowKeys(keyCode) {
+    let amountToChangeX; //how much to change targetX after method
+    let amountToChangeY; //how much to change this.targetY after method
+
+    switch (keyCode) { //calculate how to change target based on key codes
+      case 37: //left arrow key
+        charSize = 0;
+        amountToChangeX = -charSize;
+        amountToChangeY = 0;
+        break;
+      case 39: //right arrow key
+        amountToChangeX = charSize;
+        amountToChangeY = 0;
+        break;
+      case 38: //up arrow key
+        amountToChangeX = 0;
+        amountToChangeY = -lineSpace;
+        break;
+      case 40: //down arrow key
+        amountToChangeX = 0;
+        amountToChangeY = lineSpace;
+        break;
+      default:
+        return; //stop executing method
+    }
+
+    //actually change target based on above calculated values
     if ((this.targetX === null) || (this.targetY === null)) { //if there is no target, have new target = current postiion + amountToChange
-      this.targetX = this.x + (amountToChangeX * sign);
-      this.targetY = (this.y + (amountToChangeY * sign));
-    } else { //if there is a target, offset it
-      this.targetX += (amountToChangeX * sign);
-      this.targetY += (amountToChangeY * sign);
-    }
-  }
-  update() { //use x,y pos of element to style element (Using offsets to style it from center instead of top-left corner)
-    if (this.retargeting) { //if targeting the mouse, change target to equal the mouse position
-      this.targetX = mouseX + camera.x;
-      this.targetY = mouseY + camera.y;
-    }
-    this.moveTowardsTarget();
-    this.element.style.left = (this.x - this.posOffset) - camera.x + "px";
-    this.element.style.top = (this.y - this.height / 2) - camera.y + "px";
-  }
-
-  pointWithRectOverlap(pointX, pointY, rectX, rectY, rectWidth, rectHeight) {
-    if ((pointX >= rectX) && ((pointX <= rectX + rectWidth))) { //horz collision?
-      if ((pointY >= rectY - rectHeight / 2) && ((pointY <= rectY + rectHeight / 2))) { //horz collision?
-        return true;
-      }
-    }
-    return false;
-  }
-  moveTowardsTarget() {
-    if (!((this.targetX || this.targetY) === null)) {
-      //find difference between target and current position
-      const deltaX = this.targetX - this.x;
-      const deltaY = this.targetY - this.y;
-      //use percentage of that delta to find movespeed in pixels
-      let moveX = deltaX * this.toTargetMovespeed;
-      let moveY = deltaY * this.toTargetMovespeed;
-      this.toTargetMoveVector.x = moveX;
-      this.toTargetMoveVector.y = moveY;
-
-      this.toTargetMoveVector.constrainMag(this.toTargetMaxMovespeed); //constrain mag (and coressponding components) of vector
-      //actually moved based on these calculations...
-      this.x += this.toTargetMoveVector.x;
-      this.y += this.toTargetMoveVector.y;
-
-      if (distFromDelta(deltaX, deltaY) < .5) { //if very close to target, snap to target and stop moving torwards target
-        this.x = this.targetX;
-        this.y = this.targetY;
-        this.targetX = null;
-        this.targetY = null;
+      this.targetX = this.x + amountToChangeX;
+      this.targetY = this.y + amountToChangeY;
+      } else { //if there is a target, offset it
+        this.targetX += amountToChangeX;
+        this.targetY += amountToChangeY;
       }
     }
 
-  }
+    update() { //use x,y pos of element to style element (Using offsets to style it from center instead of top-left corner)
+      if (this.retargeting) { //if targeting the mouse, change target to equal the mouse position
+        this.targetX = mouseX + camera.x;
+        this.targetY = mouseY + camera.y;
+      }
+      this.moveTowardsTarget();
+      this.element.style.left = (this.x - this.posOffset) - camera.x + "px";
+      this.element.style.top = (this.y - this.height / 2) - camera.y + "px";
+    }
 
-}
+    pointWithRectOverlap(pointX, pointY, rectX, rectY, rectWidth, rectHeight) {
+      if ((pointX >= rectX) && ((pointX <= rectX + rectWidth))) { //horz collision?
+        if ((pointY >= rectY - rectHeight / 2) && ((pointY <= rectY + rectHeight / 2))) { //horz collision?
+          return true;
+        }
+      }
+      return false;
+    }
+    moveTowardsTarget() {
+      if (!((this.targetX || this.targetY) === null)) {
+        //find difference between target and current position
+        const deltaX = this.targetX - this.x;
+        const deltaY = this.targetY - this.y;
+        //use percentage of that delta to find movespeed in pixels
+        let moveX = deltaX * this.toTargetMovespeed;
+        let moveY = deltaY * this.toTargetMovespeed;
+        this.toTargetMoveVector.x = moveX;
+        this.toTargetMoveVector.y = moveY;
+
+        this.toTargetMoveVector.constrainMag(this.toTargetMaxMovespeed); //constrain mag (and coressponding components) of vector
+        //actually moved based on these calculations...
+        this.x += this.toTargetMoveVector.x;
+        this.y += this.toTargetMoveVector.y;
+
+        if (distFromDelta(deltaX, deltaY) < .5) { //if very close to target, snap to target and stop moving torwards target
+          this.x = this.targetX;
+          this.y = this.targetY;
+          this.targetX = null;
+          this.targetY = null;
+        }
+      }
+
+    }
+
+  }

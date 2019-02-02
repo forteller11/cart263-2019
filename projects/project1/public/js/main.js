@@ -3,7 +3,7 @@ window.onload = main;
 let player;
 let sessionID;
 let camera;
-let areasOfInterest = []; //array of objects which contain close together strings
+let spans = [];
 const updateTime = 16.7; //~60fps
 let mouseX = 0;
 let mouseY = 0;
@@ -26,52 +26,11 @@ function main() {
 function update() {
   camera.update();
   player.update();
-  for (let i = 0; i < areasOfInterest.length; i ++){ //update areas
-    areasOfInterest[i].update();
-    if (areasOfInterest[i].elements.length <= 0){ //if areas contain no string objects, splice
-      areasOfInterest.splice(i,1);
+  for (let i = 0; i < spans.length; i ++){ //update spans
+    spans[i].update();
+    if (spans[i].opacity <= 0){
+      spans[i].delete();
+      spans.splice(1,i);
     }
   }
-}
-
-function trackMouseMovement(e) { //store position of mouse in global variables
-  mouseX = e.clientX; //"client" means get pos of mouse relative to window pos (and not monitor pos)
-  mouseY = e.clientY;
-}
-
-function constrain(varr, min, max) { //same functionality as p5's constrain();
-  let varrConstrained = varr;
-  if (varr > max) {
-    varrConstrained = max;
-  }
-  if (varr < min) {
-    varrConstrained = min;
-  }
-  return varrConstrained;
-}
-
-function checkPointWithRectangleOverlap(pointX, pointY, rectX, rectY, rectWidth, rectHeight) {
-  if ((pointX >= rectX - rectWidth / 2) && ((pointX <= rectX + rectWidth / 2))) { //horz collision?
-    if ((pointY >= rectY - rectHeight / 2) && ((pointY <= rectY + rectHeight / 2))) { //horz collision?
-      return true;
-    }
-  }
-  return false;
-}
-
-function randomRange(min, max) {
-  const r = Math.random();
-  const delta = max - min;
-  return (r * delta) + min;
-}
-
-function distFromDelta(xComponent,yComponent){
-  return Math.sqrt((xComponent*xComponent)+(yComponent*yComponent))
-}
-
-function linearInterpolate(value1,value2,lerpAmount){
-  const valueDelta = value1 - value2; //find difference between values
-  const lerpAdd = lerpAmount * valueDelta
-  const lerpResult = lerpAdd + value2;
-  return lerpResult;
 }

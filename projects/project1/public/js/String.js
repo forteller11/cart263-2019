@@ -32,7 +32,9 @@ class String {
         this.opacity += this.opacityFade;
         this.element.style.opacity = this.opacity;
       }
-  deleteElement(){
+
+  delete(){
     this.element.remove();
   }
+
 }
