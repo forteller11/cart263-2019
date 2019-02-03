@@ -15,11 +15,14 @@ let spanBlueprints = []; //value,x,y
 
 //on new connection, call a function with the socket being the unique connection between the server a client
 io.on('connection',function(socket){
-  socket.emit('initialiseTextboxes', players); //make sure all players know of the existence of the new player
-  socket.emit('initialiseSpans', strings); //make sure all players know of the existence of the new player
+  console.log('NEW CLIENT-SERVER CONNECTION');
+  socket.emit('initialiseTextboxes', textboxBlueprints); //make sure all players know of the existence of the new player
+  console.log('initialise textboxes');
+  socket.emit('initialiseSpans', spanBlueprints); //make sure all players know of the existence of the new player
+  console.log('initialise spans');
 
-  socket.on('newTextbox', function(newTextboxData){
-    console.log("NEW TEXTBOX");
+  socket.on('newTextbox', function(newTextboxData){ //store data from new textbox and broadcast to all other clients
+    console.log("NEW TEXTBOX:");
     console.log(newTextboxData);
     textboxBlueprints.push(newTextboxData);
     socket.broadcast.emit('newTextbox',newTextboxData);

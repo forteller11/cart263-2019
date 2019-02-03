@@ -1,11 +1,12 @@
 "use strict";
 window.onload = main;
 let textboxes = [];
-let player;
-let sessionID; //unique identifier of specefic client/server connections
-
-let camera;
 let spans = [];
+let camera;
+
+let sessionID; //unique identifier of specefic client/server connections
+let socket;
+
 const updateTime = 16.7; //~60fps
 let mouseX = 0; //track mouseX/Y globally
 let mouseY = 0;
@@ -14,11 +15,12 @@ const lineSpace = 32; //when users press enter how far the textbox travels verti
 const letterKerningSpace = 2; //space inbetween letters
 let body = document.getElementsByTagName("body");
 
-let socket;
+
 
 
 function main() {
   socket = io.connect('http://localhost:3000');
+
   socket.on('connect', () => { //on connection w/server...
     console.log('connected to server');
 
@@ -29,7 +31,7 @@ function main() {
           textboxes.push(new Textbox(box.id, box.value, box.x, box.y));
         }
       } else {
-        console.log('there are no players');
+        console.log('there are no textboxes');
       }
 
       socket.on('initialiseSpans', (initialiseSpansData) => { //wait for data in which to appropriately instantiate spans
@@ -57,6 +59,7 @@ function main() {
         setInterval(update, updateTime); //set update to ~ 60 times a second
 
         socket.on('newTextbox', (newTextboxData) => {
+          console.log('newtextbox connected');
           textboxes.push(new Textbox(newTextboxData.id, newTextboxData.value, newTextboxData.x, newTextboxData.y));
         });
 
@@ -69,8 +72,8 @@ function main() {
 
 
 function update() {
-  for (let player of textboxes) {
-    player.update();
+  for (let box of textboxes) { //update all textboxes
+    box.update();
   }
 
   for (let i = 0; i < spans.length; i++) { //update spans
