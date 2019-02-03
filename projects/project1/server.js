@@ -16,10 +16,14 @@ let spanBlueprints = []; //value,x,y
 //on new connection, call a function with the socket being the unique connection between the server a client
 io.on('connection',function(socket){
   console.log('NEW CLIENT-SERVER CONNECTION');
-  if (textboxBlueprints.length > 0){
-    console.log('REQUESTING WORLD DATA...');
+
+
+    if (textboxBlueprints.length > 0){
+      console.log('REQUESTING WORLD DATA...');
     socket.broadcast.emit('requestWorldData',textboxBlueprints[0].id); //request the
+
     socket.on('textboxSync',function(textboxSyncData){
+      console.log("TEXTBOXSYNC");
       for(let box of textboxSyncData){
         box.id = textboxSyncData.textboxId;
         box.value = textboxSyncData.textboxValue;
@@ -27,7 +31,9 @@ io.on('connection',function(socket){
         box.y = textboxSyncData.textboxY;
       }
       socket.broadcast.emit('textboxSync',textboxBlueprints);
+
       socket.on('spanSync',function(spanSyncData){
+        console.log("SPAN SYNC");
         for(let span of spanSyncData){
           span.string = spanSyncData.textboxId;
           span.x = spanSyncData.textboxX;

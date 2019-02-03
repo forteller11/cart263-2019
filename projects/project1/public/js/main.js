@@ -25,7 +25,7 @@ function main() {
     console.log('connected to server');
 
     socket.on('textboxSync', (textboxSyncData) => { //wait for data in which to appropriately instatiate textbox objects
-      console.log('textboxSync');
+      console.log('receiving textbox sync data from server');
       if (!(textboxSyncData.length === 0)) { //if there is data....
         for (let box of textboxDataSync) { //instatiate textboxes based on data from server
           textboxes.push(new Textbox(box.id, box.value, box.x, box.y));
@@ -97,16 +97,20 @@ function main() {
           if (idData === sessionID) { //if first client and server requests world data, send it
             //construct blobs
             let boxBlueprints = [];
+            console.log('textboxes:');
+            console.log(textboxes);
             for (let box of textboxes) {
               let data = {
                 id: box.y,
-                value: box.value,
+                value: box.element.value,
                 x: box.x,
                 y: box.y
               }
               boxBlueprints.push(data);
             }
             socket.emit('textboxSync', boxBlueprints);
+            console.log('textboxSync EMIT');
+            console.log(boxBlueprints);
 
             let spanBlueprints = [];
             for (let span of spans) {
@@ -119,6 +123,8 @@ function main() {
               spanBlueprints.push(data);
             }
             socket.emit('spanSync', spanBlueprints);
+            console.log('spanSync EMIT');
+            console.log(spanBlueprints);
           }
         });
       }); //span sync
