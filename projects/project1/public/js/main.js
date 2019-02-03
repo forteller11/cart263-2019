@@ -68,8 +68,9 @@ function main() {
             if (textboxInputData.id === textboxes[i].id){ //find the corresponding textbox
               textboxes[i].x = textboxInputData.x;
               textboxes[i].y = textboxInputData.y;
-              textboxes[i].element.value = textboxInputData.value;
+              // textboxes[i].element.value = textboxInputData.value;
               textboxes[i].handleKeyboardInputs(textboxInputData.keyCode);
+              //somehow add on last character
               textboxes[i].ajustWidth();
               break;
             }

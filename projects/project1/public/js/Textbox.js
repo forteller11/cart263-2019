@@ -52,7 +52,11 @@ class Textbox {
         amountToChangeY = lineSpace;
         const xx = (this.x - this.posOffset) + 2;
         const yy = this.y - this.height / 2 + .8;
-        let newSpan = new Span(this.element.value, xx, yy,);
+        console.log("this.element.value");
+        console.log(this.element.value);
+        let newSpan = new Span(this.element.value, xx, yy);
+        console.log("push new span");
+        console.log(newSpan);
         spans.push(newSpan);
         this.element.value = '';
         this.ajustWidth();
