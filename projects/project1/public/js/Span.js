@@ -1,6 +1,6 @@
 "use strict";
 class Span {
-  constructor(string, x, y) {
+  constructor(string, x, y,opacity=1) {
     //initialise element
     this.string = string;
     this.element = document.createElement("span");
@@ -14,7 +14,7 @@ class Span {
     this.element.style.letterSpacing = letterKerningSpace + "px";
     body[0].appendChild(this.element);
 
-    this.opacity = 1;
+    this.opacity = opacity;
     // this.opacityFade = randomRange(-0.0001,-0.00001);
     this.opacityFade = -0.00005;
 

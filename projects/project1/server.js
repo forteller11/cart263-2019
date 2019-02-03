@@ -17,33 +17,30 @@ let spanBlueprints = []; //value,x,y
 io.on('connection',function(socket){
   console.log('NEW CLIENT-SERVER CONNECTION');
   if (textboxBlueprints.length > 0){
-    socket.emit('requestWorldDaata',textboxBlueprints[0].id); //request the
-    socket.on('textboxDataSync',function(textboxDataSync){
-      for(let box of textboxDataSync){
-        box.id = textboxDataSync.textboxId;
-        box.value = textboxDataSync.textboxValue;
-        box.x = textboxDataSync.textboxX;
-        box.y = textboxDataSync.textboxY;
+    console.log('REQUESTING WORLD DATA...');
+    socket.emit('requestWorldData',textboxBlueprints[0].id); //request the
+    socket.on('textboxSync',function(textboxSyncData){
+      for(let box of textboxSyncData){
+        box.id = textboxSyncData.textboxId;
+        box.value = textboxSyncData.textboxValue;
+        box.x = textboxSyncData.textboxX;
+        box.y = textboxSyncData.textboxY;
       }
-      socket.emit('textboxDataSync',textboxBlueprints);
-      socket.on('spanDataSync',function(spanDataSync){
-        for(let span of spanBlueprints){
-          span.string = spanDataSync.textboxId;
-          span.x = spanDataSync.textboxX;
-          span.y = spanDataSync.textboxY;
+      socket.emit('textboxSync',textboxBlueprints);
+      socket.on('spanSync',function(spanSyncData){
+        for(let span of spanSyncData){
+          span.string = spanSyncData.textboxId;
+          span.x = spanSyncData.textboxX;
+          span.y = spanSyncData.textboxY;
         }
-        socket.emit('spanDataSync',spanBlueprints);
+        socket.emit('spanSync',spanBlueprints);
       });
     });
   } else { //if there are no clients, send data immediately without waiting for sync with client side
-    socket.emit('textboxDataSync',textboxBlueprints);
-    socket.emit('spanDataSync',spanBlueprints);
+    console.log('THERE ARE NO CLIENTS PREVIOUSLY JOINED');
+    socket.emit('textboxSync',textboxBlueprints);
+    socket.emit('spanSync',spanBlueprints);
   }
-  socket.emit('requestWorldData',textboxBlueprints[0].id); //request the
-  socket.emit('initialiseTextboxes', textboxBlueprints); //make sure all players know of the existence of the new player
-  console.log('initialise textboxes');
-  socket.emit('initialiseSpans', spanBlueprints); //make sure all players know of the existence of the new player
-  console.log('initialise spans');
 
   socket.on('newTextbox', function(newTextboxData){ //store data from new textbox and broadcast to all other clients
     console.log("NEW TEXTBOX:");
