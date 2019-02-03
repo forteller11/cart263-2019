@@ -71,6 +71,7 @@ function main() {
               textboxes[i].element.value = textboxInputData.value;
               textboxes[i].handleKeyboardInputs(textboxInputData.keyCode);
               textboxes[i].ajustWidth();
+              break;
             }
           }
         });
@@ -80,10 +81,21 @@ function main() {
             if (retargetingData.id === textboxes[i].id){ //find the corresponding textbox
               textboxes[i].targetX = retargetingData.targetX;
               textboxes[i].targetY = retargetingData.targetY;
+              break;
             }
           }
         });
+      });
 
+      socket.on('clientDisconnect',(disconnectData)=>{ //remove appropriate textbox from game on clientDisconnect
+        console.log("CLIENT DISCONNECTION");
+        for (let i = 0; i < textboxes.length; i ++){
+          if (disconnectData === textboxes[i].id){
+            textboxes[i].element.remove();
+            textboxes.splice(i,1);
+            break;
+          }
+        }
       });
     });
   });

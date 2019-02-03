@@ -37,6 +37,7 @@ io.on('connection',function(socket){
         textboxBlueprints[i].y = textboxInputData.y;
         textboxBlueprints[i].value = textboxInputData.value;
         socket.broadcast.emit('textboxInput',textboxInputData); //broadcast data to all clients (except the one that sent the signal)
+        break;
       }
     }
   });
@@ -47,7 +48,20 @@ io.on('connection',function(socket){
     for (let i = 0; i < textboxBlueprints.length; i ++){
       if (retargetingData.id === textboxBlueprints[i].id){ //find the corresponding textboxBlueprint
         socket.broadcast.emit('retargeting',retargetingData); //broadcast data to all clients (except the one that sent the signal)
+        break;
       }
     }
   });
+
+  socket.on('disconnect',function(){ //on client disconnection...
+    console.log("CLIENT DISCONNECTION:");
+    for (let i = 0; i < textboxBlueprints.length; i ++){
+      if (socket.id === textboxBlueprints[i].id){ //if this socket (which just triggered disconnect event = blueprint)
+        textboxBlueprints.splice(i,1); //remove it
+        break;
+      }
+    }
+    socket.broadcast.emit('clientDisconnect',socket.id);
+  });
+
 });
