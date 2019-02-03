@@ -22,91 +22,77 @@ function main() {
   socket = io.connect('http://localhost:3000');
 
   socket.on('connect', () => { //on connection w/server...
-      console.log('connected to server');
+    console.log('connected to server');
 
-      socket.on('textboxSync', (textboxSyncData) => { //wait for data in which to appropriately instatiate textbox objects
-        console.log('textboxSync');
-        if (!(textboxDataSync.length === 0)) { //if there is data....
-          for (let box of textboxDataSync) { //instatiate textboxes based on data from server
-            textboxes.push(new Textbox(box.id, box.value, box.x, box.y));
+    socket.on('textboxSync', (textboxSyncData) => { //wait for data in which to appropriately instatiate textbox objects
+      console.log('textboxSync');
+      if (!(textboxSyncData.length === 0)) { //if there is data....
+        for (let box of textboxDataSync) { //instatiate textboxes based on data from server
+          textboxes.push(new Textbox(box.id, box.value, box.x, box.y));
+        }
+      } else {
+        console.log('there are no textboxes');
+      }
+      //if no textboxes, init
+      //if no spans init
+      socket.on('spanSync', (spanSyncData) => { //wait for data in which to appropriately instantiate spans
+        console.log('intialisiing Spans');
+        if (!(spanSyncData.length === 0)) { //if there is data....
+          for (let span of spanSyncData) { //instatiate spans based on data from server
+            spans.push(new Span(span.string, span.x, span.y, span.opacity));
           }
         } else {
-          console.log('there are no textboxes');
+          console.log('there are no spans');
         }
-        //if no textboxes, init
-        //if no spans init
-        socket.on('spanSync', (spanSyncData) => { //wait for data in which to appropriately instantiate spans
-          console.log('intialisiing Spans');
-          if (!(spanSyncData.length === 0)) { //if there is data....
-            for (let span of spanSyncData) { //instatiate spans based on data from server
-              spans.push(new Span(span.string, span.x, span.y, span.opacity));
-            }
-          } else {
-            console.log('there are no spans');
-          }
-          console.log('create new avatar');
-          sessionID = socket.id; //unique identifier of this client-server connection (socket)
-          let newAvatar = new Avatar(sessionID);
-          let newAvatarData = { //create literal object to send to server
-            id: newAvatar.id,
-            value: newAvatar.element.value,
-            x: newAvatar.x,
-            y: newAvatar.y
-          }
-          socket.emit('newTextbox', newAvatarData);
-          textboxes.push(newAvatar);
-          camera = new Camera(newAvatar); //set camera to follow the most recently pushed player (the avatar)
-          update(); //update immediately
-          setInterval(update, updateTime); //set update to ~ 60 times a second
+        console.log('create new avatar');
+        sessionID = socket.id; //unique identifier of this client-server connection (socket)
+        let newAvatar = new Avatar(sessionID);
+        let newAvatarData = { //create literal object to send to server
+          id: newAvatar.id,
+          value: newAvatar.element.value,
+          x: newAvatar.x,
+          y: newAvatar.y
+        }
+        socket.emit('newTextbox', newAvatarData);
+        textboxes.push(newAvatar);
+        camera = new Camera(newAvatar); //set camera to follow the most recently pushed player (the avatar)
+        update(); //update immediately
+        setInterval(update, updateTime); //set update to ~ 60 times a second
 
-          socket.on('newTextbox', (newTextboxData) => {
-            console.log('newtextbox connected');
-            textboxes.push(new Textbox(newTextboxData.id, newTextboxData.value, newTextboxData.x, newTextboxData.y));
-          });
-
-          socket.on('newSpan', (newSpanBlueprintData) => {
-            console.log('newSpan BlueprintData');
-            console.log(newSpanBlueprintData);
-            spans.push(new Span(newSpanBlueprintData.string, newSpanBlueprintData.x, newSpanBlueprintData.y));
-          });
-
-
-          socket.on('textboxValueChange', (textboxValueChangeData) => { //receive input from other cleints
-            for (let i = 0; i < textboxes.length; i++) {
-              if (textboxValueChangeData.id === textboxes[i].id) { //find the corresponding textbox
-                textboxes[i].element.value = textboxValueChangeData.value;
-                textboxes[i].ajustWidth();
-                break;
-              }
-            }
-          });
-
-          socket.on('retargeting', (retargetingData) => { //receive retargets from other clients
-            for (let i = 0; i < textboxes.length; i++) {
-              if (retargetingData.id === textboxes[i].id) { //find the corresponding textbox
-                textboxes[i].x = retargetingData.x;
-                textboxes[i].y = retargetingData.y;
-                textboxes[i].targetX = retargetingData.targetX;
-                textboxes[i].targetY = retargetingData.targetY;
-                break;
-              }
-            }
-          });
+        socket.on('newTextbox', (newTextboxData) => {
+          console.log('newtextbox connected');
+          textboxes.push(new Textbox(newTextboxData.id, newTextboxData.value, newTextboxData.x, newTextboxData.y));
         });
 
-        socket.on('clientDisconnect', (disconnectData) => { //remove appropriate textbox from game on clientDisconnect
-          console.log("CLIENT DISCONNECTION");
+        socket.on('newSpan', (newSpanBlueprintData) => {
+          console.log('newSpan BlueprintData');
+          console.log(newSpanBlueprintData);
+          spans.push(new Span(newSpanBlueprintData.string, newSpanBlueprintData.x, newSpanBlueprintData.y));
+        });
+
+
+        socket.on('textboxValueChange', (textboxValueChangeData) => { //receive input from other cleints
           for (let i = 0; i < textboxes.length; i++) {
-            if (disconnectData === textboxes[i].id) {
-              textboxes[i].element.remove();
-              textboxes.splice(i, 1);
+            if (textboxValueChangeData.id === textboxes[i].id) { //find the corresponding textbox
+              textboxes[i].element.value = textboxValueChangeData.value;
+              textboxes[i].ajustWidth();
               break;
             }
           }
         });
-      });
 
-      socket.on('requestWorldData', (idData) => {
+        socket.on('retargeting', (retargetingData) => { //receive retargets from other clients
+          for (let i = 0; i < textboxes.length; i++) {
+            if (retargetingData.id === textboxes[i].id) { //find the corresponding textbox
+              textboxes[i].x = retargetingData.x;
+              textboxes[i].y = retargetingData.y;
+              textboxes[i].targetX = retargetingData.targetX;
+              textboxes[i].targetY = retargetingData.targetY;
+              break;
+            }
+          }
+        });
+        socket.on('requestWorldData', (idData) => {
           console.log('WORLD DATA REQUESTED');
           if (idData === sessionID) { //if first client and server requests world data, send it
             //construct blobs
@@ -133,13 +119,24 @@ function main() {
               spanBlueprints.push(data);
             }
             socket.emit('spanSync', spanBlueprints);
-          });
-        //init
-      });
-  });
-});
-//create textinput and child it to the body
-document.addEventListener("mousemove", trackMouseMovement);
+          }
+        });
+      }); //span sync
+    }); //textbox sync
+    socket.on('clientDisconnect', (disconnectData) => { //remove appropriate textbox from game on clientDisconnect
+      console.log("CLIENT DISCONNECTION");
+      for (let i = 0; i < textboxes.length; i++) {
+        if (disconnectData === textboxes[i].id) {
+          textboxes[i].element.remove();
+          textboxes.splice(i, 1);
+          break;
+        }
+      }
+    });
+  }); //connection
+
+  //create textinput and child it to the body
+  document.addEventListener("mousemove", trackMouseMovement);
 }
 
 

@@ -18,7 +18,7 @@ io.on('connection',function(socket){
   console.log('NEW CLIENT-SERVER CONNECTION');
   if (textboxBlueprints.length > 0){
     console.log('REQUESTING WORLD DATA...');
-    socket.emit('requestWorldData',textboxBlueprints[0].id); //request the
+    socket.broadcast.emit('requestWorldData',textboxBlueprints[0].id); //request the
     socket.on('textboxSync',function(textboxSyncData){
       for(let box of textboxSyncData){
         box.id = textboxSyncData.textboxId;
@@ -26,14 +26,14 @@ io.on('connection',function(socket){
         box.x = textboxSyncData.textboxX;
         box.y = textboxSyncData.textboxY;
       }
-      socket.emit('textboxSync',textboxBlueprints);
+      socket.broadcast.emit('textboxSync',textboxBlueprints);
       socket.on('spanSync',function(spanSyncData){
         for(let span of spanSyncData){
           span.string = spanSyncData.textboxId;
           span.x = spanSyncData.textboxX;
           span.y = spanSyncData.textboxY;
         }
-        socket.emit('spanSync',spanBlueprints);
+        socket.broadcast.emit('spanSync',spanBlueprints);
       });
     });
   } else { //if there are no clients, send data immediately without waiting for sync with client side
