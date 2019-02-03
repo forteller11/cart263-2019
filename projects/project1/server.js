@@ -16,6 +16,30 @@ let spanBlueprints = []; //value,x,y
 //on new connection, call a function with the socket being the unique connection between the server a client
 io.on('connection',function(socket){
   console.log('NEW CLIENT-SERVER CONNECTION');
+  if (textboxBlueprints.length > 0){
+    socket.emit('requestWorldDaata',textboxBlueprints[0].id); //request the
+    socket.on('textboxDataSync',function(textboxDataSync){
+      for(let box of textboxDataSync){
+        box.id = textboxDataSync.textboxId;
+        box.value = textboxDataSync.textboxValue;
+        box.x = textboxDataSync.textboxX;
+        box.y = textboxDataSync.textboxY;
+      }
+      socket.emit('textboxDataSync',textboxBlueprints);
+      socket.on('spanDataSync',function(spanDataSync){
+        for(let span of spanBlueprints){
+          span.string = spanDataSync.textboxId;
+          span.x = spanDataSync.textboxX;
+          span.y = spanDataSync.textboxY;
+        }
+        socket.emit('spanDataSync',spanBlueprints);
+      });
+    });
+  } else { //if there are no clients, send data immediately without waiting for sync with client side
+    socket.emit('textboxDataSync',textboxBlueprints);
+    socket.emit('spanDataSync',spanBlueprints);
+  }
+  socket.emit('requestWorldData',textboxBlueprints[0].id); //request the
   socket.emit('initialiseTextboxes', textboxBlueprints); //make sure all players know of the existence of the new player
   console.log('initialise textboxes');
   socket.emit('initialiseSpans', spanBlueprints); //make sure all players know of the existence of the new player

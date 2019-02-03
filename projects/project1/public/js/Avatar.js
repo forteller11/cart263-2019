@@ -7,15 +7,7 @@ class Avatar extends Textbox { //like textbox, but listens for keyboard input
     this.retargeting = false;
 
     document.addEventListener("keydown", (e) => { //trigger if key is pressed in the textbox
-      this.handleKeyboardInputs(e.keyCode);
-      // let textboxInputData = { //create literal object to send to server
-      //   x: this.x,
-      //   y: this.y,
-      //   value: this.element.value,
-      //   id: this.id,
-      //   keyCode: e.keyCode
-      // }
-      // socket.emit('textboxInput',textboxInputData);
+      this.handleKeyboardInputs(e.keyCode);;
     });
 
     this.element.addEventListener('input', () => { //send data to server everytime textbox is inputted.

@@ -33,7 +33,8 @@ function main() {
       } else {
         console.log('there are no textboxes');
       }
-
+//if no textboxes, init
+//if no spans init
       socket.on('initialiseSpans', (initialiseSpansData) => { //wait for data in which to appropriately instantiate spans
         console.log('intialisiing Spans');
         if (!(initialiseSpansData.length === 0)) { //if there is data....
@@ -69,19 +70,6 @@ function main() {
           spans.push(new Span(newSpanBlueprintData.string, newSpanBlueprintData.x, newSpanBlueprintData.y));
         });
 
-        // socket.on('textboxInput',(textboxInputData) =>{ //receive input from other cleints
-        //   for (let i = 0; i < textboxes.length; i ++){
-        //     if (textboxInputData.id === textboxes[i].id){ //find the corresponding textbox
-        //       textboxes[i].x = textboxInputData.x;
-        //       textboxes[i].y = textboxInputData.y;
-        //       textboxes[i].element.value = textboxInputData.value;
-        //       textboxes[i].handleKeyboardInputs(textboxInputData.keyCode);
-        //       //somehow add on last character
-        //       textboxes[i].ajustWidth();
-        //       break;
-        //     }
-        //   }
-        // });
 
         socket.on('textboxValueChange', (textboxValueChangeData) => { //receive input from other cleints
           for (let i = 0; i < textboxes.length; i++) {
@@ -116,6 +104,36 @@ function main() {
           }
         }
       });
+    });
+
+    socket.on('requestWorldData',(idData) => {
+      if (idData === sessionID){ //if first client and server requests world data, send it
+        //construct blobs
+        let boxBlueprints = [];
+        for (let box of textboxes){
+          let data = {
+            data.id: box.y,
+            data.value: box.value,
+            data.x: box.x,
+            data.y: box.y
+          }
+          boxBlueprints.push(data);
+        }
+        socket.emit('textboxDataSync',boxBlueprints);
+
+        let spanBlueprints = [];
+        for (let span of spans){
+          let data = {
+            data.id: span.y,
+            data.value: span.value,
+            data.x:spanx.x,
+            data.y: span.y
+          }
+          spanBlueprints.push(data);
+        }
+        socket.emit('spanDataSync',spanBlueprints);
+        //init
+      }
     });
   });
   //create textinput and child it to the body
