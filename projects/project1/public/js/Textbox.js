@@ -38,6 +38,8 @@ class Textbox {
   }
 
   handleKeyboardInputs(keyCode) {
+    console.log("id:"+this.id);
+    console.log("keyCOde:"+keyCode)
     let amountToChangeX; //how much to change targetX after method
     let amountToChangeY; //how much to change this.targetY after method
     switch (keyCode) { //calculate how to change target based on key codes

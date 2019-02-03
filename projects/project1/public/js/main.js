@@ -70,6 +70,7 @@ function main() {
               textboxes[i].y = textboxInputData.y;
               textboxes[i].element.value = textboxInputData.value;
               textboxes[i].handleKeyboardInputs(textboxInputData.keyCode);
+              textboxes[i].ajustWidth();
             }
           }
         });
