@@ -35,15 +35,13 @@ io.on('connection',function(socket){
     socket.broadcast.emit('newSpan',newSpanBlueprintData);
   });
 
-  socket.on('textboxInput',function(textboxInputData) { //receive input from client
-    console.log('textboxinput data');
-    console.log(textboxInputData);
+  socket.on('textboxValueChange',function(textboxValueChangeData) { //on value change from client
+    console.log('textboxValueChangeData');
+    console.log(textboxValueChangeData);
     for (let i = 0; i < textboxBlueprints.length; i ++){
-      if (textboxInputData.id === textboxBlueprints[i].id){ //find the corresponding textboxBlueprint
-        textboxBlueprints[i].x = textboxInputData.x; //update blueprints position
-        textboxBlueprints[i].y = textboxInputData.y;
-        textboxBlueprints[i].value = textboxInputData.value;
-        socket.broadcast.emit('textboxInput',textboxInputData); //broadcast data to all clients (except the one that sent the signal)
+      if (textboxValueChangeData.id === textboxBlueprints[i].id){ //find the corresponding textboxBlueprint
+        textboxBlueprints[i].value = textboxValueChangeData.value;
+        socket.broadcast.emit('textboxValueChange',textboxValueChangeData); //broadcast data to all clients (except the one that sent the signal)
         break;
       }
     }
@@ -54,6 +52,8 @@ io.on('connection',function(socket){
     console.log(retargetingData);
     for (let i = 0; i < textboxBlueprints.length; i ++){
       if (retargetingData.id === textboxBlueprints[i].id){ //find the corresponding textboxBlueprint
+        textboxBlueprints[i].x = retargetingData.x;
+        textboxBlueprints[i].y = retargetingData.y;
         socket.broadcast.emit('retargeting',retargetingData); //broadcast data to all clients (except the one that sent the signal)
         break;
       }

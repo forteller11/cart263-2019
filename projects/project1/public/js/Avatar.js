@@ -1,21 +1,25 @@
 "use strict";
 class Avatar extends Textbox { //like textbox, but listens for keyboard input
-  constructor(id=null, value='shout into the void', x = ran(window.innerWidth), y = ran(window.innerHeight)) {
-    super(id,value,x,y);
+  constructor(id = null, value = 'shout into the void', x = ran(window.innerWidth), y = ran(window.innerHeight)) {
+    super(id, value, x, y);
 
     this.mouseOverTextBox = false; //is mouse over text input element?
     this.retargeting = false;
 
     document.addEventListener("keydown", (e) => { //trigger if key is pressed in the textbox
       this.handleKeyboardInputs(e.keyCode);
-      let textboxInputData = { //create literal object to send to server
-        x: this.x,
-        y: this.y,
-        value: this.element.value,
-        id: this.id,
-        keyCode: e.keyCode
-      }
-      socket.emit('textboxInput',textboxInputData);
+      // let textboxInputData = { //create literal object to send to server
+      //   x: this.x,
+      //   y: this.y,
+      //   value: this.element.value,
+      //   id: this.id,
+      //   keyCode: e.keyCode
+      // }
+      // socket.emit('textboxInput',textboxInputData);
+    });
+
+    this.element.addEventListener('input', () => { //send data to server everytime textbox is inputted.
+      this.emitValueChange();
     });
 
     //hitbox handling
@@ -36,10 +40,21 @@ class Avatar extends Textbox { //like textbox, but listens for keyboard input
       this.element.focus(); //automatically select textbox (place cursor inside of it so user can type right away)
       this.retargeting = false; //stop targeting mouse position
     })
-
   }
-  handleKeyboardInputs(keyCode){
-    if (keyCode === 13){ //if enter is pressed spawn span
+
+  update() { //use x,y pos of element to style element (Using offsets to style it from center instead of top-left corner)
+    if (this.retargeting) { //if targeting the mouse, change target to equal the mouse position
+      this.emitRetargetingData();
+      this.targetX = mouseX + camera.x;
+      this.targetY = mouseY + camera.y;
+    }
+    super.update();
+  }
+
+  handleKeyboardInputs(keyCode) {
+    let targetXStore = this.targetX;
+    let targetYStore = this.targetY;
+    if (keyCode === 13) { //if enter is pressed spawn span
       const xx = (this.x - this.posOffset) + 2;
       const yy = this.y - this.height / 2 + .8;
       let newSpan = new Span(this.element.value, xx, yy);
@@ -53,27 +68,38 @@ class Avatar extends Textbox { //like textbox, but listens for keyboard input
       }
       console.log('spanblueprintdata');
       console.log(spanBlueprintData);
-      socket.emit('newSpan',spanBlueprintData);
+      socket.emit('newSpan', spanBlueprintData);
 
       this.element.value = '';
+      this.emitValueChange();
       this.ajustWidth();
     }
 
     super.handleKeyboardInputs(keyCode);
-  }
-  update() { //use x,y pos of element to style element (Using offsets to style it from center instead of top-left corner)
-    if (this.retargeting) { //if targeting the mouse, change target to equal the mouse position
-      let retargetingData = { //send data to server
-        id: this.id,
-        targetX: this.targetX,
-        targetY: this.targetY
-      }
-      socket.emit('retargeting',retargetingData);
 
-      this.targetX = mouseX + camera.x;
-      this.targetY = mouseY + camera.y;
+    //if any targets have changed due to this method
+    if ((!(this.targetX === targetXStore)) || (!(this.targetY === targetYStore))) {
+      this.emitRetargetingData();
     }
-    super.update();
   }
 
+  emitRetargetingData() {
+    let retargetingData = { //send data to server
+      id: this.id,
+      x: this.x,
+      y: this.y,
+      targetX: this.targetX,
+      targetY: this.targetY
+    }
+    socket.emit('retargeting', retargetingData);
+  }
+
+  emitValueChange(){
+    console.log("input EVENT");
+    let valueData = {
+      id: this.id,
+      value: this.element.value,
+    }
+    socket.emit('textboxValueChange', valueData);
+  }
 }

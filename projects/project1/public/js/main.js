@@ -69,23 +69,35 @@ function main() {
           spans.push(new Span(newSpanBlueprintData.string, newSpanBlueprintData.x, newSpanBlueprintData.y));
         });
 
-        socket.on('textboxInput',(textboxInputData) =>{ //receive input from other cleints
-          for (let i = 0; i < textboxes.length; i ++){
-            if (textboxInputData.id === textboxes[i].id){ //find the corresponding textbox
-              textboxes[i].x = textboxInputData.x;
-              textboxes[i].y = textboxInputData.y;
-              textboxes[i].element.value = textboxInputData.value;
-              textboxes[i].handleKeyboardInputs(textboxInputData.keyCode);
-              //somehow add on last character
+        // socket.on('textboxInput',(textboxInputData) =>{ //receive input from other cleints
+        //   for (let i = 0; i < textboxes.length; i ++){
+        //     if (textboxInputData.id === textboxes[i].id){ //find the corresponding textbox
+        //       textboxes[i].x = textboxInputData.x;
+        //       textboxes[i].y = textboxInputData.y;
+        //       textboxes[i].element.value = textboxInputData.value;
+        //       textboxes[i].handleKeyboardInputs(textboxInputData.keyCode);
+        //       //somehow add on last character
+        //       textboxes[i].ajustWidth();
+        //       break;
+        //     }
+        //   }
+        // });
+
+        socket.on('textboxValueChange', (textboxValueChangeData) => { //receive input from other cleints
+          for (let i = 0; i < textboxes.length; i++) {
+            if (textboxValueChangeData.id === textboxes[i].id) { //find the corresponding textbox
+              textboxes[i].element.value = textboxValueChangeData.value;
               textboxes[i].ajustWidth();
               break;
             }
           }
         });
 
-        socket.on('retargeting',(retargetingData) =>{ //receive retargets from other clients
-          for (let i = 0; i < textboxes.length; i ++){
-            if (retargetingData.id === textboxes[i].id){ //find the corresponding textbox
+        socket.on('retargeting', (retargetingData) => { //receive retargets from other clients
+          for (let i = 0; i < textboxes.length; i++) {
+            if (retargetingData.id === textboxes[i].id) { //find the corresponding textbox
+              textboxes[i].x = retargetingData.x;
+              textboxes[i].y = retargetingData.y;
               textboxes[i].targetX = retargetingData.targetX;
               textboxes[i].targetY = retargetingData.targetY;
               break;
@@ -94,12 +106,12 @@ function main() {
         });
       });
 
-      socket.on('clientDisconnect',(disconnectData)=>{ //remove appropriate textbox from game on clientDisconnect
+      socket.on('clientDisconnect', (disconnectData) => { //remove appropriate textbox from game on clientDisconnect
         console.log("CLIENT DISCONNECTION");
-        for (let i = 0; i < textboxes.length; i ++){
-          if (disconnectData === textboxes[i].id){
+        for (let i = 0; i < textboxes.length; i++) {
+          if (disconnectData === textboxes[i].id) {
             textboxes[i].element.remove();
-            textboxes.splice(i,1);
+            textboxes.splice(i, 1);
             break;
           }
         }
