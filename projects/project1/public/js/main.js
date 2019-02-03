@@ -15,6 +15,7 @@ const lineSpace = 32; //when users press enter how far the textbox travels verti
 const letterKerningSpace = 2; //space inbetween letters
 let body = document.getElementsByTagName("body");
 let firstTimeConnection = true;
+let initialisedWorld = false;
 
 
 
@@ -26,42 +27,62 @@ function main() {
 
     socket.on('textboxSync', (textboxSyncData) => { //wait for data in which to appropriately instatiate textbox objects
       console.log('receiving textbox sync data from server');
-      if ( (!(textboxSyncData.length === 0)) && (textboxes.length === 0)) { //if there is data, and this is first time initialising data
+      if ((!(textboxSyncData.length === 0)) && (textboxes.length === 0)) { //if there is data, and this is first time initialising data
         for (let box of textboxSyncData) { //instatiate textboxes based on data from server
           textboxes.push(new Textbox(box.id, box.value, box.x, box.y));
         }
       } else {
-        console.log('there are no textboxes');
+        console.log("don't initialise textboxes");
       }
-      //if no textboxes, init
-      //if no spans init
-      socket.on('spanSync', (spanSyncData) => { //wait for data in which to appropriately instantiate spans
-        if ((!(spanSyncData.length === 0) && (textboxes.length === 0))) { //if there is data....
-          console.log('pushing spans');
-          for (let span of spanSyncData) { //instatiate spans based on data from server
-            spans.push(new Span(span.string, span.x, span.y, span.opacity));
-          }
-        } else {
-          console.log('there are no spans');
+    }); //textbox sync
+    //if no textboxes, init
+    //if no spans init
+    socket.on('spanSync', (spanSyncData) => { //wait for data in which to appropriately instantiate spans
+      if ((!(spanSyncData.length === 0) && (textboxes.length === 0))) { //if there is data....
+        console.log('pushing spans');
+        for (let span of spanSyncData) { //instatiate spans based on data from server
+          spans.push(new Span(span.string, span.x, span.y, span.opacity));
         }
-        if (firstTimeConnection === true){ //after initalising data,
+      } else {
+        console.log("don't initialise spans");
+      }
+      if (initialisedWorld === false){
+        setup();
+      }
+    }); //span sync
 
-        console.log('create new avatar');
-        firstTimeConnection = false;
-        sessionID = socket.id; //unique identifier of this client-server connection (socket)
-        let newAvatar = new Avatar(sessionID);
-        let newAvatarData = { //create literal object to send to server
-          id: newAvatar.id,
-          value: newAvatar.element.value,
-          x: newAvatar.x,
-          y: newAvatar.y
+    socket.on('clientDisconnect', (disconnectData) => { //remove appropriate textbox from game on clientDisconnect
+      console.log("CLIENT DISCONNECTION");
+      for (let i = 0; i < textboxes.length; i++) {
+        if (disconnectData === textboxes[i].id) {
+          textboxes[i].element.remove();
+          textboxes.splice(i, 1);
+          break;
         }
-        socket.emit('newTextbox', newAvatarData);
-        textboxes.push(newAvatar);
-        camera = new Camera(newAvatar); //set camera to follow the most recently pushed player (the avatar)
-        update(); //update immediately
-        setInterval(update, updateTime); //set update to ~ 60 times a second
       }
+    });
+  }); //connection
+
+
+  function setup(){ //post initialisation
+    if (initialisedWorld === false){
+      initialisedWorld = true;
+          console.log('create new avatar');
+          sessionID = socket.id; //unique identifier of this client-server connection (socket)
+          let newAvatar = new Avatar(sessionID);
+          let newAvatarData = { //create literal object to send to server
+            id: newAvatar.id,
+            value: newAvatar.element.value,
+            x: newAvatar.x,
+            y: newAvatar.y
+          }
+          socket.emit('newTextbox', newAvatarData);
+          textboxes.push(newAvatar);
+          camera = new Camera(newAvatar); //set camera to follow the most recently pushed player (the avatar)
+          update(); //update immediately
+          setInterval(update, updateTime); //set update to ~ 60 times a second
+        }
+
         socket.on('newTextbox', (newTextboxData) => {
           console.log('newtextbox connected');
           textboxes.push(new Textbox(newTextboxData.id, newTextboxData.value, newTextboxData.x, newTextboxData.y));
@@ -130,22 +151,10 @@ function main() {
             console.log(spanBlueprints);
           }
         });
-      }); //span sync
-    }); //textbox sync
-    socket.on('clientDisconnect', (disconnectData) => { //remove appropriate textbox from game on clientDisconnect
-      console.log("CLIENT DISCONNECTION");
-      for (let i = 0; i < textboxes.length; i++) {
-        if (disconnectData === textboxes[i].id) {
-          textboxes[i].element.remove();
-          textboxes.splice(i, 1);
-          break;
-        }
-      }
-    });
-  }); //connection
 
   //create textinput and child it to the body
   document.addEventListener("mousemove", trackMouseMovement);
+  }
 }
 
 
