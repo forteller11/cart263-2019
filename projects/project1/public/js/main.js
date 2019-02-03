@@ -14,7 +14,7 @@ const charSize = 16; //fontSize
 const lineSpace = 32; //when users press enter how far the textbox travels vertically
 const letterKerningSpace = 2; //space inbetween letters
 let body = document.getElementsByTagName("body");
-
+let firstTimeConnection = true;
 
 
 
@@ -26,8 +26,8 @@ function main() {
 
     socket.on('textboxSync', (textboxSyncData) => { //wait for data in which to appropriately instatiate textbox objects
       console.log('receiving textbox sync data from server');
-      if (!(textboxSyncData.length === 0)) { //if there is data....
-        for (let box of textboxDataSync) { //instatiate textboxes based on data from server
+      if ( (!(textboxSyncData.length === 0)) && (textboxes.length === 0)) { //if there is data, and this is first time initialising data
+        for (let box of textboxSyncData) { //instatiate textboxes based on data from server
           textboxes.push(new Textbox(box.id, box.value, box.x, box.y));
         }
       } else {
@@ -36,15 +36,18 @@ function main() {
       //if no textboxes, init
       //if no spans init
       socket.on('spanSync', (spanSyncData) => { //wait for data in which to appropriately instantiate spans
-        console.log('intialisiing Spans');
-        if (!(spanSyncData.length === 0)) { //if there is data....
+        if ((!(spanSyncData.length === 0) && (textboxes.length === 0))) { //if there is data....
+          console.log('pushing spans');
           for (let span of spanSyncData) { //instatiate spans based on data from server
             spans.push(new Span(span.string, span.x, span.y, span.opacity));
           }
         } else {
           console.log('there are no spans');
         }
+        if (firstTimeConnection === true){ //after initalising data,
+
         console.log('create new avatar');
+        firstTimeConnection = false;
         sessionID = socket.id; //unique identifier of this client-server connection (socket)
         let newAvatar = new Avatar(sessionID);
         let newAvatarData = { //create literal object to send to server
@@ -58,7 +61,7 @@ function main() {
         camera = new Camera(newAvatar); //set camera to follow the most recently pushed player (the avatar)
         update(); //update immediately
         setInterval(update, updateTime); //set update to ~ 60 times a second
-
+      }
         socket.on('newTextbox', (newTextboxData) => {
           console.log('newtextbox connected');
           textboxes.push(new Textbox(newTextboxData.id, newTextboxData.value, newTextboxData.x, newTextboxData.y));
