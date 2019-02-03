@@ -28,6 +28,13 @@ io.on('connection',function(socket){
     socket.broadcast.emit('newTextbox',newTextboxData);
   });
 
+  socket.on('newSpan', function(newSpanBlueprintData){ //store data from new textbox and broadcast to all other clients
+    console.log("NEW SPAN:");
+    console.log(newSpanBlueprintData);
+    spanBlueprints.push(newSpanBlueprintData);
+    socket.broadcast.emit('newSpan',newSpanBlueprintData);
+  });
+
   socket.on('textboxInput',function(textboxInputData) { //receive input from client
     console.log('textboxinput data');
     console.log(textboxInputData);

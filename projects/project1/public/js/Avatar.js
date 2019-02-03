@@ -7,6 +7,7 @@ class Avatar extends Textbox { //like textbox, but listens for keyboard input
     this.retargeting = false;
 
     document.addEventListener("keydown", (e) => { //trigger if key is pressed in the textbox
+      this.handleKeyboardInputs(e.keyCode);
       let textboxInputData = { //create literal object to send to server
         x: this.x,
         y: this.y,
@@ -14,7 +15,6 @@ class Avatar extends Textbox { //like textbox, but listens for keyboard input
         id: this.id,
         keyCode: e.keyCode
       }
-      this.handleKeyboardInputs(e.keyCode);
       socket.emit('textboxInput',textboxInputData);
     });
 
@@ -38,7 +38,29 @@ class Avatar extends Textbox { //like textbox, but listens for keyboard input
     })
 
   }
+  handleKeyboardInputs(keyCode){
+    if (keyCode === 13){ //if enter is pressed spawn span
+      const xx = (this.x - this.posOffset) + 2;
+      const yy = this.y - this.height / 2 + .8;
+      let newSpan = new Span(this.element.value, xx, yy);
+      console.log(newSpan);
+      spans.push(newSpan);
 
+      let spanBlueprintData = {
+        string: newSpan.string,
+        x: newSpan.x,
+        y: newSpan.y
+      }
+      console.log('spanblueprintdata');
+      console.log(spanBlueprintData);
+      socket.emit('newSpan',spanBlueprintData);
+
+      this.element.value = '';
+      this.ajustWidth();
+    }
+
+    super.handleKeyboardInputs(keyCode);
+  }
   update() { //use x,y pos of element to style element (Using offsets to style it from center instead of top-left corner)
     if (this.retargeting) { //if targeting the mouse, change target to equal the mouse position
       let retargetingData = { //send data to server

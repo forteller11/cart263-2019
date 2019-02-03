@@ -50,16 +50,6 @@ class Textbox {
       case 13: //ENTER
         amountToChangeX = 0;
         amountToChangeY = lineSpace;
-        const xx = (this.x - this.posOffset) + 2;
-        const yy = this.y - this.height / 2 + .8;
-        console.log("this.element.value");
-        console.log(this.element.value);
-        let newSpan = new Span(this.element.value, xx, yy);
-        console.log("push new span");
-        console.log(newSpan);
-        spans.push(newSpan);
-        this.element.value = '';
-        this.ajustWidth();
         break;
       case 37: //left arrow key
         amountToChangeX = -charSize;
