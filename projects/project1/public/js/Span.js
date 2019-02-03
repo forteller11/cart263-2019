@@ -1,6 +1,6 @@
 "use strict";
-class String {
-  constructor(string, x, y, initialVelX, initialVelY) {
+class Span {
+  constructor(string, x, y) {
     //initialise element
     this.string = string;
     this.element = document.createElement("span");
@@ -20,9 +20,6 @@ class String {
 
     this.x = x;
     this.y = y;
-
-    this.element.style.left = (this.x - camera.x) + "px";
-    this.element.style.top = (this.y - camera.y) + "px";
   }
   update() {
     this.element.style.left = (this.x - camera.x) + "px";

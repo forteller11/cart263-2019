@@ -1,10 +1,11 @@
 "use strict";
 class Textbox {
-  constructor(value='i am a stranger',width = 32, height = 8, x = ran(window.innerWidth), y = ran(window.innerHeight)) {
-    this.minWidth = width;
+  constructor(id=null, value='i am a stranger', x = ran(window.innerWidth), y = ran(window.innerHeight)) {
+    this.id = id;
+    this.minWidth = 32;
     this.maxWidth = 200;
     this.currentWidth = this.minWidth;
-    this.height = height;
+    this.height = 16;
     //creating and initialising textbox
     this.element = document.createElement("INPUT");
     this.element.setAttribute("type", "text");
@@ -47,7 +48,7 @@ class Textbox {
         const yy = this.y - this.height / 2 + .8;
         const initialVelY = 0;
         const initialVelX = 0;
-        let newStringElement = new String(this.element.value, xx, yy, initialVelX, -initialVelY);
+        let newStringElement = new Span(this.element.value, xx, yy, initialVelX, -initialVelY);
         spans.push(newStringElement);
         this.element.value = '';
         this.ajustWidth();

@@ -1,7 +1,8 @@
 "use strict";
-class Avatar extends Textbox { //like textbox, but listens for keyboard input and is responsible for camera object
-  constructor(value='shout into the void',width = 32, height = 8, x = window.innerWidth / 2, y = window.innerHeight / 2) {
-    super(value,width,height,x,y);
+class Avatar extends Textbox { //like textbox, but listens for keyboard input
+  constructor(id=null, value='shout into the void', x = ran(window.innerWidth), y = ran(window.innerHeight)) {
+    super(id,value,x,y);
+
     this.mouseOverTextBox = false; //is mouse over text input element?
     this.retargeting = false;
 
