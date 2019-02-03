@@ -30,6 +30,10 @@ class Textbox {
     this.toTargetMaxMovespeed = 4.5 * updateTime / 16.7; //max movespeed in pixels to target per frame
     this.toTargetMoveVector = new Vector(0, 0);
 
+    this.element.addEventListener('input', (e) => { //if textbox.value changes, ajust width
+      console.log('inputs changed');
+      this.ajustWidth();
+    });
     this.ajustWidth();
   }
 
@@ -40,20 +44,16 @@ class Textbox {
       case 9: //tab
         amountToChangeX = charSize * 3;
         amountToChangeY = 0;
-        this.element.focus(); //refocus after pressing tab
-        this.element.select(); //refocus after pressing tab
         break;
       case 13: //ENTER
-        const xx = (this.x - this.posOffset) + 2;
-        const yy = this.y - this.height / 2 + .8;
-        const initialVelY = 0;
-        const initialVelX = 0;
-        let newStringElement = new Span(this.element.value, xx, yy, initialVelX, -initialVelY);
-        spans.push(newStringElement);
-        this.element.value = '';
-        this.ajustWidth();
         amountToChangeX = 0;
         amountToChangeY = lineSpace;
+        const xx = (this.x - this.posOffset) + 2;
+        const yy = this.y - this.height / 2 + .8;
+        let newSpan = new Span(this.element.value, xx, yy,);
+        spans.push(newSpan);
+        this.element.value = '';
+        this.ajustWidth();
         break;
       case 37: //left arrow key
         amountToChangeX = -charSize;

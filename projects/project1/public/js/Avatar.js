@@ -6,17 +6,16 @@ class Avatar extends Textbox { //like textbox, but listens for keyboard input
     this.mouseOverTextBox = false; //is mouse over text input element?
     this.retargeting = false;
 
-    this.mouseOverTextBox = false; //is mouse over text input element?
-    this.retargeting = false;
-
-    this.ajustWidth();
-
     document.addEventListener("keydown", (e) => { //trigger if key is pressed in the textbox
       this.handleKeyboardInputs(e.keyCode);
-    });
-
-    this.element.addEventListener('input', (e) => { //if textbox.value changes, ajust width
-      this.ajustWidth();
+      let textboxInputData = { //create literal object to send to server
+        x: this.x,
+        y: this.y,
+        value: this.element.value,
+        id: this.id,
+        keyCode: e.keyCode
+      }
+      socket.emit('textboxInput',textboxInputData);
     });
 
     //hitbox handling
@@ -42,6 +41,13 @@ class Avatar extends Textbox { //like textbox, but listens for keyboard input
 
   update() { //use x,y pos of element to style element (Using offsets to style it from center instead of top-left corner)
     if (this.retargeting) { //if targeting the mouse, change target to equal the mouse position
+      let retargetingData = { //send data to server
+        id: this.id,
+        targetX: this.targetX,
+        targetY: this.targetY
+      }
+      socket.emit('retargeting',retargetingData);
+
       this.targetX = mouseX + camera.x;
       this.targetY = mouseY + camera.y;
     }

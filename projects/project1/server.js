@@ -27,4 +27,27 @@ io.on('connection',function(socket){
     textboxBlueprints.push(newTextboxData);
     socket.broadcast.emit('newTextbox',newTextboxData);
   });
+
+  socket.on('textboxInput',function(textboxInputData) { //receive input from client
+    console.log('textboxinput data');
+    console.log(textboxInputData);
+    for (let i = 0; i < textboxBlueprints.length; i ++){
+      if (textboxInputData.id === textboxBlueprints[i].id){ //find the corresponding textboxBlueprint
+        textboxBlueprints[i].x = textboxInputData.x; //update blueprints position
+        textboxBlueprints[i].y = textboxInputData.y;
+        textboxBlueprints[i].value = textboxInputData.value;
+        socket.broadcast.emit('textboxInput',textboxInputData); //broadcast data to all clients (except the one that sent the signal)
+      }
+    }
+  });
+
+  socket.on('retargeting',function(retargetingData) { //receive input from client
+    console.log('retarget data');
+    console.log(retargetingData);
+    for (let i = 0; i < textboxBlueprints.length; i ++){
+      if (retargetingData.id === textboxBlueprints[i].id){ //find the corresponding textboxBlueprint
+        socket.broadcast.emit('retargeting',retargetingData); //broadcast data to all clients (except the one that sent the signal)
+      }
+    }
+  });
 });

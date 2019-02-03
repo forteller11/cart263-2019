@@ -48,7 +48,7 @@ function main() {
         let newAvatar = new Avatar(sessionID);
         let newAvatarData = { //create literal object to send to server
           id: newAvatar.id,
-          value: newAvatar.value,
+          value: newAvatar.element.value,
           x: newAvatar.x,
           y: newAvatar.y
         }
@@ -61,6 +61,26 @@ function main() {
         socket.on('newTextbox', (newTextboxData) => {
           console.log('newtextbox connected');
           textboxes.push(new Textbox(newTextboxData.id, newTextboxData.value, newTextboxData.x, newTextboxData.y));
+        });
+
+        socket.on('textboxInput',(textboxInputData) =>{ //receive input from other cleints
+          for (let i = 0; i < textboxes.length; i ++){
+            if (textboxInputData.id === textboxes[i].id){ //find the corresponding textbox
+              textboxes[i].x = textboxInputData.x;
+              textboxes[i].y = textboxInputData.y;
+              textboxes[i].element.value = textboxInputData.value;
+              textboxes[i].handleKeyboardInputs(textboxInputData.keyCode);
+            }
+          }
+        });
+
+        socket.on('retargeting',(retargetingData) =>{ //receive retargets from other clients
+          for (let i = 0; i < textboxes.length; i ++){
+            if (retargetingData.id === textboxes[i].id){ //find the corresponding textbox
+              textboxes[i].targetX = retargetingData.targetX;
+              textboxes[i].targetY = retargetingData.targetY;
+            }
+          }
         });
 
       });
