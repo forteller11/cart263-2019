@@ -7,6 +7,7 @@ class Draggable extends Image {
     this.dragging = false;
     this.deltaMouseX = null;
     this.deltaMouseY = null;
+    this.hovering = false;
     console.log(this.x);
     for (let element of this.elements) {
       element.style.display = "none";
@@ -17,6 +18,7 @@ class Draggable extends Image {
 
     this.container.addEventListener('mouseover', (e) => {
       console.log('hover');
+      this.hovering = true;
       if (this.dragging === false) { //dont overide dragg image
         for (let element of this.elements) {
           element.style.display = "none";
@@ -26,6 +28,7 @@ class Draggable extends Image {
     });
 
     this.container.addEventListener('mouseleave', (e) => { //mouse off
+      this.hovering = false;
       if (this.dragging === false) {
         console.log('mouseleave');
         for (let element of this.elements) {
