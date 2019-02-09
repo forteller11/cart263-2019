@@ -17,9 +17,8 @@ let body = document.getElementsByTagName("body");
 let firstTimeConnection = true;
 let initialisedWorld = false;
 
-
-
 function main() {
+  document.addEventListener("mousemove", trackMouseMovement);
   socket = io.connect('http://localhost:3000');
 
   socket.on('connect', () => { //on connection w/server...
@@ -29,7 +28,7 @@ function main() {
       console.log('receiving textbox sync data from server');
       if (initialisedWorld === false) { //if there is data, and this is first time initialising data
         for (let box of textboxSyncData) { //instatiate textboxes based on data from server
-          textboxes.push(new Textbox(box.id, box.value, box.x, box.y,box.targetX,box.targetY));
+          textboxes.push(new Textbox(box.id, box.value, box.x, box.y, box.targetX, box.targetY));
         }
       } else {
         console.log("don't initialise textboxes");
@@ -49,7 +48,7 @@ function main() {
       }
 
 
-      if (initialisedWorld === false){ //if first time connecting, execute setup function
+      if (initialisedWorld === false) { //if first time connecting, execute setup function
         setup();
       }
     }); //span sync
@@ -66,103 +65,103 @@ function main() {
     });
   }); //connection
 
-
-  function setup(){ //post initialisation
-    if (initialisedWorld === false){
-      initialisedWorld = true;
-          console.log('create new avatar');
-          sessionID = socket.id; //unique identifier of this client-server connection (socket)
-          console.log('sessionID:'+sessionID);
-          let newAvatar = new Avatar(sessionID);
-          let newAvatarData = { //create literal object to send to server
-            id: newAvatar.id,
-            value: newAvatar.element.value,
-            x: newAvatar.x,
-            y: newAvatar.y
-          }
-          socket.emit('newTextbox', newAvatarData);
-          textboxes.push(newAvatar);
-          camera = new Camera(newAvatar); //set camera to follow the most recently pushed player (the avatar)
-          update(); //update immediately
-          setInterval(update, updateTime); //set update to ~ 60 times a second
-        }
-
-        socket.on('newTextbox', (newTextboxData) => {
-          console.log('newtextbox connected');
-          textboxes.push(new Textbox(newTextboxData.id, newTextboxData.value, newTextboxData.x, newTextboxData.y));
-        });
-
-        socket.on('newSpan', (newSpanBlueprintData) => {
-          console.log('newSpan BlueprintData');
-          console.log(newSpanBlueprintData);
-          spans.push(new Span(newSpanBlueprintData.string, newSpanBlueprintData.x, newSpanBlueprintData.y));
-        });
+} //main
 
 
-        socket.on('textboxValueChange', (textboxValueChangeData) => { //receive input from other cleints
-          for (let i = 0; i < textboxes.length; i++) {
-            if (textboxValueChangeData.id === textboxes[i].id) { //find the corresponding textbox
-              textboxes[i].element.value = textboxValueChangeData.value;
-              textboxes[i].ajustWidth();
-              break;
-            }
-          }
-        });
 
-        socket.on('retargeting', (retargetingData) => { //receive retargets from other clients
-          for (let i = 0; i < textboxes.length; i++) {
-            if (retargetingData.id === textboxes[i].id) { //find the corresponding textbox
-              textboxes[i].x = retargetingData.x;
-              textboxes[i].y = retargetingData.y;
-              textboxes[i].targetX = retargetingData.targetX;
-              textboxes[i].targetY = retargetingData.targetY;
-              break;
-            }
-          }
-        });
-        socket.on('requestWorldData', (idData) => {
-          console.log('WORLD DATA REQUESTED');
-          console.log(idData+"==="+sessionID);
-          if (idData === sessionID) { //if first client and server requests world data, send it
-            //construct blobs
-            let boxBlueprints = [];
-            console.log('textboxes:');
-            console.log(textboxes);
-            for (let box of textboxes) {
-              let data = {
-                id: box.y,
-                value: box.element.value,
-                x: box.x,
-                y: box.y,
-                targetX: box.targetX,
-                targetY: box.targetY
-              }
-              boxBlueprints.push(data);
-            }
-            socket.emit('textboxSync', boxBlueprints);
-            console.log('textboxSync EMIT');
-            console.log(boxBlueprints);
-
-            let spanBlueprints = [];
-            for (let span of spans) {
-              let data = {
-                string: span.string,
-                opacity: span.opacity,
-                x: span.x,
-                y: span.y
-              }
-              spanBlueprints.push(data);
-            }
-            socket.emit('spanSync',spanBlueprints);
-            console.log('spanSync EMIT');
-            console.log(spanBlueprints);
-          }
-        });
-
-  //create textinput and child it to the body
-  document.addEventListener("mousemove", trackMouseMovement);
+function setup() { //post initialisation
+  if (initialisedWorld === false) {
+    initialisedWorld = true;
+    console.log('create new avatar');
+    sessionID = socket.id; //unique identifier of this client-server connection (socket)
+    console.log('sessionID:' + sessionID);
+    let newAvatar = new Avatar(sessionID);
+    let newAvatarData = { //create literal object to send to server
+      id: newAvatar.id,
+      value: newAvatar.element.value,
+      x: newAvatar.x,
+      y: newAvatar.y
+    }
+    socket.emit('newTextbox', newAvatarData);
+    textboxes.push(newAvatar);
+    camera = new Camera(newAvatar); //set camera to follow the most recently pushed player (the avatar)
+    update(); //update immediately
+    setInterval(update, updateTime); //set update to ~ 60 times a second
   }
-}
+
+  socket.on('newTextbox', (newTextboxData) => {
+    console.log('newtextbox connected');
+    textboxes.push(new Textbox(newTextboxData.id, newTextboxData.value, newTextboxData.x, newTextboxData.y));
+  });
+
+  socket.on('newSpan', (newSpanBlueprintData) => {
+    console.log('newSpan BlueprintData');
+    console.log(newSpanBlueprintData);
+    spans.push(new Span(newSpanBlueprintData.string, newSpanBlueprintData.x, newSpanBlueprintData.y));
+  });
+
+
+  socket.on('textboxValueChange', (textboxValueChangeData) => { //receive input from other cleints
+    for (let i = 0; i < textboxes.length; i++) {
+      if (textboxValueChangeData.id === textboxes[i].id) { //find the corresponding textbox
+        textboxes[i].element.value = textboxValueChangeData.value;
+        textboxes[i].ajustWidth();
+        break;
+      }
+    }
+  });
+
+  socket.on('retargeting', (retargetingData) => { //receive retargets from other clients
+    for (let i = 0; i < textboxes.length; i++) {
+      if (retargetingData.id === textboxes[i].id) { //find the corresponding textbox
+        textboxes[i].x = retargetingData.x;
+        textboxes[i].y = retargetingData.y;
+        textboxes[i].targetX = retargetingData.targetX;
+        textboxes[i].targetY = retargetingData.targetY;
+        break;
+      }
+    }
+  });
+  socket.on('requestWorldData', (idData) => {
+    console.log('WORLD DATA REQUESTED');
+    console.log(idData + "===" + sessionID);
+    if (idData === sessionID) { //if first client and server requests world data, send it
+      //construct blobs
+      let boxBlueprints = [];
+      console.log('textboxes:');
+      console.log(textboxes);
+      for (let box of textboxes) {
+        let data = {
+          id: box.y,
+          value: box.element.value,
+          x: box.x,
+          y: box.y,
+          targetX: box.targetX,
+          targetY: box.targetY
+        }
+        boxBlueprints.push(data);
+      }
+      socket.emit('textboxSync', boxBlueprints);
+      console.log('textboxSync EMIT');
+      console.log(boxBlueprints);
+
+      let spanBlueprints = [];
+      for (let span of spans) {
+        let data = {
+          string: span.string,
+          opacity: span.opacity,
+          x: span.x,
+          y: span.y
+        }
+        spanBlueprints.push(data);
+      }
+      socket.emit('spanSync', spanBlueprints);
+      console.log('spanSync EMIT');
+      console.log(spanBlueprints);
+    }
+  }); //request world data
+} //setup
+
 
 
 function update() {

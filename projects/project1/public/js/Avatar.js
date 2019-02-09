@@ -1,3 +1,10 @@
+/*
+the avatar class represents the players avatar and has the same functionality as
+the textbox except its movements are not controlled by the server but rather by
+inputs from the player. Therefore the Avatar mainly just adds event listeners to
+the textbox class which affect the textbox and also transmit that data to other clients
+
+*/
 "use strict";
 class Avatar extends Textbox { //like textbox, but listens for keyboard input
   constructor(id = null, value = 'shout into the void', x = ran(window.innerWidth), y = ran(window.innerHeight)) {

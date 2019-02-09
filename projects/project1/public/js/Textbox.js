@@ -1,3 +1,8 @@
+/*
+this is the textbox class which handles the creation of the html input element,
+and it's position and size on the page.
+instances of the textbox represent other clients on the server.
+*/
 "use strict";
 class Textbox {
   constructor(id=null, value='i am a stranger', x = ran(window.innerWidth), y = ran(window.innerHeight),targX=null,targY=null) {
