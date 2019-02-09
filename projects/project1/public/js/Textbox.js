@@ -5,7 +5,13 @@ instances of the textbox represent other clients on the server.
 */
 "use strict";
 class Textbox {
-  constructor(id=null, value='i am a stranger', x = ran(window.innerWidth), y = ran(window.innerHeight),targX=null,targY=null) {
+  constructor(id = null,
+  value = 'shout into the void',
+  x = ran(window.innerWidth/2)+window.innerWidth/4,
+  y = ran(window.innerheight/2)+window.innerHeight/4,
+  targX=null,
+  targY=null) {
+    
     this.id = id;
     this.minWidth = 32;
     this.maxWidth = 200;

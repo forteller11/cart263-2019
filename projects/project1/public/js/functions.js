@@ -15,15 +15,6 @@ function constrain(varr, min, max) { //same functionality as p5's constrain();
   return varrConstrained;
 }
 
-function checkPointWithRectangleOverlap(pointX, pointY, rectX, rectY, rectWidth, rectHeight) {
-  if ((pointX >= rectX - rectWidth / 2) && ((pointX <= rectX + rectWidth / 2))) { //horz collision?
-    if ((pointY >= rectY - rectHeight / 2) && ((pointY <= rectY + rectHeight / 2))) { //horz collision?
-      return true;
-    }
-  }
-  return false;
-}
-
 function ran(value1, value2) { //acts like p5's random function
   switch (arguments.length) {
     case 0: //random 0-1
@@ -40,13 +31,23 @@ function ran(value1, value2) { //acts like p5's random function
   }
 }
 
-function distFromDelta(xComponent,yComponent){
+function min(){ //returns smallest argument
+  let currentMin = Infinity;
+  for (let i = 0; i < arguments.length; i++){
+    if (arguments[i] < currentMin){
+      currentMin = arguments[i];
+    }
+  }
+  return currentMin;
+}
+
+function distFromDelta(xComponent,yComponent){ //pythag theroum
   return Math.sqrt((xComponent*xComponent)+(yComponent*yComponent))
 }
 
 function linearInterpolate(value1,value2,lerpAmount){
   const valueDelta = value1 - value2; //find difference between values
-  const lerpAdd = lerpAmount * valueDelta
-  const lerpResult = lerpAdd + value2;
+  const lerpAdd = lerpAmount * valueDelta; //find percentage of delta which user wants to lerp by
+  const lerpResult = lerpAdd + value2; //add constant
   return lerpResult;
 }

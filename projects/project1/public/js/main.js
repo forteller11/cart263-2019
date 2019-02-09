@@ -1,5 +1,5 @@
 "use strict";
-window.onload = main;
+window.onload = initialiseScene;
 let textboxes = [];
 let spans = [];
 let camera;
@@ -17,7 +17,7 @@ let body = document.getElementsByTagName("body");
 let firstTimeConnection = true;
 let initialisedWorld = false;
 
-function main() {
+function initialiseScene() {
   document.addEventListener("mousemove", trackMouseMovement);
   socket = io.connect('http://localhost:3000');
 
@@ -49,7 +49,7 @@ function main() {
 
 
       if (initialisedWorld === false) { //if first time connecting, execute setup function
-        setup();
+        main();
       }
     }); //span sync
 
@@ -65,11 +65,11 @@ function main() {
     });
   }); //connection
 
-} //main
+} //initialiseScene
 
 
 
-function setup() { //post initialisation
+function main() { //post initialisation begin listening to server for data
   if (initialisedWorld === false) {
     initialisedWorld = true;
     console.log('create new avatar');
@@ -160,7 +160,7 @@ function setup() { //post initialisation
       console.log(spanBlueprints);
     }
   }); //request world data
-} //setup
+} //main
 
 
 

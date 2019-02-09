@@ -7,8 +7,14 @@ the textbox class which affect the textbox and also transmit that data to other 
 */
 "use strict";
 class Avatar extends Textbox { //like textbox, but listens for keyboard input
-  constructor(id = null, value = 'shout into the void', x = ran(window.innerWidth), y = ran(window.innerHeight)) {
-    super(id, value, x, y);
+  constructor(id = null,
+  value = 'shout into the void',
+  x = ran(window.innerWidth/2)+window.innerWidth/4,
+  y = ran(window.innerHeight/2)+window.innerHeight/4,
+  targX=null,
+  targY=null) {
+
+    super(id, value, x, y, targX, targY);
 
     this.mouseOverTextBox = false; //is mouse over text input element?
     this.retargeting = false;
