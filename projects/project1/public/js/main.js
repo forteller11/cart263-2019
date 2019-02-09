@@ -27,9 +27,9 @@ function main() {
 
     socket.on('textboxSync', (textboxSyncData) => { //wait for data in which to appropriately instatiate textbox objects
       console.log('receiving textbox sync data from server');
-      if ((!(textboxSyncData.length === 0)) && (textboxes.length === 0)) { //if there is data, and this is first time initialising data
+      if (initialisedWorld === false) { //if there is data, and this is first time initialising data
         for (let box of textboxSyncData) { //instatiate textboxes based on data from server
-          textboxes.push(new Textbox(box.id, box.value, box.x, box.y));
+          textboxes.push(new Textbox(box.id, box.value, box.x, box.y,box.targetX,box.targetY));
         }
       } else {
         console.log("don't initialise textboxes");
@@ -38,7 +38,8 @@ function main() {
     //if no textboxes, init
     //if no spans init
     socket.on('spanSync', (spanSyncData) => { //wait for data in which to appropriately instantiate spans
-      if ((!(spanSyncData.length === 0) && (textboxes.length === 0))) { //if there is data....
+      console.log('ah');
+      if (initialisedWorld === false) { //if there is data....
         console.log('pushing spans');
         for (let span of spanSyncData) { //instatiate spans based on data from server
           spans.push(new Span(span.string, span.x, span.y, span.opacity));
@@ -46,7 +47,9 @@ function main() {
       } else {
         console.log("don't initialise spans");
       }
-      if (initialisedWorld === false){
+
+
+      if (initialisedWorld === false){ //if first time connecting, execute setup function
         setup();
       }
     }); //span sync
@@ -128,7 +131,9 @@ function main() {
                 id: box.y,
                 value: box.element.value,
                 x: box.x,
-                y: box.y
+                y: box.y,
+                targetX: box.targetX,
+                targetY: box.targetY
               }
               boxBlueprints.push(data);
             }
@@ -146,7 +151,7 @@ function main() {
               }
               spanBlueprints.push(data);
             }
-            socket.emit('spanSync', spanBlueprints);
+            socket.emit('spanSync',spanBlueprints);
             console.log('spanSync EMIT');
             console.log(spanBlueprints);
           }

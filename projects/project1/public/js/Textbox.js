@@ -1,6 +1,6 @@
 "use strict";
 class Textbox {
-  constructor(id=null, value='i am a stranger', x = ran(window.innerWidth), y = ran(window.innerHeight)) {
+  constructor(id=null, value='i am a stranger', x = ran(window.innerWidth), y = ran(window.innerHeight),targX=null,targY=null) {
     this.id = id;
     this.minWidth = 32;
     this.maxWidth = 200;
@@ -22,8 +22,8 @@ class Textbox {
     this.x = x; //reffering to left of textbox + this.posOffset
     this.y = y; // reffering the vertical center of the textbox
 
-    this.targetX = null;
-    this.targetY = null;
+    this.targetX = targX;
+    this.targetY = targY;
 
     this.posOffset = charSize / 8; // so that when repositioning the textbox the mouse is still within it
     this.toTargetMovespeed = .085 * updateTime / 16.7; //max percentage to transport to target per frame
