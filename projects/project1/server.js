@@ -28,27 +28,14 @@ io.on('connection', function(socket) {
     socket.emit('spanSync', spanBlueprints);
   }
 
-  socket.on('textboxSync', function(textboxSyncData) {
+  socket.on('textboxSync', function(textboxSyncData) { //route data containing all textboxes to clients
       console.log("TEXTBOXSYNC");
-      console.log(textboxSyncData);
-      // for (let i = 0; i < textboxSyncData.length; i ++) {
-      //
-      //   box.id = textboxSyncData.textboxId;
-      //   box.value = textboxSyncData.textboxValue;
-      //   box.x = textboxSyncData.textboxX;
-      //   box.y = textboxSyncData.textboxY;
-      // }
       socket.broadcast.emit('textboxSync', textboxSyncData);
   });
 
-  socket.on('spanSync', function(spanSyncData) {
+  socket.on('spanSync', function(spanSyncData) { //route data containing all spans in scene to clients
     console.log("SPAN SYNC");
-    for (let span of spanSyncData) {
-      span.string = spanSyncData.textboxId;
-      span.x = spanSyncData.textboxX;
-      span.y = spanSyncData.textboxY;
-    }
-    socket.broadcast.emit('spanSync', spanBlueprints);
+    socket.broadcast.emit('spanSync', spanSyncData);
   });
   socket.on('newTextbox', function(newTextboxData) { //on the creation of a new text input
     console.log("NEW TEXTBOX:");
@@ -68,25 +55,12 @@ io.on('connection', function(socket) {
     console.log('textboxValueChangeData');
     console.log(textboxValueChangeData);
     socket.broadcast.emit('textboxValueChange', textboxValueChangeData); //broadcast new value to all other clients
-    for (let i = 0; i < textboxBlueprints.length; i++) { //find the corresponding textinput in the serverside array
-      if (textboxValueChangeData.id === textboxBlueprints[i].id) {
-        textboxBlueprints[i].value = textboxValueChangeData.value; //sync up the values
-        break;
-      }
-    }
   });
 
   socket.on('retargeting', function(retargetingData) { //if a textbox changes its target (on mouseclick/drag or on arrowkeys/enter)
     console.log('retarget data');
     console.log(retargetingData);
       socket.broadcast.emit('retargeting', retargetingData); //broadcast new target o all other clients
-    for (let i = 0; i < textboxBlueprints.length; i++) { //sync up serverside data with corresponding client
-      if (retargetingData.id === textboxBlueprints[i].id) {
-        textboxBlueprints[i].x = retargetingData.x;
-        textboxBlueprints[i].y = retargetingData.y;
-        break;
-      }
-    }
   });
 
   socket.on('disconnect', function() { //on client disconnection...

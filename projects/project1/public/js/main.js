@@ -72,6 +72,7 @@ function main() {
       initialisedWorld = true;
           console.log('create new avatar');
           sessionID = socket.id; //unique identifier of this client-server connection (socket)
+          console.log('sessionID:'+sessionID);
           let newAvatar = new Avatar(sessionID);
           let newAvatarData = { //create literal object to send to server
             id: newAvatar.id,
@@ -121,6 +122,7 @@ function main() {
         });
         socket.on('requestWorldData', (idData) => {
           console.log('WORLD DATA REQUESTED');
+          console.log(idData+"==="+sessionID);
           if (idData === sessionID) { //if first client and server requests world data, send it
             //construct blobs
             let boxBlueprints = [];
