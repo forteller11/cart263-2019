@@ -104,7 +104,6 @@ function main() { //post initialisation begin listening to server for data
     for (let i = 0; i < textboxes.length; i++) {
       if (textboxValueChangeData.id === textboxes[i].id) { //find the corresponding textbox in personal array which the value change correspond to
         textboxes[i].element.value = textboxValueChangeData.value; //change the value
-        textboxes[i].ajustWidth();
         break;
       }
     }

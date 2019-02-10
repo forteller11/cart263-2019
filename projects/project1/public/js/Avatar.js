@@ -1,12 +1,20 @@
 /*
 the avatar class represents the players avatar and has the same functionality as
 the textbox except its movements are not controlled by the server but rather by
-inputs from the player. Therefore the Avatar mainly just adds event listeners to
-the textbox class which affect the textbox and also transmit that data to other clients
+inputs from the player/browser/client directly.
+Therefore functionally the Avatar extends the textbox class mainly just through
+adding event listeners for keyboard and mouse inputs, which also then send this
+data to other clients through the server.
 
+what is crucial here is that the avatar immediately responds to a users actions
+and DOESN'T have to wait for the server to confirm its inputs, because users don't
+physically interact (no hitboxes) this immediacy poses no problems of contradictory
+sims happening on two seperate clients (for instance one client thinks it ran into another,
+but the other client does not agree) and it means that there will be no lag felt
+by the users.
 */
 "use strict";
-class Avatar extends Textbox { //like textbox, but listens for keyboard input
+class Avatar extends Textbox {
   constructor(id = null,
   value = 'shout into the void',
   x = ran(window.innerWidth/2)+window.innerWidth/4,
@@ -57,9 +65,12 @@ class Avatar extends Textbox { //like textbox, but listens for keyboard input
   }
 
   handleKeyboardInputs(keyCode) {
+    //extends this method by adding a response if enter is pressed,
+    //also now the method emits any targets that have been changed as a result of execution
+
     let targetXStore = this.targetX;
     let targetYStore = this.targetY;
-    if (keyCode === 13) { //if enter is pressed spawn span
+    if (keyCode === 13) { //if enter is pressed spawn a new span
       const xx = (this.x - this.posOffset) + 2;
       const yy = this.y - this.height / 2 + .8;
       let newSpan = new Span(this.element.value, xx, yy);
@@ -73,10 +84,10 @@ class Avatar extends Textbox { //like textbox, but listens for keyboard input
       }
       console.log('spanblueprintdata');
       console.log(spanBlueprintData);
-      socket.emit('newSpan', spanBlueprintData);
+      socket.emit('newSpan', spanBlueprintData); //send this newspan to all other clients
 
-      this.element.value = '';
-      this.emitValueChange();
+      this.element.value = ''; //remove all text (value) from textinput
+      this.emitValueChange(); //send this value change (as the input event has not been triggered)
       this.ajustWidth();
     }
 
@@ -88,8 +99,8 @@ class Avatar extends Textbox { //like textbox, but listens for keyboard input
     }
   }
 
-  emitRetargetingData() {
-    let retargetingData = { //send data to server
+  emitRetargetingData() { //send retargeting data to server
+    let retargetingData = {
       id: this.id,
       x: this.x,
       y: this.y,
@@ -99,7 +110,7 @@ class Avatar extends Textbox { //like textbox, but listens for keyboard input
     socket.emit('retargeting', retargetingData);
   }
 
-  emitValueChange(){
+  emitValueChange(){ //send value change data to server
     console.log("input EVENT");
     let valueData = {
       id: this.id,
