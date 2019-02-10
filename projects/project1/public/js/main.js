@@ -87,23 +87,23 @@ function main() { //post initialisation begin listening to server for data
   }
 
 
-  socket.on('newTextbox', (newTextboxData) => {
+  socket.on('newTextbox', (newTextboxData) => { //if cleint receives data that a newtextbox has been created, create one using the data
     console.log('newtextbox connected');
     textboxes.push(new Textbox(newTextboxData.id, newTextboxData.value, newTextboxData.x, newTextboxData.y));
   });
 
 
-  socket.on('newSpan', (newSpanBlueprintData) => {
+  socket.on('newSpan', (newSpanBlueprintData) => { //if client receives data that a newSpan has been created, create one using data
     console.log('newSpan BlueprintData');
     console.log(newSpanBlueprintData);
     spans.push(new Span(newSpanBlueprintData.string, newSpanBlueprintData.x, newSpanBlueprintData.y));
   });
 
 
-  socket.on('textboxValueChange', (textboxValueChangeData) => { //receive input from other cleints
+  socket.on('textboxValueChange', (textboxValueChangeData) => { //if another client's avatar's textinput has changed its value
     for (let i = 0; i < textboxes.length; i++) {
-      if (textboxValueChangeData.id === textboxes[i].id) { //find the corresponding textbox
-        textboxes[i].element.value = textboxValueChangeData.value;
+      if (textboxValueChangeData.id === textboxes[i].id) { //find the corresponding textbox in personal array which the value change correspond to
+        textboxes[i].element.value = textboxValueChangeData.value; //change the value
         textboxes[i].ajustWidth();
         break;
       }
@@ -111,9 +111,9 @@ function main() { //post initialisation begin listening to server for data
   });
 
 
-  socket.on('retargeting', (retargetingData) => { //receive retargets from other clients
+  socket.on('retargeting', (retargetingData) => { //receive retargets from another client
     for (let i = 0; i < textboxes.length; i++) {
-      if (retargetingData.id === textboxes[i].id) { //find the corresponding textbox
+      if (retargetingData.id === textboxes[i].id) { //find the corresponding textbox which the retarget belongs to
         textboxes[i].x = retargetingData.x;
         textboxes[i].y = retargetingData.y;
         textboxes[i].targetX = retargetingData.targetX;
@@ -124,15 +124,15 @@ function main() { //post initialisation begin listening to server for data
   });
 
 
-  socket.on('requestWorldData', (idData) => {
+  socket.on('requestWorldData', (idData) => { //if a new client jions and the server requests world data
     console.log('WORLD DATA REQUESTED');
     console.log(idData + "===" + sessionID);
-    if (idData === sessionID) { //if first client and server requests world data, send it
-      //construct blobs
+    if (idData === sessionID) { //if this is the oldest client currently joined
+      //construct blobs which can act as blueprints to reconstruct all data in the scene
       let boxBlueprints = [];
       console.log('textboxes:');
       console.log(textboxes);
-      for (let box of textboxes) {
+      for (let box of textboxes) { //cycle through textboxes in scene
         let data = {
           id: box.id,
           value: box.element.value,
@@ -141,23 +141,23 @@ function main() { //post initialisation begin listening to server for data
           targetX: box.targetX,
           targetY: box.targetY
         }
-        boxBlueprints.push(data);
+        boxBlueprints.push(data); //push textbox blueprints to one array
       }
       socket.emit('textboxSync', boxBlueprints);
       console.log('textboxSync EMIT');
-      console.log(boxBlueprints);
+      console.log(boxBlueprints); //send this array of textbox blueprints to server
 
       let spanBlueprints = [];
-      for (let span of spans) {
-        let data = {
+      for (let span of spans) { //for every span in the scene
+        let data = { //construct a blueprint
           string: span.string,
           opacity: span.opacity,
           x: span.x,
           y: span.y
         }
-        spanBlueprints.push(data);
+        spanBlueprints.push(data); //push all span bluepritns to one array
       }
-      socket.emit('spanSync', spanBlueprints);
+      socket.emit('spanSync', spanBlueprints); //send array to server
       console.log('spanSync EMIT');
       console.log(spanBlueprints);
     }
@@ -170,10 +170,10 @@ function main() { //post initialisation begin listening to server for data
     for (let i = 0; i < textboxes.length; i++) { //cycle through textboxes
       console.log("for:"+i);
       console.log(disconnectData + '===' + textboxes[i].id);
-      if (disconnectData === textboxes[i].id) { //until
+      if (disconnectData === textboxes[i].id) { //find corresponding textbox
         console.log("SPLICE DISCONNECTED CLIENT"+textboxes[i]);
-        textboxes[i].element.remove();
-        textboxes.splice(i, 1);
+        textboxes[i].element.remove(); //remove html input element
+        textboxes.splice(i, 1); //remove from js array
         break;
       }
     }
@@ -185,15 +185,16 @@ function main() { //post initialisation begin listening to server for data
 
 function update() {
   for (let box of textboxes) { //update all textboxes
-    box.update();
+    box.update(); //use data from event handlers, server and camera to restyle html input appropriately
   }
 
   for (let i = 0; i < spans.length; i++) { //update spans
     spans[i].update();
-    if (spans[i].opacity <= 0) {
-      spans[i].delete();
-      spans.splice(1, i);
+    if (spans[i].opacity <= 0) { //if opacity is below 0
+      spans[i].element.remove(); //remove html span element
+      spans.splice(1, i); //remove from js array
     }
   }
-  camera.update();
+
+  camera.update(); //move camera towards player
 }

@@ -26,7 +26,7 @@ function ran(value1, value2) { //acts like p5's random function
       const range = delta * Math.random();
       return range + min(value1, value2);
     default:
-      console.log("ERROR: wrong number of arguments!");
+      console.log("ERROR: Too many arguments!");
       return;
   }
 }

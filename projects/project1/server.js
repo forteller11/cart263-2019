@@ -20,10 +20,23 @@ let spanBlueprints = []; //value,x,y
 io.on('connection', function(socket) {
   console.log('NEW CLIENT-SERVER CONNECTION');
 
+
+/*
+if a new client joins the server, the server asks the oldest client to send it all
+its world data as a sort of ground truth (in this case it's ok that a client acts as
+a ground truth because security is not an issue and I wanted to take off as much load
+from the server side as possible, the server then updates its own internal arrays
+representing a blueprint for the spans and textboxes and sends it to the newly connected
+client so it can sync up with the sort of ground truth. This requesting of world data is necessary
+because the server isn't constantly updating its arrays everytime data is sent inbetween clients
+because this itteration would cause a tiny but uncessary performance decrease and
+the free heroku servers are NOT very powerful and I wanted the app to be as scalable
+as possible given these performance restraints.
+*/
   if (textboxBlueprints.length > 0) { //if there are textboxes on client connection,
     console.log('REQUESTING WORLD DATA...');
     socket.broadcast.emit('requestWorldData', textboxBlueprints[0].id); //request the position of all textboxes from the oldest client
-  } else { //if there are no clients, send data immediately without waiting for sync with oldest client
+  } else { //if there are no clients, send data immediately without waiting for sync with oldest client to act as ground truth
     console.log('THERE ARE NO CLIENTS PREVIOUSLY JOINED');
     socket.emit('textboxSync', textboxBlueprints);
     socket.emit('spanSync', spanBlueprints);

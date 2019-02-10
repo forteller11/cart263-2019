@@ -32,8 +32,4 @@ class Span {
     this.element.style.opacity = this.opacity;
   }
 
-  delete() {
-    this.element.remove();
-  }
-
 }
