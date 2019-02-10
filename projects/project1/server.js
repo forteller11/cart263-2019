@@ -1,21 +1,22 @@
 "use strict";
-const PORT = process.env.PORT || 3000; //try to find Heroku's port, otherwise began a local server
+const PORT = process.env.PORT || 3000; //try to find Heroku's port, otherwise (if undefined) make port a local one
 console.log("process.env.port:"+process.env.PORT);
 let express = require('express');
 let app = express();
 let server = app.listen(PORT);
-app.use(express.static('public')); //send all the files in the public folder to any clients
+app.use(express.static('public')); //send all the files in the public folder to joined clients
 let socket = require('socket.io');
 var io = socket(server);
 console.log("SOCKET SERVER RUNNING ON PORT:"+PORT);
 
 //initialise global arrays to store all textboxes (players) and html spans in the seen
-let textboxBlueprints = []; //ID,value,x,y
+let textboxBlueprints = []; //ID,value,x,y; but just used to store
 let spanBlueprints = []; //value,x,y
 
 
 
-//on new connection, call a function with the socket being the unique connection between the server a client
+//on new connection, call a function with the socket being the object repersenting the unique connection between the server-client
+//then set various socket.on's and emits to listener for recieve and trasnmit data between server-clientside
 io.on('connection', function(socket) {
   console.log('NEW CLIENT-SERVER CONNECTION');
 
@@ -65,6 +66,7 @@ io.on('connection', function(socket) {
 
   socket.on('disconnect', function() { //on client disconnection...
     console.log("CLIENT DISCONNECTION:");
+    console.log(socket.id);
     socket.broadcast.emit('clientDisconnect', socket.id); //let all clients know of disconnection
     for (let i = 0; i < textboxBlueprints.length; i++) {
       if (socket.id === textboxBlueprints[i].id) { //if this socket (which just triggered disconnect event = blueprint)

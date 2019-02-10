@@ -11,6 +11,7 @@ so the canvas is flush with the top left corner.
   margin: 0;
   font-family: monospace,Courier;
 }
+
 canvas{
   border-radius: 0px;
   display:block;

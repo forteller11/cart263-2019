@@ -11,7 +11,7 @@ class Textbox {
   y = ran(window.innerheight/2)+window.innerHeight/4,
   targX=null,
   targY=null) {
-    
+
     this.id = id;
     this.minWidth = 32;
     this.maxWidth = 200;
@@ -38,7 +38,7 @@ class Textbox {
 
     this.posOffset = charSize / 8; // so that when repositioning the textbox the mouse is still within it
     this.toTargetMovespeed = .085 * updateTime / 16.7; //max percentage to transport to target per frame
-    this.toTargetMaxMovespeed = 4.5 * updateTime / 16.7; //max movespeed in pixels to target per frame
+    this.toTargetMaxMovespeed = 5.5 * updateTime / 16.7; //max movespeed in pixels to target per frame
     this.toTargetMoveVector = new Vector(0, 0);
 
     this.element.addEventListener('input', (e) => { //if textbox.value changes, ajust width
