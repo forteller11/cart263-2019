@@ -24,7 +24,7 @@ class Span {
   update() {
     this.element.style.left = (this.x - camera.x) + "px";
     this.element.style.top = (this.y - camera.y) + "px";
-    this.fade();
+    // this.fade();
   }
 
   fade() {
