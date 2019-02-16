@@ -38,7 +38,7 @@ function main() {
   video.style.position = "absolute";
   video.style.opacity = videoOpacity + "%";
   container = document.getElementById('container');
-  container.style.position = "absolute";
+  container.style.position = "fixed";
   container.style.width = frameWidth + "px";
   container.style.height = frameHeight + 'px';
   // frameWidth = video.width;
