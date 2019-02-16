@@ -7,11 +7,14 @@ let frameWidth = window.innerWidth * .7;
 let frameHeight = frameWidth * 9 / 16;
 let centerXOffset = (window.innerWidth - frameWidth) / 2;
 let centerYOffset = (window.innerHeight - frameHeight) / 2;
+let fontSize =32;
+
 window.addEventListener('resize', () => {
    frameWidth = window.innerWidth * .7;
    frameHeight = frameWidth * 9 / 16;
    centerXOffset = (window.innerWidth - frameWidth) / 2;
    centerYOffset = (window.innerHeight - frameHeight) / 2;
+   fontSize = 32;
 });
 let zoomToHorz = .57; //zoom into horz center of screen = .5
 let zoomToVert = .43; // 0 = top, .5, center, 1 bottom
@@ -30,19 +33,39 @@ let rightKeysHeld = 0;
 
 let fadeTimer = 0;
 let fadeTime = 60 * 50;
-let fadeSpeed = .004;
+const fadeSpeed = .004;
 let videoOpacity = 1;
 
+const instructFadeSpeed = .04;
+let leftInstruct;
+let leftInstructOpacity = 1;
+let leftInstructFade = -1;
+let rightInstruct;
+let rightInstructOpacity = 1;
+let rightInstructFade = -1;
+let holdInstruct;
+let holdInstructOpacity = 1;
+let holdInstructFade = -1;
 function main() {
-  video = document.getElementById('video');
-  video.style.position = "absolute";
-  video.style.opacity = videoOpacity + "%";
+
+
   container = document.getElementById('container');
   container.style.position = "fixed";
   container.style.width = frameWidth + "px";
   container.style.height = frameHeight + 'px';
-  // frameWidth = video.width;
-  // frameHeight = video.height;
+
+  video = document.getElementById('video');
+  video.style.position = "relative";
+  video.style.opacity = videoOpacity + "%";
+  leftInstruct = document.getElementById('leftInstructions');
+  leftInstruct.style.fontSize = fontSize + 'px';
+
+  rightInstruct = document.getElementById('rightInstructions');
+  rightInstruct.style.fontSize = fontSize + 'px';
+
+  holdInstruct = document.getElementById('hold');
+  holdInstruct.style.fontSize = fontSize + 'px';
+
 
   document.addEventListener('keydown', (e) => {
     calculateZoomAmount(e, 1);
@@ -51,7 +74,7 @@ function main() {
     calculateZoomAmount(e, -1);
   });
 
-  console.log(video);
+
 
   setInterval(update, 16.7);
 }
@@ -63,6 +86,38 @@ function update() {
   } else {
     video.pause();
   }
+
+if (holdInstructOpacity > 0){
+  leftInstructOpacity -= instructFadeSpeed * leftInstructFade;
+  leftInstructOpacity = constrain(leftInstructOpacity,0,1);
+  rightInstructOpacity -= instructFadeSpeed * rightInstructFade;
+  rightInstructOpacity = constrain(rightInstructOpacity,0,1);
+  if ((leftInstructOpacity <= 0) && (rightInstructOpacity <= 0)){
+      holdInstructOpacity -= instructFadeSpeed;
+  } else {
+    holdInstructOpacity += instructFadeSpeed;
+  }
+  holdInstructOpacity = constrain(holdInstructOpacity,0,1);
+}
+
+const yy = centerYOffset+frameHeight;
+const xx = centerXOffset;
+holdInstruct.style.left =  xx + 'px';
+holdInstruct.style.top =  yy + 'px';
+
+const x1 = 78;
+leftInstruct.style.left =  xx+x1 + 'px';
+leftInstruct.style.top =  yy + 'px';
+
+const x2 = 90;
+rightInstruct.style.left =  xx + x1 + x2 + 'px';
+rightInstruct.style.top =  yy + 'px';
+
+  leftInstruct.style.opacity = leftInstructOpacity;
+
+  rightInstruct.style.opacity = rightInstructOpacity;
+
+  holdInstruct.style.opacity = holdInstructOpacity;
 
   //animate smoothly between zoom levels
   const desiredZoomChange = zoomTarget - zoomCurrent;
@@ -89,61 +144,76 @@ function update() {
 
 
 function calculateZoomAmount(e, sign) {
-  video.play();
   if (e.repeat === false) {
-    console.log(e.keyCode);
+    video.play();
+    // console.log(sign+'_'+e.keyCode);
     switch (e.keyCode) {
       case 65: //a
         zoomTarget += zoomIncreaseAmount * sign;
         leftKeysHeld += 1 * sign;
+        leftInstructFade = sign;
         break;
 
-      case 97: //a
-        zoomTarget += zoomIncreaseAmount * sign;
-        leftKeysHeld += 1 * sign;
-        break;
 
       case 83: //s
         zoomTarget += zoomIncreaseAmount * sign;
         leftKeysHeld += 1 * sign;
+        leftInstructFade = sign;
         break;
 
 
       case 68: //d
         zoomTarget += zoomIncreaseAmount * sign;
         leftKeysHeld += 1 * sign;
+        leftInstructFade = sign;
         break;
 
       case 70: //f
         zoomTarget += zoomIncreaseAmount * sign;
         leftKeysHeld += 1 * sign;
+        leftInstructFade = sign;
         break;
       case 71: //g
         zoomTarget += zoomIncreaseAmount * sign;
         leftKeysHeld += 1 * sign;
+        leftInstructFade = sign;
         break;
 
       case 72: //h
         zoomTarget += zoomIncreaseAmount * sign;
         rightKeysHeld += 1 * sign;
+        rightInstructFade = sign;
         break;
       case 74: //j
         zoomTarget += zoomIncreaseAmount * sign;
         rightKeysHeld += 1 * sign;
+        rightInstructFade = sign;
         break;
 
       case 75: //k
         zoomTarget += zoomIncreaseAmount * sign;
         rightKeysHeld += 1 * sign;
+        rightInstructFade = sign;
         break;
 
       case 76: //L
         zoomTarget += zoomIncreaseAmount * sign;
         rightKeysHeld += 1 * sign;
+        rightInstructFade = sign;
         break;
 
       default:
         break;
     }
   }
+}
+
+function constrain(varr,min,max){
+  if (varr > max){
+    return max;
+  }
+  if (varr < min){
+    return min;
+  }
+  return varr;
 }
