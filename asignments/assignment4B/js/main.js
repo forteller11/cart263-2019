@@ -3,10 +3,11 @@
 window.onload = main;
 
 let body;
-const circlePop = 10;
+const circlePop = 4;
 let circles = [];
 
 const physicsDrag = .98;
+const collisionForceTransfer = .8;
 
 let mouseHistMaxLength = 6;
 let mouseHistX = [];
@@ -54,11 +55,11 @@ function main() {
         throwComponentX += (mouseHistX[i+1] - mouseHistX[i]) * weight;
         throwComponentY += (mouseHistY[i+1] - mouseHistY[i]) * weight;
       }
-      throwComponentX = throwComponentX/(mouseHistMaxLength-1); //find mean kinda
-      throwComponentY = throwComponentY/(mouseHistMaxLength-1);
+      throwComponentX = throwComponentX/(mouseHistX.length-1); //find mean kinda
+      throwComponentY = throwComponentY/(mouseHistY.length-1);
 
-      circles[mouseDragIndex].velocity.x += throwComponentX;
-      circles[mouseDragIndex].velocity.y += throwComponentY;
+      circles[mouseDragIndex].velocity.x = throwComponentX;
+      circles[mouseDragIndex].velocity.y = throwComponentY;
 
       circles[mouseDragIndex].drag = false;
     }
@@ -66,7 +67,7 @@ function main() {
   });
 
   for (let i = 0; i < circlePop; i++) {
-    const newCircle = new Entity('assets/face1.png');
+    const newCircle = new Food('assets/face1.png');
     circles.push(newCircle);
   }
   circles[0].x = 0;
@@ -128,13 +129,30 @@ function entityCollision(e1, e2) {
     let projectedVectorEntity1 = new Vector(collisionAngle,projectedMagEntity1,'polar');
     let projectedVectorEntity2 = new Vector(collisionAngle,projectedMagEntity2,'polar');
 
-    // console.log(collisionVector);
-    // console.log(projectedVectorEntity1);
-    e1.velocity.sub(projectedVectorEntity1); //remove all vel going towards other entity
-    e2.velocity.add(projectedVectorEntity1); //add that vel to other entity
+    projectedVectorEntity1.mult(collisionForceTransfer); //shorten vector
+    projectedVectorEntity2.mult(collisionForceTransfer);
 
-    e2.velocity.sub(projectedVectorEntity2); //remove all vel going towards other entity
-    e1.velocity.add(projectedVectorEntity2); //add that vel to other entity
+    const deltaMassE1 = e1.invMass/e2.invMass; //how much more e1 shud be effected then e2
+    const deltaMassE2 = e2.invMass/e1.invMass; //how much more e1 shud be effected then e2
+    console.log(deltaMassE1)
+    //change vectors depending on mass differences
+    let c1e1 = new Vector (projectedVectorEntity1.x,projectedVectorEntity1.y);
+    c1e1.mult(deltaMassE1);
+
+    let c1e2 = new Vector (projectedVectorEntity1.x,projectedVectorEntity1.y);
+    c1e2.mult(deltaMassE2);
+
+    let c2e1 = new Vector (projectedVectorEntity2.x,projectedVectorEntity2.y);
+    c2e1.mult(deltaMassE1);
+
+    let c2e2 = new Vector (projectedVectorEntity2.x,projectedVectorEntity2.y);
+    c2e2.mult(deltaMassE2);
+
+    e1.velocity.sub(c1e1); //remove all vel going towards other entity
+    e2.velocity.add(c1e2); //add that vel to other entity
+
+    e2.velocity.sub(c2e2); //remove all vel going towards other entity
+    e1.velocity.add(c2e1); //add that vel to other entity
 
     //for e2 dot will have to be reversed maybe? or not?
   }

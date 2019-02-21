@@ -2,12 +2,13 @@
 "use strict";
 
 class Entity{
-  constructor(imgUrl=null, x=ran(window.innerWidth), y=(window.innerHeight)/2, angle=0, radius=64, mass=1){
+  constructor(imgUrl=null, x=ran(window.innerWidth), y=ran(0,window.innerHeight), angle=0, radius=ran(16,128), mass=1){
     this.x = x;
     this.y = y;
     this.angle = angle;
     this.radius = radius;
-    this.mass = mass;
+    this.mass = radius/64;
+    this.invMass = 1/this.mass; //inversemass
     this.velocity = new Vector(ran(-5,5),ran(-5,5));
     this.drag = false;
 
@@ -21,11 +22,6 @@ class Entity{
   }
 
   update(){
-    if (this.drag === false){
-      this.velocity.mult(physicsDrag);
-      this.x += this.velocity.x;
-      this.y += this.velocity.y;
-    }
     this.positionImage();
   }
 
