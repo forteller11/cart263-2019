@@ -2,11 +2,12 @@
 "use strict";
 
 class Entity{
-  constructor(imgUrl=null,x=ran(window.innerWidth),y=(window.innerHeight)/4,angle=0,radius=64){
+  constructor(imgUrl=null, x=ran(window.innerWidth), y=(window.innerHeight)/4, angle=0, radius=64, mass=1){
     this.x = x;
     this.y = y;
     this.angle = angle;
     this.radius = radius;
+    this.mass = mass;
     this.velocity = new Vector(0,0);
     this.image = document.createElement('IMG');
     this.image.src = imgUrl;
@@ -18,13 +19,14 @@ class Entity{
   }
 
   update(){
+    this.velocity.mult(physicsDrag)
     this.x += this.velocity.x;
     this.y += this.velocity.y;
     this.positionImage();
   }
 
   positionImage(){
-    this.image.style.left = (this.x + this.radius) + 'px';
-    this.image.style.top = (this.y + this.radius) + 'px';
+    this.image.style.left = (this.x - this.radius) + 'px';
+    this.image.style.top = (this.y - this.radius) + 'px';
   }
 }

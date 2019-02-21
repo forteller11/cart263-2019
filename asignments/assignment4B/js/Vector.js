@@ -21,6 +21,14 @@ class Vector{
     this.y = Math.sin(thetaStore) * this.mag; //recalculate y component based on new mag
   }
 
+  mult(multValue){ //divide vector by some magnitude
+    this.mag = distFromDelta(this.x,this.y);
+    const thetaStore = Math.atan2(this.y,this.x); //save angle of vector
+    this.mag = this.mag*multValue; //divide magnitude
+    this.x = Math.cos(thetaStore) * this.mag; //recalculate x component based on new mag
+    this.y = Math.sin(thetaStore) * this.mag; //recalculate y component based on new mag
+  }
+
   constrainMag(max){ //make sure magnitude of vec isn't greator than "max"
     this.mag = distFromDelta(this.x,this.y);
 
