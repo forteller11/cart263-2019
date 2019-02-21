@@ -3,10 +3,10 @@
 window.onload = main;
 
 let body;
-const circlePop = 2;
+const circlePop = 10;
 let circles = [];
 
-const physicsDrag = .95;
+const physicsDrag = .98;
 
 let mouseHistMaxLength = 6;
 let mouseHistX = [];
@@ -28,6 +28,7 @@ function main() {
         mouseEntityDragOffsetX = circles[i].x - e.clientX;
         mouseEntityDragOffsetY = circles[i].y - e.clientY;
         mouseDragIndex = i;
+        circles[mouseDragIndex].drag = true;
         break;
       }
     }
@@ -58,6 +59,8 @@ function main() {
 
       circles[mouseDragIndex].velocity.x += throwComponentX;
       circles[mouseDragIndex].velocity.y += throwComponentY;
+
+      circles[mouseDragIndex].drag = false;
     }
     mouseDragIndex = null;
   });
@@ -114,6 +117,25 @@ function entityCollision(e1, e2) {
     }
 
     //dynamic resolution (Change velocities of balls accordingly)
+    const collisionAngle = Math.atan2(collisionDeltaY,collisionDeltaX); //angle from e1-->e2
 
+    let collisionVector = new Vector(collisionAngle,1,'polar'); //normalized vector from e1 to e2;
+
+    let projectedMagEntity1 = dotProduct(e1.velocity,collisionVector);
+    let projectedMagEntity2 = dotProduct(e2.velocity,collisionVector);
+
+    //vector with all the x/y velocities going from entity to entity
+    let projectedVectorEntity1 = new Vector(collisionAngle,projectedMagEntity1,'polar');
+    let projectedVectorEntity2 = new Vector(collisionAngle,projectedMagEntity2,'polar');
+
+    // console.log(collisionVector);
+    // console.log(projectedVectorEntity1);
+    e1.velocity.sub(projectedVectorEntity1); //remove all vel going towards other entity
+    e2.velocity.add(projectedVectorEntity1); //add that vel to other entity
+
+    e2.velocity.sub(projectedVectorEntity2); //remove all vel going towards other entity
+    e1.velocity.add(projectedVectorEntity2); //add that vel to other entity
+
+    //for e2 dot will have to be reversed maybe? or not?
   }
 }

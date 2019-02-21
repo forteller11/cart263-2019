@@ -9,11 +9,13 @@ if (mouseHistX.length < mouseHistMaxLength){ //store mouse positions every frame
   mouseHistX.push(mouseMoveStoreX);
   mouseHistY.push(mouseMoveStoreY);
 }
-
-if (!(mouseDragIndex === null)){ //move entity if dragging === true
-  circles[mouseDragIndex].x = mouseMoveStoreX + mouseEntityDragOffsetX;
-  circles[mouseDragIndex].y = mouseMoveStoreY + mouseEntityDragOffsetY;
+if (!(mouseDragIndex === null)){
+  const velX = mouseHistX[mouseHistX.length-1] - mouseHistX[mouseHistX.length-2];
+  const velY = mouseHistY[mouseHistY.length-1] - mouseHistY[mouseHistY.length-2];
+  circles[mouseDragIndex].velocity.x = velX*.75;
+  circles[mouseDragIndex].velocity.y = velY*.75;
 }
+
   // console.log('update');
   for (let i = 0; i < circles.length; i++){
     for (let j = i+1; j < circles.length; j ++){ //might go out of scope of array depending on if check or execution happens first

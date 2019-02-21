@@ -69,3 +69,7 @@ function linearInterpolate(value1,value2,lerpAmount){
   const lerpResult = lerpAdd + value2; //add constant
   return lerpResult;
 }
+
+function dotProduct(v1,v2){ //returns dot product of two vectors
+  return (v1.x*v2.x)+(v1.y*v2.y);
+}
