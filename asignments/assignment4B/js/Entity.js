@@ -1,16 +1,30 @@
 //barebones 2D vector class (only added methods needed for this specefic projects purposes)
 "use strict";
 
-class Entity(x,y,a){
-  constructor(x,y,a){
+class Entity{
+  constructor(imgUrl=null,x=ran(window.innerWidth),y=(window.innerHeight)/4,angle=0,radius=64){
     this.x = x;
     this.y = y;
-    this.a = a;
-    this.components = [];
+    this.angle = angle;
+    this.radius = radius;
+    this.velocity = new Vector(0,0);
+    this.image = document.createElement('IMG');
+    this.image.src = imgUrl;
+    this.image.style.position = 'fixed';
+    this.image.width = radius*2;
+    this.image.height = radius*2;
+    this.positionImage();
+    body.appendChild(this.image);
   }
+
   update(){
-    for (let component of this.components){
-      component.update();
-    }
+    this.x += this.velocity.x;
+    this.y += this.velocity.y;
+    this.positionImage();
+  }
+
+  positionImage(){
+    this.image.style.left = (this.x + this.radius) + 'px';
+    this.image.style.top = (this.y + this.radius) + 'px';
   }
 }
