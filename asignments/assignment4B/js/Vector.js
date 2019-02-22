@@ -12,12 +12,21 @@ class Vector {
       this.x = Math.cos(a1) * a2;
       this.y = Math.sin(a1) * a2;
     }
+    this.mag = distFromDelta(this.x, this.y);
   }
 
   mag() { //find the magnitude of this vetor
-    const newMag = distFromDelta(this.x, this.y);
-    this.mag = newMag;
-    return newMag;
+      console.log('undefined');
+      const newMag = distFromDelta(this.x, this.y);
+      this.mag = newMag;
+      return newMag;
+  }
+
+  setMag(setMag) { //set mag and components to new mag
+      const thetaStore = Math.atan2(this.y, this.x); //save angle of vector
+      this.x = Math.cos(thetaStore) * setMag; //recalculate x component based on new mag
+      this.y = Math.sin(thetaStore) * setMag; //recalculate y component based on new mag
+      this.mag=setMag;
   }
 
   sub(v){ //subtract a vector from this vector
@@ -57,7 +66,7 @@ class Vector {
     }
   }
 
-  radians() { //returns angle in radians of current vector
+  angle() { //returns angle in radians of current vector
     return Math.atan2(this.y, this.x); //save angle of vector
   }
 

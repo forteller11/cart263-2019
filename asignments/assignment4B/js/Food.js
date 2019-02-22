@@ -1,7 +1,7 @@
 'use strict';
 
 class Food extends Entity{
-  consutrctor(imgUrl=null, x=ran(window.innerWidth), y=ran(0,window.innerHeight), angle=0, radius=ran(16,128), mass=1){
+  consutrctor(imgUrl, x, y, angle, radius, mass){
     this.super(imgUrl, x, y, angle, radius, mass);
   }
 
