@@ -95,6 +95,35 @@ function entityCollision(e1, e2) {
   const collisionBetween = new Vector(collisionDeltaX, collisionDeltaY); //vector going from center of e1 to e2
 
   if (collisionBetween.mag < e1.radius + e2.radius) { //if this is true, then circles are colliding
+    const deltaMassE1 = e1.invMass / e2.invMass; //how much more e1 shud be effected then e2
+    const deltaMassE2 = e2.invMass / e1.invMass; //how much more e1 shud be effected then e2
+    ///dynamic resolution for angles\\\\\
+        //transfer rotational energies
+        const rotationToBeTransferredPercentage = 0.6;
+        const rotationToBeTransferredFromEntity1 = e1.angleVelocity * rotationToBeTransferredPercentage;
+        const rotationToBeTransferredFromEntity2 = e2.angleVelocity * rotationToBeTransferredPercentage;
+
+        e1.angleVelocity -= rotationToBeTransferredFromEntity1 * deltaMassE1;
+        e2.angleVelocity += rotationToBeTransferredFromEntity1 * deltaMassE2;
+
+        e1.angleVelocity += rotationToBeTransferredFromEntity2 * deltaMassE1;
+        e2.angleVelocity -= rotationToBeTransferredFromEntity2 * deltaMassE2;
+
+    //the more at a right angle the velocity to collision vector is the more angular momentum changes
+    let deltaVelocityVector = new Vector (e2.velocity.x-e1.velocity.x,e2.velocity.y-e1.velocity.y);
+    const momentOfInertia = .0012;
+    let deltaBetweenCollisionAndEntity1 = Math.sin(collisionBetween.angle() - e1.velocity.angle());
+    let deltaBetweenCollisionAndEntity2 = Math.sin(collisionBetween.angle() - e2.velocity.angle());
+
+    deltaBetweenCollisionAndEntity1 *= momentOfInertia * e1.velocity.mag;
+    deltaBetweenCollisionAndEntity2 *= momentOfInertia * e2.velocity.mag;
+    //
+    e1.angleVelocity += (deltaBetweenCollisionAndEntity1) * deltaMassE1; //if at right angle want maxium angle change
+    e2.angleVelocity += (deltaBetweenCollisionAndEntity1) * deltaMassE2; //if at right angle want maxium angle change
+
+    e1.angleVelocity -= (deltaBetweenCollisionAndEntity2) * deltaMassE1; //if at right angle want maxium angle change
+    e2.angleVelocity -= (deltaBetweenCollisionAndEntity2) * deltaMassE2; //if at right angle want maxium angle change
+
 
     ////////dynamic resolution (Change velocities of balls accordingly)\\\\\\\\\
     let collisionVector = new Vector(collisionBetween.angle(), 1, 'polar'); //normalized vector from e1 to e2;
@@ -108,9 +137,6 @@ function entityCollision(e1, e2) {
 
     projectedVectorEntity1.mult(collisionForceTransfer); //shorten vector
     projectedVectorEntity2.mult(collisionForceTransfer);
-
-    const deltaMassE1 = e1.invMass / e2.invMass; //how much more e1 shud be effected then e2
-    const deltaMassE2 = e2.invMass / e1.invMass; //how much more e1 shud be effected then e2
 
     //change vectors depending on mass differences
     let c1e1 = new Vector(projectedVectorEntity1.x, projectedVectorEntity1.y);
@@ -132,26 +158,8 @@ function entityCollision(e1, e2) {
     e1.velocity.add(c2e1); //add that vel to other entity
 
 
-    ///dynamic resolution for angles\\\\\
-    //might have to rerrange - signs
-    //dont make it about velocity but rather diff in velocity
-    let deltaVelocityVector = new Vector (e2.velocity.x-e1.velocity.x,e2.velocity.y-e1.velocity.y);
-    const momentOfInertia = .001;
-    let deltaBetweenCollisionAndEntity1 = Math.sin(collisionBetween.angle() - e1.velocity.angle());
-    let deltaBetweenCollisionAndEntity2 = Math.sin(collisionBetween.angle() - e2.velocity.angle());
 
 
-
-    deltaBetweenCollisionAndEntity1 *= momentOfInertia * e1.velocity.mag * deltaMassE1;
-    deltaBetweenCollisionAndEntity2 *= momentOfInertia * e2.velocity.mag * deltaMassE2;
-
-    e1.angleVelocity += (deltaBetweenCollisionAndEntity1); //if at right angle want maxium angle change
-    e2.angleVelocity += (deltaBetweenCollisionAndEntity1); //if at right angle want maxium angle change
-
-    e1.angleVelocity -= (deltaBetweenCollisionAndEntity2)*deltaMassE1; //if at right angle want maxium angle change
-    e2.angleVelocity -= (deltaBetweenCollisionAndEntity2)*deltaMassE2; //if at right angle want maxium angle change
-
-    //now make collisions transfer angularVelocity aswell depending on position
 }
 
 

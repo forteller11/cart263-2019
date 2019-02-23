@@ -10,7 +10,7 @@ class Entity{
 
     this.mass = radius/64;
     this.velocity = new Vector(ran(-5,5),ran(-5,5));
-    this.angleVelocity = ran(.1);
+    this.angleVelocity = ran(-.1,.1);
     this.invMass = 1/this.mass; //inversemass
     this.drag = false;
 
