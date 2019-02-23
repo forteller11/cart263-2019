@@ -145,11 +145,11 @@ function entityCollision(e1, e2) {
     deltaBetweenCollisionAndEntity1 *= momentOfInertia * e1.velocity.mag * deltaMassE1;
     deltaBetweenCollisionAndEntity2 *= momentOfInertia * e2.velocity.mag * deltaMassE2;
 
-    e1.angleVelocity += Math.abs(deltaBetweenCollisionAndEntity1); //if at right angle want maxium angle change
-    e2.angleVelocity += Math.abs(deltaBetweenCollisionAndEntity1); //if at right angle want maxium angle change
+    e1.angleVelocity += (deltaBetweenCollisionAndEntity1); //if at right angle want maxium angle change
+    e2.angleVelocity += (deltaBetweenCollisionAndEntity1); //if at right angle want maxium angle change
 
-    e1.angleVelocity -= Math.sin(deltaBetweenCollisionAndEntity2)*deltaMassE1; //if at right angle want maxium angle change
-    e2.angleVelocity -= Math.sin(deltaBetweenCollisionAndEntity2)*deltaMassE2; //if at right angle want maxium angle change
+    e1.angleVelocity -= (deltaBetweenCollisionAndEntity2)*deltaMassE1; //if at right angle want maxium angle change
+    e2.angleVelocity -= (deltaBetweenCollisionAndEntity2)*deltaMassE2; //if at right angle want maxium angle change
 
     //now make collisions transfer angularVelocity aswell depending on position
 }
