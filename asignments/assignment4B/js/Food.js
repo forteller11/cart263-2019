@@ -10,8 +10,8 @@ class Food extends Entity{
       this.velocity.mult(physicsDrag);
       this.x += this.velocity.x;
       this.y += this.velocity.y;
+      this.angle += this.angleVelocity;
     }
-  this.positionImage();
-  // console.log(this.velocity.x);
+  super.update();
   }
 }

@@ -130,6 +130,28 @@ function entityCollision(e1, e2) {
 
     e2.velocity.sub(c2e2); //remove all vel going towards other entity
     e1.velocity.add(c2e1); //add that vel to other entity
+
+
+    ///dynamic resolution for angles\\\\\
+    //might have to rerrange - signs
+    //dont make it about velocity but rather diff in velocity
+    let deltaVelocityVector = new Vector (e2.velocity.x-e1.velocity.x,e2.velocity.y-e1.velocity.y);
+    const momentOfInertia = .001;
+    let deltaBetweenCollisionAndEntity1 = Math.sin(collisionBetween.angle() - e1.velocity.angle());
+    let deltaBetweenCollisionAndEntity2 = Math.sin(collisionBetween.angle() - e2.velocity.angle());
+
+
+
+    deltaBetweenCollisionAndEntity1 *= momentOfInertia * e1.velocity.mag * deltaMassE1;
+    deltaBetweenCollisionAndEntity2 *= momentOfInertia * e2.velocity.mag * deltaMassE2;
+
+    e1.angleVelocity += Math.abs(deltaBetweenCollisionAndEntity1); //if at right angle want maxium angle change
+    e2.angleVelocity += Math.abs(deltaBetweenCollisionAndEntity1); //if at right angle want maxium angle change
+
+    e1.angleVelocity -= Math.sin(deltaBetweenCollisionAndEntity2)*deltaMassE1; //if at right angle want maxium angle change
+    e2.angleVelocity -= Math.sin(deltaBetweenCollisionAndEntity2)*deltaMassE2; //if at right angle want maxium angle change
+
+    //now make collisions transfer angularVelocity aswell depending on position
 }
 
 
@@ -147,7 +169,7 @@ function entityCollision(e1, e2) {
     if (nxtCollisionBetween.mag < e1.radius + e2.radius) { //if overlapping next frame
     //static resolution (make it so circles don't overlap post collision)
     const distOverlapping = e1.radius + e2.radius - collisionBetween.mag;
-    collisionBetween.setMag(distOverlapping);
+    collisionBetween.setMag(distOverlapping); //CARFUL because rewriting over vector which dynamic resoltuion needs
     staticResolution(e1,e2,collisionBetween);
   }
 

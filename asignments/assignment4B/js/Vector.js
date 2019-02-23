@@ -32,11 +32,13 @@ class Vector {
   sub(v){ //subtract a vector from this vector
     this.x -= v.x;
     this.y -= v.y;
+    this.mag = distFromDelta(this.x, this.y);
   }
 
   add(v){ //add a vector from this vector
     this.x += v.x;
     this.y += v.y;
+    this.mag = distFromDelta(this.x, this.y);
   }
 
   div(divValue) { //divide vector by some magnitude
