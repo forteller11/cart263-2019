@@ -138,17 +138,23 @@ function entityCollision(e1, e2) {
     projectedVectorEntity1.mult(collisionForceTransfer); //shorten vector
     projectedVectorEntity2.mult(collisionForceTransfer);
 
+    const angleVelocityContributionToLinear = 10; //how much angle vel effects resultant post collision linear vel
+
     //change vectors depending on mass differences
     let c1e1 = new Vector(projectedVectorEntity1.x, projectedVectorEntity1.y);
+    c1e1.rotate(e2.angleVelocity*angleVelocityContributionToLinear);
     c1e1.mult(deltaMassE1);
 
     let c1e2 = new Vector(projectedVectorEntity1.x, projectedVectorEntity1.y);
+    c1e2.rotate(e1.angleVelocity*angleVelocityContributionToLinear);
     c1e2.mult(deltaMassE2);
 
     let c2e1 = new Vector(projectedVectorEntity2.x, projectedVectorEntity2.y);
+    c2e1.rotate(e2.angleVelocity*angleVelocityContributionToLinear);
     c2e1.mult(deltaMassE1);
 
     let c2e2 = new Vector(projectedVectorEntity2.x, projectedVectorEntity2.y);
+    c2e2.rotate(e1.angleVelocity*angleVelocityContributionToLinear);
     c2e2.mult(deltaMassE2);
 
     e1.velocity.sub(c1e1); //remove all vel going towards other entity
