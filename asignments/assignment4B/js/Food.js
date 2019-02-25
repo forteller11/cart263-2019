@@ -10,8 +10,10 @@ class Food extends Entity{
       this.velocity.mult(physicsDrag);
       this.x += this.velocity.x;
       this.y += this.velocity.y;
-      this.angle += this.angleVelocity;
     }
+    const maxAngleVel = Math.PI/4;
+    this.angleVelocity = constrain(this.angleVelocity,-maxAngleVel,maxAngleVel);
+    this.angle += this.angleVelocity;
   super.update();
   }
 }

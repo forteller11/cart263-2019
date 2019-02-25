@@ -128,6 +128,7 @@ function entityCollision(e1, e2) {
     ////////dynamic resolution (Change velocities of balls accordingly)\\\\\\\\\
     let collisionVector = new Vector(collisionBetween.angle(), 1, 'polar'); //normalized vector from e1 to e2;
 
+    //velocity to remove to entity and add to other entity
     let projectedMagEntity1 = dotProduct(e1.velocity, collisionVector);
     let projectedMagEntity2 = dotProduct(e2.velocity, collisionVector);
 
@@ -136,26 +137,44 @@ function entityCollision(e1, e2) {
     let projectedVectorEntity2 = new Vector(collisionBetween.angle(), projectedMagEntity2, 'polar');
 
     projectedVectorEntity1.mult(collisionForceTransfer); //shorten vector
+    // projectedVectorEntity1.constrainMag(.01); //constrain mag to not be larger
     projectedVectorEntity2.mult(collisionForceTransfer);
 
+
+    // projectedVectorEntity2.constrainMag(e2.velocity.mag/deltaMassE1); //constrain mag to not be larger
+
     const angleVelocityContributionToLinear = 10; //how much angle vel effects resultant post collision linear vel
+    const momentumToBeTransffered = 1; //percentage force lost on transfer to other entity
+
+    //how much to change resultant forces considering rotation of bodies collided with, can only change by max of 90degrees
+    const rotateE1VecBy = constrain(e2.angleVelocity*angleVelocityContributionToLinear,-Math.PI/2,Math.PI/2);
+    const rotateE2VecBy = constrain(e1.angleVelocity*angleVelocityContributionToLinear,-Math.PI/2,Math.PI/2);
 
     //change vectors depending on mass differences
     let c1e1 = new Vector(projectedVectorEntity1.x, projectedVectorEntity1.y);
-    c1e1.rotate(e2.angleVelocity*angleVelocityContributionToLinear);
-    c1e1.mult(deltaMassE1);
+    c1e1.rotate(rotateE1VecBy);
 
     let c1e2 = new Vector(projectedVectorEntity1.x, projectedVectorEntity1.y);
-    c1e2.rotate(e1.angleVelocity*angleVelocityContributionToLinear);
-    c1e2.mult(deltaMassE2);
+    c1e2.rotate(rotateE2VecBy);
 
     let c2e1 = new Vector(projectedVectorEntity2.x, projectedVectorEntity2.y);
-    c2e1.rotate(e2.angleVelocity*angleVelocityContributionToLinear);
-    c2e1.mult(deltaMassE1);
+    c2e1.rotate(rotateE1VecBy);
 
     let c2e2 = new Vector(projectedVectorEntity2.x, projectedVectorEntity2.y);
-    c2e2.rotate(e1.angleVelocity*angleVelocityContributionToLinear);
-    c2e2.mult(deltaMassE2);
+    c2e2.rotate(rotateE2VecBy);
+
+
+    if (deltaMassE1 < deltaMassE2){ //if entity one is heavier then e2, make sure e2 only goes as fast as e1
+      c1e1.mult(deltaMassE1); // make change in velocity less for e1, while giving 100% of vel to e2 (to make it go as fast as e1)
+      c2e1.mult(deltaMassE1 * momentumToBeTransffered); //but also lose some momentum on transfer
+
+      c1e2.mult(momentumToBeTransffered);
+    } else {
+      c1e2.mult(deltaMassE2 * momentumToBeTransffered);
+      c2e2.mult(deltaMassE2);
+
+      c2e1.mult(momentumToBeTransffered);
+    }
 
     e1.velocity.sub(c1e1); //remove all vel going towards other entity
     e2.velocity.add(c1e2); //add that vel to other entity
