@@ -87,3 +87,7 @@ function mapFromRanges(value,range1a,range1b,range2a,range2b){
 function dotProduct(v1,v2){ //returns dot product of two vectors
   return (v1.x*v2.x)+(v1.y*v2.y);
 }
+
+function hashFunction(value){ //generate deterministic but random key from value
+
+}
