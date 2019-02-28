@@ -1,12 +1,13 @@
 'use strict'
 
 class cPos { //stores position
-  constructor(x=0,y=0,z=0){
+  constructor(angle=0,x=0,y=0,z=0){
     this.pos = new Vector(x,y);
+    this.angle = angle;
   }
 }
 
-class cCircleCollision{
+class cHitbox{ //circle hitbox
   constructor(radius){
     this.radius = radius;
   }
@@ -31,5 +32,22 @@ class cPhysics {
 
     this.vel = new Vector(xVel,yVel);
     this.angularVel = angularVel;
+  }
+}
+
+class cImage { //contains html image element
+  constructor(imgUrl=null,sizeOfImage=null){
+    if (sizeOfImage === null){
+      console.log('imgUrl === null');
+    }
+    if (sizeOfImage === null){
+      console.log('size of image=== null, set to cHitbox.radius*2');
+    }
+    this.image = document.createElement('IMG');
+    this.image.src = imgUrl;
+    this.image.style.position = 'fixed';
+    this.image.width = sizeOfImage;
+    this.image.height = sizeOfImage;
+    body.appendChild(this.image);
   }
 }
