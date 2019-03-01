@@ -1,8 +1,7 @@
 'use strict';
 class System{ //base functionality for all systems
   constructor(arrayOfRelevantEntities){
-    this.relevantComponents = [null]; //array of relevant components
-    this.relevantEntities = [null]; //entities with appropriate components for system
+    this.requiredComponents = [null]; //array of relevant components
   }
 
   systemExecution(entity){
@@ -21,16 +20,17 @@ class System{ //base functionality for all systems
 class sPhysicsTransform extends System { //applys drags and phy constants (gravity if applicable)
   constructor(arrayOfRelevantEntities){
     super(arrayOfRelevantEntities);
-    this.relevantComponents['cPos','cPhysics'];
+    this.requiredComponents = ['cPos','cPhysics'];
   }
 
   systemExecution(entity){
     //generalize to 3 dimensions
     //apply drag and constrain velocties
-    entity.cPhysics.vel.mult(global.physics.cartesianDrag);
-    entity.cPhysics.angularVel *= global.physics.polarDrag;
-    entity.cPhysics.angularVel = constrain(entity.cPhysics.angularVel, -global.physics.maxPolarVel, global.physics.maxPolarVel);
-    entity.cPos.angle += entity.physicsC.angularVel;
+    entity.cPhysics.vel.mult(globalObj.physics.cartesianDrag);
+    console.log(entity.cPhysics);
+    entity.cPhysics.angularVel *= globalObj.physics.polarDrag;
+    entity.cPhysics.angularVel = constrain(entity.cPhysics.angularVel, -globalObj.physics.maxPolarVel, globalObj.physics.maxPolarVel);
+    entity.cPos.angle += entity.cPhysics.angularVel;
 
     //transform position based on velocties
     entity.cPos.x += entity.cPhysics.vel.x;
@@ -44,15 +44,15 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
 class sImageTransform extends System{ //transforms image to entity position
   constructor(arrayOfRelevantEntities){
     super(arrayOfRelevantEntities);
-    this.relevantComponents['cPos','cHitbox','cImage'];
+    this.requiredComponents = ['cPos','cHitbox','cImage'];
   }
 
   systemExecution(entity){
     const angleDegrees = entity.cPos.angle*180;
-    entity.cImage.style.transform = 'rotate('+angleDegrees+'deg)';
+    entity.cImage.image.style.transform = 'rotate('+angleDegrees+'deg)';
 
-    entity.cImage.style.left = ( entity.cPos.x - entity.cHitbox.radius) + 'px';
-    this.image.style.top = (entity.cPos.y - entity.cHitbox.radius) + 'px';
+    entity.cImage.image.style.left = ( entity.cPos.x - entity.cHitbox.radius) + 'px';
+    entity.cImage.image.style.top = (entity.cPos.y - entity.cHitbox.radius) + 'px';
   }
 
 }

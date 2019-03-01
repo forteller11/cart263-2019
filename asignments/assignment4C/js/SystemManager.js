@@ -15,6 +15,8 @@ class SystemManager{
   for (let i = 0; i < this.systems.length; i ++){ //create 2Darray of relevant components
     this.relevantEntities[i] = [];
   }
+
+  console.log(this.systems);
   }
 
   addEntity(newEntity){ //find all systems which cocern the entity and track them
@@ -23,25 +25,26 @@ class SystemManager{
       let entityRelevance = true; //is entity relevant?
       let requiredComponentFound = [];
 
-      for (let j = 0; j < this.systems[i].relevantComponents.length; j ++) { //for every relevant component in system
-        let requiredSystemComponent = this.systems[i].relevantComponents[j]; //id of required comopnent
+      for (let j = 0; j < this.systems[i].requiredComponents.length; j ++) { //for every relevant component in system
         let requiredComponentFound = false; //is there required component for system in the entity
 
-        for (let k = 0; k < newEntity.components.length; k ++){ //make sure there is a crresponding comopnent in entity
-          if (requiredSystemComponent === newEntity.components[k]){
+        for (let k = 0; k < newEntity.componentNames.length; k ++){ //make sure there is a crresponding comopnent in entity
+          console.log(this.systems[i].requiredComponents[j] + '  ' + newEntity.componentNames[k]);
+          if (this.systems[i].requiredComponents[j] === newEntity.componentNames[k]){
             requiredComponentFound = true;
             break;
           }
         }
+
         if (requiredComponentFound === false){ //if couldn't find a entityComponent required by system
           entityRelevance = false; //entity not relevant
-          console.log('this entity isnt relevant')
+          console.log('this entity isnt relevant');
           break; //break outta loop, go to next system
         }
 
       }
       if (entityRelevance === true){ //if got to end of loop / entity relevance still is true,
-        console.log(j+'this entity is relevant')
+        console.log('this entity is relevant');
         this.relevantEntities[i][this.relevantEntities[i].length] = newEntity; //put on
       }
     }
@@ -73,9 +76,9 @@ class SystemManager{
     //   }
     // }
 
-    this.sPhysicsTransform.systemExecution(); //
-    this.sImageTransform.systemExecution()
-    transform.update();
-    render.update();
+    // this.sPhysicsTransform.systemExecution(); //
+    // this.sImageTransform.systemExecution()
+    // transform.update();
+    // render.update();
   }
 }

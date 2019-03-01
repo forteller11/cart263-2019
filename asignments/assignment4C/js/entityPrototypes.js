@@ -3,22 +3,23 @@
 function createHead(){
   let newHead = new Entity();
 
-  let newPos = new cPos(ran(Math.PI));
+  let newPos = new cPos(ran(Math.PI),window.innerWidth/2,window.innerHeight/2);
   newHead.cPos = newPos;
-  newHead.components.push(newPos);
+  newHead.componentNames.push('cPos');
 
-  let radius = ran(16,128);
+  let radius = ran(32,128);
   let newHitbox = new cHitbox(radius);
   newHead.cHitbox = newHitbox;
-  newHead.components.push(newHitbox);
+  newHead.componentNames.push('cHitbox');
 
-  let newPhysics = new cPhysics(2*radius*Math.PI*Math.PI);
+  const initVel = 2;
+  let newPhysics = new cPhysics(2*radius*Math.PI*Math.PI,ran(-initVel,initVel),ran(-initVel,initVel));
   newHead.cPhysics = newPhysics;
-  newHead.components.push(newPhysics);
+  newHead.componentNames.push('cPhysics');
 
   let newImage = new cImage('assets/face1.png',radius*2)
   newHead.cImage = newImage;
-  newHead.components.push(newImage);
+  newHead.componentNames.push('cImage');
   return newHead;
   //draggable
 }
