@@ -2,27 +2,23 @@
 
 class cPos { //stores position
   constructor(angle=0,x=0,y=0,z=0){
-    this.pos = new Vector(x,y);
+    this.name = 'cPos';
+    this.x = x;
+    this.y = y;
     this.angle = angle;
   }
 }
 
 class cHitbox{ //circle hitbox
   constructor(radius){
+    this.name = 'cHitbox';
     this.radius = radius;
-  }
-}
-
-class cPhysicsConstants { //stores physics constants
-  constructor(){
-    this.maxPolarVel = Math.PI/4//max/min polar velocity
-    this.cartesianDrag = 0.98; //rate at which linear vel approaches 0
-    this.polarDrag = .96; //rate at which rotational vel approaches 0
   }
 }
 
 class cPhysics {
   constructor(mass=null,xVel=0,yVel=0,angleVel=0){
+    this.name = 'cPhysics';
     if (mass===null){
       console.log('mass not set, define by cCollision as PI r ^2');
     }
@@ -37,6 +33,7 @@ class cPhysics {
 
 class cImage { //contains html image element
   constructor(imgUrl=null,sizeOfImage=null){
+    this.name = 'cImage';
     if (sizeOfImage === null){
       console.log('imgUrl === null');
     }
@@ -49,5 +46,14 @@ class cImage { //contains html image element
     this.image.width = sizeOfImage;
     this.image.height = sizeOfImage;
     body.appendChild(this.image);
+  }
+}
+
+class cPhysicsConstants { //stores physics constants
+  constructor(){
+    this.name = 'cPhysicsConstants';
+    this.maxPolarVel = Math.PI/4//max/min polar velocity
+    this.cartesianDrag = 0.98; //rate at which linear vel approaches 0
+    this.polarDrag = .96; //rate at which rotational vel approaches 0
   }
 }

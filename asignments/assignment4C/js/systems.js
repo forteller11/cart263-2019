@@ -18,10 +18,10 @@ class System{ //base functionality for all systems
 }
 
 
-class sPhysics extends System { //applys drags and phy constants (gravity if applicable)
+class sPhysicsTransform extends System { //applys drags and phy constants (gravity if applicable)
   constructor(arrayOfRelevantEntities){
     super(arrayOfRelevantEntities);
-    this.relevantComponents[cPos,cPhysics,cPhysicsConstants];
+    this.relevantComponents['cPos','cPhysics','cPhysicsConstants'];
   }
 
   systemExecution(entity){
@@ -42,27 +42,10 @@ class sPhysics extends System { //applys drags and phy constants (gravity if app
 }
 
 
-class sTransform extends System{ //changes transform component based on physics component
+class sImageTransform extends System{ //transforms image to entity position
   constructor(arrayOfRelevantEntities){
     super(arrayOfRelevantEntities);
-    this.relevantComponents[cPos,cPhysics];
-  }
-
-  systemExecution(entity){
-    //generalize to 3 dimensions
-    entity.cPos.x += entity.cPhysics.vel.x;
-    entity.cPos.y += entity.cPhysics.vel.y;
-    entity.cPos.angle += entity.cPhysics.angularVel;
-  }
-
-}
-
-
-
-class sTransformImage extends System{ //transforms image to entity position
-  constructor(arrayOfRelevantEntities){
-    super(arrayOfRelevantEntities);
-    this.relevantComponents[cPos,cHitbox,cImage];
+    this.relevantComponents['cPos','cHitbox','cImage'];
   }
 
   systemExecution(entity){
@@ -75,7 +58,10 @@ class sTransformImage extends System{ //transforms image to entity position
 
 }
 
-//collision system, static/dynamic resolution ssytems...
+//class dragEvents (stores mouse info), class dragble (tells it can be dragged, stores offsets)
+//sDrag requires dragEvents, dragable, pos, physics, tests collision,
+
+//collision system, static/dynamic resolution ssytems... draggable, component which stores drag events
 
 
 // class handleSprites(){} for food entity and animations
