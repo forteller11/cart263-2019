@@ -3,7 +3,7 @@
 class SystemManager{
   constructor(){
     this.systems = []; //array of systems
-    this.relevantComponents = [];
+
 
     this.sPhysicsTransform = new sPhysicsTransform();
     this.systems.push(this.sPhysicsTransform);
@@ -11,9 +11,10 @@ class SystemManager{
     this.sImageTransform = new sImageTransform();
     this.systems.push(this.sImageTransform);
 
-for (let i = 0; i < this.systems.length; i ++){ //create 2Darray of relevant components
-  this.relevantComponents[i] = [];
-}
+  this.relevantEntities = []; //2d array containing relevant enttiies for each system
+  for (let i = 0; i < this.systems.length; i ++){ //create 2Darray of relevant components
+    this.relevantEntities[i] = [];
+  }
   }
 
   addEntity(newEntity){ //find all systems which cocern the entity and track them
@@ -34,12 +35,14 @@ for (let i = 0; i < this.systems.length; i ++){ //create 2Darray of relevant com
         }
         if (requiredComponentFound === false){ //if couldn't find a entityComponent required by system
           entityRelevance = false; //entity not relevant
+          console.log('this entity isnt relevant')
           break; //break outta loop, go to next system
         }
 
       }
       if (entityRelevance === true){ //if got to end of loop / entity relevance still is true,
-        this.relevantComponents[i][this.relevantComponents[i].length] = newEntity; //put on
+        console.log(j+'this entity is relevant')
+        this.relevantEntities[i][this.relevantEntities[i].length] = newEntity; //put on
       }
     }
 
@@ -53,7 +56,25 @@ for (let i = 0; i < this.systems.length; i ++){ //create 2Darray of relevant com
     // collision.update();
     //   staticResolution.update();
     //     dynamicResolution.update();
-    this.sPhysicsTransform.systemExecution(entity); //
+    for (let j = 0; j < this.relevantEntities[0].length; j++){ //itterate through collum of array
+      this.sPhysicsTransform.systemExecution(this.relevantEntities[0][j]);
+    }
+
+    for (let j = 0; j < this.relevantEntities[1].length; j++){ //itterate through collum of array
+      this.sImageTransform.systemExecution(this.relevantEntities[1][j]);
+    }
+
+    // for (let j = 0; j < this.relevantEntities[2].length; j++){ //itterate through collum of array
+    //   //first only itterate through half of array so everything doesn't happen twice (like with insertion sort)
+    //   if (this.sOverlap.systemExecution(this.relevantEntities[2][j]) === true){
+    //     //return collision data (both entities,)
+    //     //this then the overlap subsystems see if the components of each entity are relevant to its work, if they are, it
+    //     // which can be used by static/dynamic resolution and cooking to determine what to do with both entities)
+    //   }
+    // }
+
+    this.sPhysicsTransform.systemExecution(); //
+    this.sImageTransform.systemExecution()
     transform.update();
     render.update();
   }
