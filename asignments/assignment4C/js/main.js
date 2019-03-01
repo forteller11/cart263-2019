@@ -8,6 +8,7 @@ let firstEntity;
 function main(){
   body = document.getElementById('body');
   globalObj = new Globals();
+  console.log(globalObj);
   systemManager = new SystemManager();
 
   createEntitiesFromBlueprint(headBlueprint,3);

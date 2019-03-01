@@ -3,17 +3,18 @@
 function headBlueprint(){
   let newHead = new Entity();
 
-  let newPos = new cPos(ran(Math.PI),ran(window.innerWidth),ran(window.innerHeight));
+  let newPos = new cPos(ran(Math.PI),ran(window.innerWidth/2),ran(window.innerHeight));
   newHead.cPos = newPos;
   newHead.componentNames.push('cPos');
 
   let radius = ran(32,128);
-  // let newHitbox = new cHitbox(radius);
-  // newHead.cHitbox = newHitbox;
-  // newHead.componentNames.push('cHitbox');
+  let newHitbox = new cHitbox(radius);
+  newHead.cHitbox = newHitbox;
+  newHead.componentNames.push('cHitbox');
 
-  const initVel = 4;
-  let newPhysics = new cPhysics(2*radius*Math.PI*Math.PI,ran(-initVel,initVel),ran(-initVel,initVel));
+  const initVel = 20;
+  const initRot = .2;
+  let newPhysics = new cPhysics(2*radius*Math.PI*Math.PI,ran(-initVel,initVel),ran(-initVel,initVel),ran(-initRot,initRot));
   newHead.cPhysics = newPhysics;
   newHead.componentNames.push('cPhysics');
 
