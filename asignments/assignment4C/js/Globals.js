@@ -4,6 +4,10 @@ class Globals{
   constructor(){
     this.physics = new gPhysicsConstants();
     this.mouseEvents = new gMouseEvents();
+    this.dragData = new gDragData();
+  }
+  update(){
+    this.mouseEvents.update();
   }
 }
 
@@ -18,6 +22,15 @@ class gPhysicsConstants { //stores physics constants
 
 
   class gMouseEvents{ //tracks mouseEvents
+    constructor(){
+      this.mouseClick; //on initial click === true, then equals false
+      this.mouseDown;
+      this.mouseX;
+      this.mouseY;
+    }
+  }
+
+  class gDragData{
     constructor(){
 
     }

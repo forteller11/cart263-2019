@@ -48,3 +48,9 @@ class cImage { //contains html image element
     body.appendChild(this.image);
   }
 }
+
+class cDraggable{
+  constructor(){
+    this.draggable = true;
+  }
+}

@@ -1,9 +1,12 @@
 'use strict';
 
-class SystemManager{
-  constructor(){
+class SystemManager {
+
+  constructor() {
     this.systems = []; //array of systems
 
+    this.sOverlap = new sOverlap();
+    this.systems.push(this.sOverlap);
 
     this.sPhysicsTransform = new sPhysicsTransform();
     this.systems.push(this.sPhysicsTransform);
@@ -11,61 +14,39 @@ class SystemManager{
     this.sImageTransform = new sImageTransform();
     this.systems.push(this.sImageTransform);
 
-  this.relevantEntities = []; //2d array containing relevant enttiies for each system
-  for (let i = 0; i < this.systems.length; i ++){ //create 2Darray of relevant components
-    this.relevantEntities[i] = [];
+    this.relevantEntities = []; //2d array containing relevant enttiies for each system
+    for (let i = 0; i < this.systems.length; i++) { //create 2Darray of relevant components
+      this.relevantEntities[i] = [];
+    }
+    console.log(this.systems);
   }
 
-  console.log(this.systems);
-  }
-
-  addEntity(newEntity){ //find all systems which cocern the entity and track them
-
-    for (let i = 0; i < this.systems.length; i ++){ //itterate through systems and
-      let entityRelevance = true; //is entity relevant?
-      let requiredComponentFound = [];
-
-      for (let j = 0; j < this.systems[i].requiredComponents.length; j ++) { //for every relevant component in system
-        let requiredComponentFound = false; //is there required component for system in the entity
-
-        for (let k = 0; k < newEntity.componentNames.length; k ++){ //make sure there is a crresponding comopnent in entity
-          console.log(this.systems[i].requiredComponents[j] + '  ' + newEntity.componentNames[k]);
-          if (this.systems[i].requiredComponents[j] === newEntity.componentNames[k]){
-            requiredComponentFound = true;
-            break;
-          }
-        }
-
-        if (requiredComponentFound === false){ //if couldn't find a entityComponent required by system
-          entityRelevance = false; //entity not relevant
-          console.log('this entity isnt relevant');
-          break; //break outta loop, go to next system
-        }
-
-      }
-      if (entityRelevance === true){ //if got to end of loop / entity relevance still is true,
-        console.log('this entity is relevant');
-        this.relevantEntities[i][this.relevantEntities[i].length] = newEntity; //put on
+  addEntity(newEntity) { //find all systems which cocern the entity and track them
+    for (let i = 0; i < this.systems.length; i++) { //itterate through systems and
+      let entityRelevance = this.entityContainsRequiredComponents(this.systems[i], newEntity); //check to see if entity has required components of system
+      if (entityRelevance === true) { //if the entity has all required components
+        this.systems[i].relevantEntities.push(newEntity);
+        // this.relevantEntities[i][this.relevantEntities[i].length] = newEntity; //add it to list of entities relevant to that system
       }
     }
 
   }
 
-  removeEntity(){ //remove all components and tell systems
-
+  removeEntity() { //remove all components and tell systems
+    //delete entity from relevant entities, keep list of free spaces in middle of relevant entities array
   }
 
-  update(){
+  update() {
     // collision.update();
     //   staticResolution.update();
     //     dynamicResolution.update();
-    for (let j = 0; j < this.relevantEntities[0].length; j++){ //itterate through collum of array
-      this.sPhysicsTransform.systemExecution(this.relevantEntities[0][j]);
-    }
 
-    for (let j = 0; j < this.relevantEntities[1].length; j++){ //itterate through collum of array
-      this.sImageTransform.systemExecution(this.relevantEntities[1][j]);
-    }
+    // this.sOverlap.update();
+
+    this.sPhysicsTransform.update();
+
+    this.sImageTransform.update();
+
 
     // for (let j = 0; j < this.relevantEntities[2].length; j++){ //itterate through collum of array
     //   //first only itterate through half of array so everything doesn't happen twice (like with insertion sort)
@@ -81,4 +62,29 @@ class SystemManager{
     // transform.update();
     // render.update();
   }
+
+  entityContainsRequiredComponents(system, entity) {
+    let entityRelevance = true;
+    for (let i = 0; i < system; i++) { //for every relevant component in system
+      let requiredComponentFound = false; //is there required component for system in the entity
+
+      for (let j = 0; j < entity.componentNames.length; j++) { //make sure there is a crresponding comopnent in entity
+        console.log(this.systems[i].requiredComponents[j] + '  ' + entity.componentNames[k]);
+        if (system.requiredComponents[j] === entity.componentNames[k]) {
+          requiredComponentFound = true;
+          break;
+        }
+      }
+      if (requiredComponentFound === false) { //if couldn't find a entityComponent required by system
+        entityRelevance = false; //entity not relevant
+        console.log('this entity isnt relevant');
+        break; //break outta loop, go to next system
+      }
+    }
+    return entityRelevance;
+  }
+
+
+
+
 }
