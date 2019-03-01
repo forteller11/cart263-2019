@@ -21,16 +21,15 @@ class System{ //base functionality for all systems
 class sPhysicsTransform extends System { //applys drags and phy constants (gravity if applicable)
   constructor(arrayOfRelevantEntities){
     super(arrayOfRelevantEntities);
-    this.relevantComponents['cPos','cPhysics','cPhysicsConstants'];
+    this.relevantComponents['cPos','cPhysics'];
   }
 
   systemExecution(entity){
     //generalize to 3 dimensions
     //apply drag and constrain velocties
-    entity.cPhysics.vel.mult(cPhysicsConstants.cartesianDrag);
-    entity.cPhysics.angularVel *= cPhysicsConstants.polarDrag;
-    const maxAngle
-    entity.cPhysics.angularVel = constrain(entity.cPhysics.angularVel, -cPhysicsConstants.maxPolarVel, cPhysicsConstants.maxPolarVel);
+    entity.cPhysics.vel.mult(global.physics.cartesianDrag);
+    entity.cPhysics.angularVel *= global.physics.polarDrag;
+    entity.cPhysics.angularVel = constrain(entity.cPhysics.angularVel, -global.physics.maxPolarVel, global.physics.maxPolarVel);
     entity.cPos.angle += entity.physicsC.angularVel;
 
     //transform position based on velocties

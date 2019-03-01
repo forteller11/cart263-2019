@@ -3,7 +3,7 @@
 class SystemManager{
   constructor(){
     this.systems = []; //array of systems
-    this.relevantComponents = [][];
+    this.relevantComponents = [];
 
     this.sPhysicsTransform = new sPhysicsTransform();
     this.systems.push(this.sPhysicsTransform);
@@ -11,12 +11,15 @@ class SystemManager{
     this.sImageTransform = new sImageTransform();
     this.systems.push(this.sImageTransform);
 
+for (let i = 0; i < this.systems.length; i ++){ //create 2Darray of relevant components
+  this.relevantComponents[i] = [];
+}
   }
 
   addEntity(newEntity){ //find all systems which cocern the entity and track them
 
     for (let i = 0; i < this.systems.length; i ++){ //itterate through systems and
-      let entitysRelevance = true; //is entity relevant?
+      let entityRelevance = true; //is entity relevant?
       let requiredComponentFound = [];
 
       for (let j = 0; j < this.systems[i].relevantComponents.length; j ++) { //for every relevant component in system
@@ -36,7 +39,7 @@ class SystemManager{
 
       }
       if (entityRelevance === true){ //if got to end of loop / entity relevance still is true,
-        this.relevantComponents[i][].push(newEntity); //put on 
+        this.relevantComponents[i][this.relevantComponents[i].length] = newEntity; //put on
       }
     }
 

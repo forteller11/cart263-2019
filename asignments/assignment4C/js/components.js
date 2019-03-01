@@ -17,7 +17,7 @@ class cHitbox{ //circle hitbox
 }
 
 class cPhysics {
-  constructor(mass=null,xVel=0,yVel=0,angleVel=0){
+  constructor(mass=null,xVel=0,yVel=0,angularVel=0){
     this.name = 'cPhysics';
     if (mass===null){
       console.log('mass not set, define by cCollision as PI r ^2');
@@ -46,14 +46,5 @@ class cImage { //contains html image element
     this.image.width = sizeOfImage;
     this.image.height = sizeOfImage;
     body.appendChild(this.image);
-  }
-}
-
-class cPhysicsConstants { //stores physics constants
-  constructor(){
-    this.name = 'cPhysicsConstants';
-    this.maxPolarVel = Math.PI/4//max/min polar velocity
-    this.cartesianDrag = 0.98; //rate at which linear vel approaches 0
-    this.polarDrag = .96; //rate at which rotational vel approaches 0
   }
 }
