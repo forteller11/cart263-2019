@@ -18,6 +18,7 @@ class gPhysicsConstants { //stores physics constants
     this.cartesianDrag = 0.98; //rate at which linear vel approaches 0
     this.polarDrag = .96; //rate at which rotational vel approaches 0
     this.angularVelEffectOnLinear = 10; //how much angle vel effects resultant post collision linear vel
+    this.rotationTransferOnCollision = .2;
   }
 }
 

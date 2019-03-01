@@ -64,14 +64,9 @@ class sDrag extends System { //transforms image to entity position
     this.requiredComponents = ['cPos', 'cHitbox', 'cDraggable'];
 
     document.addEventListener('mousedown', (e) => {
-      console.log('down');
-      console.log(this.relevantEntities)
       for (let i = 0; i < this.relevantEntities.length; i++) {
         if (this.relevantEntities[i].cDraggable.draggable) {
-          // console.log(this.relevantEntities[i]);
-          console.log('down');
           if (this.pointCircleOverlap(e.clientX, e.clientY, this.relevantEntities[i])) {
-            console.log('OVERLAP');
             globalObj.dragData.dragOffsetX = this.relevantEntities[i].cPos.x - e.clientX;
             globalObj.dragData.dragOffsetY = this.relevantEntities[i].cPos.y - e.clientY;
             globalObj.dragData.dragEntityRef = this.relevantEntities[i];
@@ -147,12 +142,17 @@ class sDrag extends System { //transforms image to entity position
     }
 
     systemExecution(e1, e2) {
-      // console.log('systemexecution');
+      // first do bounding box collision (quicker)
       if ((e1.cPos.x + e1.cHitbox.radius > e2.cPos.x - e2.cHitbox.radius) && //horz overlap
         (e2.cPos.x + e2.cHitbox.radius > e1.cPos.x - e1.cHitbox.radius)) {
         if ((e1.cPos.y + e1.cHitbox.radius > e2.cPos.y - e2.cHitbox.radius) && //horz overlap
           (e2.cPos.y + e2.cHitbox.radius > e1.cPos.y - e1.cHitbox.radius)) {
-          return true;
+
+            //then perform pixel perfect collision using square root (slower)
+            const minDistBeforeOverlap = e1.cHitbox.radius+e2.cHitbox.radius;
+            if (distBetween(e1.cPos.x,e1.cPos.y,e2.cPos.x,e2.cPos.y) < minDistBeforeOverlap){
+              return true;
+            }
         }
       }
       return false;
@@ -180,7 +180,7 @@ class sDrag extends System { //transforms image to entity position
 
     systemExecution(e1, e2) {
       const meanRestitution = (e1.cPhysics.restitution + e2.cPhysics.restitution) / 2;
-      const meanRotationalRestitution = meanRestitution * 0.75;
+      const meanAngularRestitution = meanRestitution * 0.5;
 
       const collisionDeltaX = e2.cPos.x - e1.cPos.x;
       const collisionDeltaY = e2.cPos.y - e1.cPos.y;
@@ -189,13 +189,13 @@ class sDrag extends System { //transforms image to entity position
       const deltaMassE2 = e2.cPhysics.invMass / e1.cPhysics.invMass; //how much more e1 shud be effected then e2
       ///dynamic resolution for angles\\\\\
 
-      const rotationToBeTransferredFromEntity1 = e1.cPhysics.angularVel * meanRotationalRestitution;
-      const rotationToBeTransferredFromEntity2 = e2.cPhysics.angularVel * meanRotationalRestitution;
+      const rotationToBeTransferredFromEntity1 = e1.cPhysics.angularVel * globalObj.physics.rotationTransferOnCollision;
+      const rotationToBeTransferredFromEntity2 = e2.cPhysics.angularVel * globalObj.physics.rotationTransferOnCollision;
       //
       e1.cPhysics.angularVel -= rotationToBeTransferredFromEntity1 * deltaMassE1;
-      e2.cPhysics.angularVel += rotationToBeTransferredFromEntity1 * deltaMassE2;
+      e2.cPhysics.angularVel += rotationToBeTransferredFromEntity1 * deltaMassE2 * meanAngularRestitution;
 
-      e1.cPhysics.angularVel += rotationToBeTransferredFromEntity2 * deltaMassE1;
+      e1.cPhysics.angularVel += rotationToBeTransferredFromEntity2 * deltaMassE1 * meanAngularRestitution;
       e2.cPhysics.angularVel -= rotationToBeTransferredFromEntity2 * deltaMassE2;
 
       //the more at a right angle the velocity to collision vector is the more angular momentum changes

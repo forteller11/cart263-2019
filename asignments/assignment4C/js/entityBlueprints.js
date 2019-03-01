@@ -12,9 +12,9 @@ function headBlueprint(){
   newHead.cHitbox = newHitbox;
   newHead.componentNames.push('cHitbox');
 
-  const initVel = 20;
-  const initRot = .2;
-  let newPhysics = new cPhysics(2*radius*Math.PI*Math.PI,ran(-initVel,initVel),ran(-initVel,initVel),ran(-initRot,initRot));
+  const initVel = 10;
+  const initRot = .1;
+  let newPhysics = new cPhysics(4/3*radius*radius*radius*Math.PI,ran(-initVel,initVel),ran(-initVel,initVel),ran(-initRot,initRot));
   newHead.cPhysics = newPhysics;
   newHead.componentNames.push('cPhysics');
 
