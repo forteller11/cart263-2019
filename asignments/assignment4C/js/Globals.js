@@ -33,6 +33,13 @@ class gPhysicsConstants { //stores physics constants
 
   class gDragData{
     constructor(){
-
+      this.mouseX = 0;
+      this.mouseY = 0;
+      this.mouseHistX = [];
+      this.mouseHistY = [];
+      this.mouseHistMaxLength = 6;
+      this.dragOffsetX = null;
+      this.dragOffsetY = null;
+      this.dragEntityRef = null;
     }
   }

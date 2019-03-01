@@ -10,6 +10,9 @@ class SystemManager {
 
     this.sCollisionResolution = new sCollisionResolution(); //sub system, not responsible for own tick/update
 
+    this.sDrag = new sDrag();
+    this.systems.push(this.sDrag);
+
     this.sPhysicsTransform = new sPhysicsTransform();
     this.systems.push(this.sPhysicsTransform);
 
@@ -39,6 +42,8 @@ class SystemManager {
   update() {
 
     this.sOverlap.update(); //this has multiple subsystems
+
+    this.sDrag.update();
 
     this.sPhysicsTransform.update();
 

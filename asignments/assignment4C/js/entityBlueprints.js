@@ -21,6 +21,10 @@ function headBlueprint(){
   let newImage = new cImage('assets/face1.png',radius*2)
   newHead.cImage = newImage;
   newHead.componentNames.push('cImage');
+
+  let newDraggable = new cDraggable();
+  newHead.cDraggable = newDraggable;
+  newHead.componentNames.push('cDraggable');
   return newHead;
   //draggable
 }
