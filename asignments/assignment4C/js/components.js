@@ -47,6 +47,6 @@ class cImage { //contains html image element
 class cDraggable{
   constructor(){
     this.name = 'cDraggable';
-    this.draggable = true;
+    this.draggable = true
   }
 }

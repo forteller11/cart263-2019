@@ -64,14 +64,17 @@ class sDrag extends System { //transforms image to entity position
     this.requiredComponents = ['cPos', 'cHitbox', 'cDraggable'];
 
     document.addEventListener('mousedown', (e) => {
+      console.log('down');
+      console.log(this.relevantEntities)
       for (let i = 0; i < this.relevantEntities.length; i++) {
-        if (this.relevantEntities[i].draggable) {
-          console.log(this.relevantEntities[i]);
+        if (this.relevantEntities[i].cDraggable.draggable) {
+          // console.log(this.relevantEntities[i]);
           console.log('down');
-          if (pointCircleOverlap(e.clientX, e.clientY, this.relevantEntities[i])) {
+          if (this.pointCircleOverlap(e.clientX, e.clientY, this.relevantEntities[i])) {
+            console.log('OVERLAP');
             globalObj.dragData.dragOffsetX = this.relevantEntities[i].cPos.x - e.clientX;
             globalObj.dragData.dragOffsetY = this.relevantEntities[i].cPos.y - e.clientY;
-            globalObj.dragEntityRef = this.relevantEntities[i];
+            globalObj.dragData.dragEntityRef = this.relevantEntities[i];
             break;
           }
         }
@@ -84,7 +87,7 @@ class sDrag extends System { //transforms image to entity position
     });
 
     document.addEventListener('mouseup', (e) => { //calculate
-      if (!(globalObj.dragEntityRef === null)) {
+      if (!(globalObj.dragData.dragEntityRef === null)) {
         let throwComponentX = 0;
         let throwComponentY = 0;
         for (let i = 0; i < globalObj.dragData.mouseHistX.length - 1; i++) { //find delta between mouseHist
@@ -95,10 +98,10 @@ class sDrag extends System { //transforms image to entity position
         throwComponentX = throwComponentX / (globalObj.dragData.mouseHistX.length - 1); //find mean kinda
         throwComponentY = throwComponentY / (globalObj.dragData.mouseHistY.length - 1);
         console.log(this.relevantEntities);
-        globalObj.dragEntityRef.cPhysics.vel.x = throwComponentX;
-        globalObj.dragEntityRef.cPhysics.vel.y = throwComponentY;
+        globalObj.dragData.dragEntityRef.cPhysics.vel.x = throwComponentX;
+        globalObj.dragData.dragEntityRef.cPhysics.vel.y = throwComponentY;
       }
-      globalObj.dragEntityRef = null; //stop dragging
+      globalObj.dragData.dragEntityRef = null; //stop dragging
     });
 
 } //END OF CONSTRUCTOR
@@ -121,13 +124,13 @@ class sDrag extends System { //transforms image to entity position
         globalObj.dragData.dragEntityRef.cPhysics.vel.y = velY * .75;
 
         globalObj.dragData.dragEntityRef.cPos.x = globalObj.dragData.mouseX + globalObj.dragData.dragOffsetX;
-        globalObj.dragData.dragEntityRef.cPos.y = globalObj.dragData.mouseY + globalObj.dragData.dragOffsetX;
+        globalObj.dragData.dragEntityRef.cPos.y = globalObj.dragData.mouseY + globalObj.dragData.dragOffsetY;
       }
     }
 
     pointCircleOverlap(mouseX, mouseY, entity) {
-      if ((mouseX < e1.cPos.x + e1.cHitbox.radius) && (mouseX > e1.cPos.x - e1.cHitbox.radius)) {
-        if ((mouseY < e1.cPos.y + e1.cHitbox.radius) && (mouseY > e1.cPos.y - e1.cHitbox.radius)) {
+      if ((mouseX < entity.cPos.x + entity.cHitbox.radius) && (mouseX > entity.cPos.x - entity.cHitbox.radius)) {
+        if ((mouseY < entity.cPos.y + entity.cHitbox.radius) && (mouseY > entity.cPos.y - entity.cHitbox.radius)) {
           return true;
         }
       }
