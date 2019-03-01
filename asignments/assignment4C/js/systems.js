@@ -1,16 +1,16 @@
 'use strict';
-class System{ //base functionality for all systems
-  constructor(arrayOfRelevantEntities){
+class System { //base functionality for all systems
+  constructor(arrayOfRelevantEntities) {
     this.relevantEntities = []; //array of relevant entities to system
     this.requiredComponents = []; //array of relevant components
   }
 
-  systemExecution(entity){
+  systemExecution(entity) {
     console.log('overide this method for useful system');
   }
 
-  update(){
-    for (let entity of this.relevantEntities){
+  update() {
+    for (let entity of this.relevantEntities) {
       this.systemExecution(entity);
     }
   }
@@ -19,12 +19,12 @@ class System{ //base functionality for all systems
 
 
 class sPhysicsTransform extends System { //applys drags and phy constants (gravity if applicable)
-  constructor(arrayOfRelevantEntities){
+  constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
-    this.requiredComponents = ['cPos','cPhysics'];
+    this.requiredComponents = ['cPos', 'cPhysics'];
   }
 
-  systemExecution(entity){
+  systemExecution(entity) {
     //generalize to 3 dimensions
     //apply drag and constrain velocties
     entity.cPhysics.vel.mult(globalObj.physics.cartesianDrag);
@@ -41,38 +41,51 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
 }
 
 
-class sImageTransform extends System{ //transforms image to entity position
-  constructor(arrayOfRelevantEntities){
+class sImageTransform extends System { //transforms image to entity position
+  constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
-    this.requiredComponents = ['cPos','cHitbox','cImage'];
+    this.requiredComponents = ['cPos', 'cImage'];
   }
 
-  systemExecution(entity){
-    const angleDegrees = entity.cPos.angle*180;
-    entity.cImage.image.style.transform = 'rotate('+angleDegrees+'deg)';
+  systemExecution(entity) {
+    const angleDegrees = entity.cPos.angle * 180;
+    entity.cImage.image.style.transform = 'rotate(' + angleDegrees + 'deg)';
 
-    entity.cImage.image.style.left = ( entity.cPos.x - entity.cHitbox.radius) + 'px';
-    entity.cImage.image.style.top = (entity.cPos.y - entity.cHitbox.radius) + 'px';
+    entity.cImage.image.style.left = (entity.cPos.x - entity.cImage.image.width/2) + 'px';
+    entity.cImage.image.style.top = (entity.cPos.y - entity.cImage.image.height/2) + 'px';
   }
 
 }
 
-class sOverlap extends System{ //transforms image to entity position
-  constructor(arrayOfRelevantEntities){
+class sOverlap extends System { //transforms image to entity position
+  constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
-    this.requiredComponents = ['cPos','cHitbox'];
+    this.requiredComponents = ['cPos', 'cHitbox'];
   }
 
-  systemExecution(entity){
-    const angleDegrees = entity.cPos.angle*180;
-    entity.cImage.image.style.transform = 'rotate('+angleDegrees+'deg)';
-    entity.cImage.image.style.left = ( entity.cPos.x - entity.cHitbox.radius) + 'px';
-    entity.cImage.image.style.top = (entity.cPos.y - entity.cHitbox.radius) + 'px';
+  systemExecution(e1, e2) {
+    // console.log('systemexecution');
+    if ((e1.cPos.x + e1.cHitbox.radius > e2.cPos.x - e2.cHitbox.radius) && //horz overlap
+      (e2.cPos.x + e2.cHitbox.radius > e1.cPos.x - e1.cHitbox.radius)) {
+      if ((e1.cPos.y + e1.cHitbox.radius > e2.cPos.y - e2.cHitbox.radius) && //horz overlap
+        (e2.cPos.y + e2.cHitbox.radius > e1.cPos.y - e1.cHitbox.radius)) {
+        console.log('collision!');
+        return true;
+      }
+    }
+    return false;
+
   }
 
-  update(){
+  update() { //cycle through all pairs of collidable components,
+    for (let i = 0; i < this.relevantEntities.length; i++) {
+      for (let j = i + 1; j < this.relevantEntities.length; j++) {
+        if (this.systemExecution(this.relevantEntities[i], this.relevantEntities[j])) { //check overlap
+          onCollisionEvent(this.relevantEntities[i], this.relevantEntities[j]); //propogate event
+        }
+      }
+    }
     //cycle through all relevant entities
-    onCollisionEvent();
   }
 
 }

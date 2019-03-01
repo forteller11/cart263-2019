@@ -1,18 +1,18 @@
 'use strict';
 
-function createHead(){
+function headBlueprint(){
   let newHead = new Entity();
 
-  let newPos = new cPos(ran(Math.PI),window.innerWidth/2,window.innerHeight/2);
+  let newPos = new cPos(ran(Math.PI),ran(window.innerWidth),ran(window.innerHeight));
   newHead.cPos = newPos;
   newHead.componentNames.push('cPos');
 
   let radius = ran(32,128);
-  let newHitbox = new cHitbox(radius);
-  newHead.cHitbox = newHitbox;
-  newHead.componentNames.push('cHitbox');
+  // let newHitbox = new cHitbox(radius);
+  // newHead.cHitbox = newHitbox;
+  // newHead.componentNames.push('cHitbox');
 
-  const initVel = 2;
+  const initVel = 4;
   let newPhysics = new cPhysics(2*radius*Math.PI*Math.PI,ran(-initVel,initVel),ran(-initVel,initVel));
   newHead.cPhysics = newPhysics;
   newHead.componentNames.push('cPhysics');
@@ -22,4 +22,11 @@ function createHead(){
   newHead.componentNames.push('cImage');
   return newHead;
   //draggable
+}
+
+function createEntitiesFromBlueprint(entityBlueprint,numberToCreate){
+  for (let i = 0; i < numberToCreate; i ++){
+    let newEntity = entityBlueprint();
+    systemManager.addEntity(newEntity);
+  }
 }

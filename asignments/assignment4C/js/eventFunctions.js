@@ -1,5 +1,5 @@
 'use strict';
 
-function onEntityCollision(e1,e2){
+function onCollisionEvent(e1,e2){
 
 }

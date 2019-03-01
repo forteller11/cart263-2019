@@ -10,10 +10,8 @@ function main(){
   globalObj = new Globals();
   systemManager = new SystemManager();
 
-  firstEntity = createHead();
-  systemManager.addEntity(firstEntity);
+  createEntitiesFromBlueprint(headBlueprint,3);
 
-console.log(firstEntity);
   setInterval(update, 16.7);
 
 

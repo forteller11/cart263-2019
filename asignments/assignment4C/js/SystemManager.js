@@ -23,10 +23,8 @@ class SystemManager {
 
   addEntity(newEntity) { //find all systems which cocern the entity and track them
     for (let i = 0; i < this.systems.length; i++) { //itterate through systems and
-      let entityRelevance = this.entityContainsRequiredComponents(this.systems[i], newEntity); //check to see if entity has required components of system
-      if (entityRelevance === true) { //if the entity has all required components
-        this.systems[i].relevantEntities.push(newEntity);
-        // this.relevantEntities[i][this.relevantEntities[i].length] = newEntity; //add it to list of entities relevant to that system
+      if (this.entityContainsRequiredComponents(this.systems[i], newEntity)) { //if the entity has all required components
+        this.systems[i].relevantEntities.push(newEntity); //add entity to relevant entities of system
       }
     }
 
@@ -41,7 +39,7 @@ class SystemManager {
     //   staticResolution.update();
     //     dynamicResolution.update();
 
-    // this.sOverlap.update();
+    this.sOverlap.update();
 
     this.sPhysicsTransform.update();
 
@@ -65,23 +63,22 @@ class SystemManager {
 
   entityContainsRequiredComponents(system, entity) {
     let entityRelevance = true;
-    for (let i = 0; i < system; i++) { //for every relevant component in system
-      let requiredComponentFound = false; //is there required component for system in the entity
-
-      for (let j = 0; j < entity.componentNames.length; j++) { //make sure there is a crresponding comopnent in entity
-        console.log(this.systems[i].requiredComponents[j] + '  ' + entity.componentNames[k]);
-        if (system.requiredComponents[j] === entity.componentNames[k]) {
-          requiredComponentFound = true;
-          break;
-        }
-      }
-      if (requiredComponentFound === false) { //if couldn't find a entityComponent required by system
-        entityRelevance = false; //entity not relevant
-        console.log('this entity isnt relevant');
-        break; //break outta loop, go to next system
+    for (let i = 0; i < system.requiredComponents.length; i++) { //for every required component in system
+      if (this.doesEntityHaveComponent(system.requiredComponents[i],entity) === false){ //does entity of x component?
+        entityRelevance = false;
+        break;
       }
     }
     return entityRelevance;
+  }
+
+  doesEntityHaveComponent(component,entity){ //returns true or false
+    for (let j = 0; j < entity.componentNames.length; j++) { //make sure there is a crresponding comopnent in entity
+      if (entity.componentNames[j] === component) {
+        return true;
+      }
+    }
+    return false;
   }
 
 
