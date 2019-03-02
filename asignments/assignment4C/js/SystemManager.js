@@ -51,7 +51,7 @@ class SystemManager {
   }
 
 
-  doesEntityHaveComponent(component,entity){ //returns true or false
+  entityHasComponent(component,entity){ //returns true or false
     for (let j = 0; j < entity.componentNames.length; j++) { //make sure there is a crresponding comopnent in entity
       if (entity.componentNames[j] === component) {
         return true;
@@ -63,7 +63,7 @@ class SystemManager {
   entityContainsRequiredComponents(requiredComponent, entity) {
       let entityRelevance = true;
       for (let i = 0; i < requiredComponent.length; i++) { //for every required component in system
-        if (this.doesEntityHaveComponent(requiredComponent[i], entity) === false){ //does entity of x component?
+        if (this.entityHasComponent(requiredComponent[i], entity) === false){ //does entity of x component?
           entityRelevance = false;
           break;
         }
