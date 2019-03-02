@@ -11,7 +11,9 @@ function main(){
   console.log(globalObj);
   systemManager = new SystemManager();
 
+  createEntitiesFromBlueprint(playFieldBlueprint,1);
   createEntitiesFromBlueprint(headBlueprint,3);
+
 
   setInterval(update, 16.7);
 

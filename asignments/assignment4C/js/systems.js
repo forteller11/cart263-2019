@@ -155,33 +155,78 @@ class sOverlap extends System { //transforms image to entity position
   }
 
   systemExecution(e1, e2) {
-    // first do bounding box collision (quicker)
-    if ((e1.cPos.x + e1.cHitbox.radius > e2.cPos.x - e2.cHitbox.radius) && //horz overlap
-      (e2.cPos.x + e2.cHitbox.radius > e1.cPos.x - e1.cHitbox.radius)) {
-      if ((e1.cPos.y + e1.cHitbox.radius > e2.cPos.y - e2.cHitbox.radius) && //horz overlap
-        (e2.cPos.y + e2.cHitbox.radius > e1.cPos.y - e1.cHitbox.radius)) {
+    //collision between circle:circle
+    if ((e1.cHitbox.type === 'circle') && (e2.cHitbox.type === 'circle')) {
+      if (this.circleCircleOverlap(e1, e2)) {return true};
+    }
 
-        //then perform pixel perfect collision using square root (slower)
-        const minDistBeforeOverlap = e1.cHitbox.radius + e2.cHitbox.radius;
-        if (distBetween(e1.cPos.x, e1.cPos.y, e2.cPos.x, e2.cPos.y) < minDistBeforeOverlap) {
-          return true;
-        }
+    //collision between box:box
+    if ((e1.cHitbox.type === 'boundingbox') && (e2.cHitbox.type === 'boundingbox')) {
+      if (this.boxBoxOverlap(e1, e2)) {return true};
+    }
+
+    if ((e1.cHitbox.type === 'boundingbox') && (e2.cHitbox.type === 'circle')) {
+      if (this.boxCircleOverlap(e1, e2)) {return true};
+    }
+
+    if
+       ((e1.cHitbox.type === 'circle') && (e2.cHitbox.type === 'boundingbox')) {
+      if (this.boxCircleOverlap(e2, e1)) {return true};
+    }
+
+
+  }
+
+boxBoxOverlap(e1,e2){
+  //bounding box collision check
+  if ((e1.cPos.x + e1.cHitbox.radius > e2.cPos.x - e2.cHitbox.radius) && //horz overlap
+    (e2.cPos.x + e2.cHitbox.radius > e1.cPos.x - e1.cHitbox.radius)) {
+    if ((e1.cPos.y + e1.cHitbox.radius > e2.cPos.y - e2.cHitbox.radius) && //horz overlap
+      (e2.cPos.y + e2.cHitbox.radius > e1.cPos.y - e1.cHitbox.radius)) {
+        return true;
       }
     }
     return false;
+}
 
+circleCircleOverlap(e1,e2) {
+  // first do bounding box collision (quicker)
+  if (this.boxBoxOverlap(e1,e2)){
+      //then perform pixel perfect collision using square root (slower)
+      const minDistBeforeOverlap = e1.cHitbox.radius + e2.cHitbox.radius;
+      if (distBetween(e1.cPos.x, e1.cPos.y, e2.cPos.x, e2.cPos.y) < minDistBeforeOverlap) {
+        return true;
+      }
   }
+  return false;
+}
 
-  update() { //cycle through all pairs of collidable components,
-    for (let i = 0; i < this.relevantEntities.length; i++) {
-      for (let j = i + 1; j < this.relevantEntities.length; j++) {
-        if (this.systemExecution(this.relevantEntities[i], this.relevantEntities[j])) { //check overlap
-          onCollisionEvent(this.relevantEntities[i], this.relevantEntities[j]); //propogate event
-        }
+boxCircleOverlap(e1,e2){
+  // if (e1.cPos.x > e2.cPos.x){ //if box right of circle
+  //
+  // }
+  //
+  // if (this.boxBoxOverlap(e1,e2)){
+  //     //then perform pixel perfect collision using square root (slower)
+  //     const minDistBeforeOverlap = e1.cHitbox.radius + e2.cHitbox.radius;
+  //     if (distBetween(e1.cPos.x, e1.cPos.y, e2.cPos.x, e2.cPos.y) < minDistBeforeOverlap) {
+  //       return true;
+  //     }
+  // }
+  // return false;
+}
+
+
+update() { //cycle through all pairs of collidable components,
+  for (let i = 0; i < this.relevantEntities.length; i++) {
+    for (let j = i + 1; j < this.relevantEntities.length; j++) {
+      if (this.systemExecution(this.relevantEntities[i], this.relevantEntities[j])) { //check overlap
+        onCollisionEvent(this.relevantEntities[i], this.relevantEntities[j]); //propogate event
       }
     }
-    //cycle through all relevant entities
   }
+  //cycle through all relevant entities
+}
 
 }
 

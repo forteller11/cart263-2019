@@ -10,9 +10,10 @@ class cPos { //stores position
 }
 
 class cHitbox{ //circle hitbox
-  constructor(radius){
+  constructor(radius,type='circle'){
     this.name = 'cHitbox';
     this.radius = radius;
+    this.type = type; //can be 'circle',boundingbox,(polygon)
   }
 }
 
@@ -30,13 +31,14 @@ class cPhysics {
 }
 
 class cImage { //contains html image element
-  constructor(imgUrl=null,sizeOfImage=null){
+  constructor(imgUrl=null,sizeOfImage=null,depth = 0){
     this.name = 'cImage';
     this.image = document.createElement('IMG');
     this.image.src = imgUrl;
     this.image.style.position = 'fixed';
     this.image.width = sizeOfImage;
     this.image.height = sizeOfImage;
+    this.image.style.zIndex = depth;
     body.appendChild(this.image);
 
     if (sizeOfImage === null){console.log('imgUrl === null');}

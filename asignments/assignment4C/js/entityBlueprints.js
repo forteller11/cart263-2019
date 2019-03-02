@@ -14,12 +14,23 @@ function headBlueprint() {
   newHead.addComponent(new cImage('assets/face1.png', radius * 2));
   newHead.addComponent(new cDraggable());
 
-  return newHead;
+systemManager.addEntity(newHead);
+}
+
+function playFieldBlueprint() {
+  let radius = ran(32, 128);
+
+  let newHead = new Entity();
+
+  newHead.addComponent(new cPos(0, ran(window.innerWidth / 2), ran(window.innerHeight)));
+  newHead.addComponent(new cHitbox(radius));
+  newHead.addComponent(new cImage('assets/rorty.jpg', radius * 2,-1));
+
+systemManager.addEntity(newHead);
 }
 
 function createEntitiesFromBlueprint(entityBlueprint, numberToCreate) {
   for (let i = 0; i < numberToCreate; i++) {
-    let newEntity = entityBlueprint();
-    systemManager.addEntity(newEntity);
+    entityBlueprint();
   }
 }
