@@ -178,6 +178,7 @@ class sOverlap extends System { //transforms image to entity position
   }
 
 boxBoxOverlap(e1,e2){
+
   //bounding box collision check
   if ((e1.cPos.x + e1.cHitbox.radius > e2.cPos.x - e2.cHitbox.radius) && //horz overlap
     (e2.cPos.x + e2.cHitbox.radius > e1.cPos.x - e1.cHitbox.radius)) {
@@ -201,21 +202,79 @@ circleCircleOverlap(e1,e2) {
   return false;
 }
 
-boxCircleOverlap(e1,e2){
-  // if (e1.cPos.x > e2.cPos.x){ //if box right of circle
-  //
-  // }
-  //
-  // if (this.boxBoxOverlap(e1,e2)){
-  //     //then perform pixel perfect collision using square root (slower)
-  //     const minDistBeforeOverlap = e1.cHitbox.radius + e2.cHitbox.radius;
-  //     if (distBetween(e1.cPos.x, e1.cPos.y, e2.cPos.x, e2.cPos.y) < minDistBeforeOverlap) {
-  //       return true;
-  //     }
-  // }
-  // return false;
+boxPointOverlap(e1,e2){
+  //bounding box collision check
+  if ((e1.cPos.x + e1.cHitbox.radius > e2.cPos.x) && //horz overlap
+    (e2.cPos.x > e1.cPos.x - e1.cHitbox.radius)) {
+    if ((e1.cPos.y + e1.cHitbox.radius > e2.cPos.y) && //horz overlap
+      (e2.cPos.y > e1.cPos.y - e1.cHitbox.radius)) {
+        return true;
+      }
+    }
+    return false;
 }
 
+boxXYOverlap(e1,x2,y2){
+  //bounding box collision check
+  if ((e1.cPos.x + e1.cHitbox.radius > x2) && //horz overlap
+    (x2 > e1.cPos.x - e1.cHitbox.radius)) {
+    if ((e1.cPos.y + e1.cHitbox.radius > y2) && //horz overlap
+      (y2 > e1.cPos.y - e1.cHitbox.radius)) {
+        return true;
+      }
+    }
+    return false;
+}
+
+boxCircleOverlap(e1,e2){
+  //first check if the x/y of the circle is within the box and exit function if true (for performance)
+  if (boxPointOverlap(e1,e2){ return true}); //else do more computationally expensive test
+
+  const overlapAccuracy = 2; //higher is more precise
+  let arrayOfCollisionPointsX = [];
+  let arrayOfCollisionPointsY = [];
+
+  const maxDistBetweenPoints =  (e2.cHitbox.radius*2)/overlapAccuracy;
+  //generate enough points that when space evenly they don't exceede max distBetweenPoints
+  const pointsPerSide = Math.ceil(e1.cHitbox.radius/maxDistBetweenPoints);
+  const evenSpaceBetweenPoints = (e2.cHitbox.radius*2)/pointsPerSide;
+
+  const topOfBox =   e1.cPos.y-e1.cHitbox.radius;
+  const botOfBox =   e1.cPos.y+e1.cHitbox.radius;
+  const leftOfBox =  e1.cPos.x-e1.cHitbox.radius;
+  const rightOfBox = e1.cPos.x+e1.cHitbox.radius;
+
+  for (let i = 0; i < pointsPerSide; i++){
+    const topOfBox =   e1.cPos.y-e1.cHitbox.radius;
+    const botOfBox =   e1.cPos.y+e1.cHitbox.radius;
+    const leftOfBox =  e1.cPos.x-e1.cHitbox.radius;
+    const rightOfBox = e1.cPos.x+e1.cHitbox.radius;
+
+
+    //points from top-left of box to bot-left
+    arrayOfCollisionsPointsX[i] = leftOfBox;
+    arrayOfCollisionsPointsY[i] = topOfBox + (i*evenSpaceBetweenPoints);
+
+    //points from bot-left of box to bot-right
+    arrayOfCollisionsPointsX[i+(pointsPerSide*1)-1] = leftOfBox + (i*evenSpaceBetweenPoints);
+    arrayOfCollisionsPointsY[i+(pointsPerSide*1)-1] = botOfBox;
+
+    //points from bot-right to bot-top of box
+    arrayOfCollisionsPointsX[i+(pointsPerSide*2)-1] = rightOfBox;
+    arrayOfCollisionsPointsY[i+(pointsPerSide*2)-1] = botOfBox - (i*evenSpaceBetweenPoints);
+
+    //topright to topleft
+    arrayOfCollisionsPointsX[i+(pointsPerSide*3)-1] = rightOfBox - (i*evenSpaceBetweenPoints);
+    arrayOfCollisionsPointsY[i+(pointsPerSide*3)-1] = topOfBox;
+  }
+
+  for (let i = 0; i < arrayOfCollisionPointsX.length; i++){
+    if (boxXYOverlap(e1,arrayOfCollisionPointsX[i],arrayOfCollisionPointsY[i]){
+      return true;
+    }
+  }
+  return false;
+}
 
 update() { //cycle through all pairs of collidable components,
   for (let i = 0; i < this.relevantEntities.length; i++) {

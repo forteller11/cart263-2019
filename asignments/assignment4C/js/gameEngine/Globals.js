@@ -1,5 +1,5 @@
 'use strict';
-
+//The parent of a bunch of singleton components
 class Globals{
   constructor(){
     this.physics = new gPhysicsConstants();
