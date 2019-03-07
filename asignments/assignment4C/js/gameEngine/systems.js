@@ -92,8 +92,8 @@ class sDrag extends System { //transforms image to entity position
 
   update() {
     if (globalObj.mouse.histX.length < globalObj.mouse.histMaxLength) { //store mouse positions every frame
-      globalObj.mouse.histX.push(globalObj.drag.mouseX);
-      globalObj.mouse.histY.push(globalObj.drag.mouseY);
+      globalObj.mouse.histX.push(globalObj.mouse.x);
+      globalObj.mouse.histY.push(globalObj.mouse.y);
     } else { //remove oldest, add newest pos
       globalObj.mouse.histX.splice(0, 1);
       globalObj.mouse.histY.splice(0, 1);
@@ -118,8 +118,8 @@ class sDrag extends System { //transforms image to entity position
         globalObj.drag.dragEntityRef.cPhysics.vel.y = velY * .75;
       }
       //move pos based on mouse pos and offsets
-      globalObj.drag.dragEntityRef.cPos.x = globalObj.drag.mouseX + globalObj.drag.dragOffsetX;
-      globalObj.drag.dragEntityRef.cPos.y = globalObj.drag.mouseY + globalObj.drag.dragOffsetY;
+      globalObj.drag.dragEntityRef.cPos.x = globalObj.mouse.x + globalObj.drag.dragOffsetX;
+      globalObj.drag.dragEntityRef.cPos.y = globalObj.mouse.y + globalObj.drag.dragOffsetY;
     }
 
   }
@@ -232,12 +232,13 @@ boxPointOverlap(e1,...args){
 }
 
 boxCircleOverlap(e1,e2){
-  console.log('boxcircleoverlap');
+  // console.log('boxcircleoverlap');
   //first check if the x/y of the circle is within the box and exit function if true (for performance)
-  if (this.boxPointOverlap(e1,e2)){
+  if (this.boxPointOverlap(e1,globalObj.mouse.x,globalObj.mouse.y)){
+    console.log('truee');
     return true;
   } //else do more computationally expensive test
-  console.log(this.boxPointOverlap(e1,globalObj.mouse.x,globalObj.mouse.y));
+
   //
   // const overlapAccuracy = 2; //higher is more precise
   // let arrayOfCollisionPointsX = [];
