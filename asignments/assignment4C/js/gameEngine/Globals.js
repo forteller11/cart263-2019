@@ -3,8 +3,8 @@
 class Globals{
   constructor(){
     this.physics = new gPhysicsConstants();
-    this.mouseEvents = new gMouseEvents();
-    this.dragData = new gDragData();
+    this.mouse = new gMouseEvents();
+    this.drag = new gDragData();
   }
   update(){
     this.mouseEvents.update();
@@ -25,20 +25,18 @@ class gPhysicsConstants { //stores physics constants
 
   class gMouseEvents{ //tracks mouseEvents
     constructor(){
-      this.mouseClick; //on initial click === true, then equals false
-      this.mouseDown;
-      this.mouseX;
-      this.mouseY;
+      this.click = false; //on initial click === true, then equals false
+      this.down = false;
+      this.x = null;
+      this.x = null;
+      this.histX = [];
+      this.histY = [];
+      this.histMaxLength = 6;
     }
   }
 
   class gDragData{
     constructor(){
-      this.mouseX = 0;
-      this.mouseY = 0;
-      this.mouseHistX = [];
-      this.mouseHistY = [];
-      this.mouseHistMaxLength = 6;
       this.dragOffsetX = null;
       this.dragOffsetY = null;
       this.dragEntityRef = null;

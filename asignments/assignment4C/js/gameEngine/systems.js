@@ -67,9 +67,9 @@ class sDrag extends System { //transforms image to entity position
       for (let i = 0; i < this.relevantEntities.length; i++) {
         if (this.relevantEntities[i].cDraggable.draggable) {
           if (this.pointCircleOverlap(e.clientX, e.clientY, this.relevantEntities[i])) {
-            globalObj.dragData.dragOffsetX = this.relevantEntities[i].cPos.x - e.clientX;
-            globalObj.dragData.dragOffsetY = this.relevantEntities[i].cPos.y - e.clientY;
-            globalObj.dragData.dragEntityRef = this.relevantEntities[i];
+            globalObj.drag.dragOffsetX = this.relevantEntities[i].cPos.x - e.clientX;
+            globalObj.drag.dragOffsetY = this.relevantEntities[i].cPos.y - e.clientY;
+            globalObj.drag.dragEntityRef = this.relevantEntities[i];
             break;
           }
         }
@@ -77,49 +77,49 @@ class sDrag extends System { //transforms image to entity position
     });
 
     document.addEventListener('mousemove', (e) => {
-      globalObj.dragData.mouseX = e.clientX; //update mouse pos
-      globalObj.dragData.mouseY = e.clientY;
+      globalObj.mouse.x = e.clientX; //update mouse pos
+      globalObj.mouse.y = e.clientY;
     });
 
     document.addEventListener('mouseup', (e) => { //calculate
-      if (!(globalObj.dragData.dragEntityRef === null)) {
+      if (!(globalObj.drag.dragEntityRef === null)) {
         this.setDragEntityReleaseVelocity();
       }
-      globalObj.dragData.dragEntityRef = null; //stop dragging
+      globalObj.drag.dragEntityRef = null; //stop dragging
     });
 
   } //END OF CONSTRUCTOR
 
   update() {
-    if (globalObj.dragData.mouseHistX.length < globalObj.dragData.mouseHistMaxLength) { //store mouse positions every frame
-      globalObj.dragData.mouseHistX.push(globalObj.dragData.mouseX);
-      globalObj.dragData.mouseHistY.push(globalObj.dragData.mouseY);
+    if (globalObj.mouse.histX.length < globalObj.mouse.histMaxLength) { //store mouse positions every frame
+      globalObj.mouse.histX.push(globalObj.drag.mouseX);
+      globalObj.mouse.histY.push(globalObj.drag.mouseY);
     } else { //remove oldest, add newest pos
-      globalObj.dragData.mouseHistX.splice(0, 1);
-      globalObj.dragData.mouseHistY.splice(0, 1);
-      globalObj.dragData.mouseHistX.push(globalObj.dragData.mouseX);
-      globalObj.dragData.mouseHistY.push(globalObj.dragData.mouseY);
+      globalObj.mouse.histX.splice(0, 1);
+      globalObj.mouse.histY.splice(0, 1);
+      globalObj.mouse.histX.push(globalObj.mouse.x);
+      globalObj.mouse.histY.push(globalObj.mouse.y);
     }
 
-    if (!(globalObj.dragData.dragEntityRef === null)) { //stop dragging if draggable becomes false
-      if (globalObj.dragData.dragEntityRef.cDraggable.draggable === false) { //if during update entity becomes undraggable...
-        if (systemManager.entityHasComponent('cPhysics', globalObj.dragData.dragEntityRef)) {
+    if (!(globalObj.drag.dragEntityRef === null)) { //stop dragging if draggable becomes false
+      if (globalObj.drag.dragEntityRef.cDraggable.draggable === false) { //if during update entity becomes undraggable...
+        if (systemManager.entityHasComponent('cPhysics', globalObj.drag.dragEntityRef)) {
           this.setDragEntityReleaseVelocity();
         }
-        globalObj.dragData.dragEntityRef = null; //stop dragging
+        globalObj.drag.dragEntityRef = null; //stop dragging
       }
     }
 
-    if (!(globalObj.dragData.dragEntityRef === null)) { //set vel and pos of entity being dragged
-      if (systemManager.entityHasComponent('cPhysics', globalObj.dragData.dragEntityRef)) {
-        const velX = globalObj.dragData.mouseHistX[globalObj.dragData.mouseHistX.length - 1] - globalObj.dragData.mouseHistX[globalObj.dragData.mouseHistX.length - 2];
-        const velY = globalObj.dragData.mouseHistY[globalObj.dragData.mouseHistY.length - 1] - globalObj.dragData.mouseHistY[globalObj.dragData.mouseHistY.length - 2];
-        globalObj.dragData.dragEntityRef.cPhysics.vel.x = velX * .75;
-        globalObj.dragData.dragEntityRef.cPhysics.vel.y = velY * .75;
+    if (!(globalObj.drag.dragEntityRef === null)) { //set vel and pos of entity being dragged
+      if (systemManager.entityHasComponent('cPhysics', globalObj.drag.dragEntityRef)) {
+        const velX = globalObj.mouse.histX[globalObj.mouse.histX.length - 1] - globalObj.mouse.histX[globalObj.mouse.histX.length - 2];
+        const velY = globalObj.mouse.histY[globalObj.mouse.histY.length - 1] - globalObj.mouse.histY[globalObj.mouse.histY.length - 2];
+        globalObj.drag.dragEntityRef.cPhysics.vel.x = velX * .75;
+        globalObj.drag.dragEntityRef.cPhysics.vel.y = velY * .75;
       }
       //move pos based on mouse pos and offsets
-      globalObj.dragData.dragEntityRef.cPos.x = globalObj.dragData.mouseX + globalObj.dragData.dragOffsetX;
-      globalObj.dragData.dragEntityRef.cPos.y = globalObj.dragData.mouseY + globalObj.dragData.dragOffsetY;
+      globalObj.drag.dragEntityRef.cPos.x = globalObj.drag.mouseX + globalObj.drag.dragOffsetX;
+      globalObj.drag.dragEntityRef.cPos.y = globalObj.drag.mouseY + globalObj.drag.dragOffsetY;
     }
 
   }
@@ -135,15 +135,15 @@ class sDrag extends System { //transforms image to entity position
   setDragEntityReleaseVelocity() {
     let throwComponentX = 0;
     let throwComponentY = 0;
-    for (let i = 0; i < globalObj.dragData.mouseHistX.length - 1; i++) { //find delta between mouseHist
-      const weight = i / (globalObj.dragData.mouseHistMaxLength - 1); //most recent histories have full delta weight;
-      throwComponentX += (globalObj.dragData.mouseHistX[i + 1] - globalObj.dragData.mouseHistX[i]) * weight;
-      throwComponentY += (globalObj.dragData.mouseHistY[i + 1] - globalObj.dragData.mouseHistY[i]) * weight;
+    for (let i = 0; i < globalObj.mouse.histX.length - 1; i++) { //find delta between mouseHist
+      const weight = i / (globalObj.mouse.histMaxLength - 1); //most recent histories have full delta weight;
+      throwComponentX += (globalObj.mouse.histX[i + 1] - globalObj.mouse.histX[i]) * weight;
+      throwComponentY += (globalObj.mouse.histY[i + 1] - globalObj.mouse.histY[i]) * weight;
     }
-    throwComponentX = throwComponentX / (globalObj.dragData.mouseHistX.length - 1); //find mean kinda
-    throwComponentY = throwComponentY / (globalObj.dragData.mouseHistY.length - 1);
-    globalObj.dragData.dragEntityRef.cPhysics.vel.x = throwComponentX;
-    globalObj.dragData.dragEntityRef.cPhysics.vel.y = throwComponentY;
+    throwComponentX = throwComponentX / (globalObj.mouse.histX.length - 1); //find mean kinda
+    throwComponentY = throwComponentY / (globalObj.mouse.histY.length - 1);
+    globalObj.drag.dragEntityRef.cPhysics.vel.x = throwComponentX;
+    globalObj.drag.dragEntityRef.cPhysics.vel.y = throwComponentY;
   }
 }
 
@@ -202,24 +202,29 @@ circleCircleOverlap(e1,e2) {
   return false;
 }
 
-boxPointOverlap(e1,e2){
-  //bounding box collision check
-  if ((e1.cPos.x + e1.cHitbox.radius > e2.cPos.x) && //horz overlap
-    (e2.cPos.x > e1.cPos.x - e1.cHitbox.radius)) {
-    if ((e1.cPos.y + e1.cHitbox.radius > e2.cPos.y) && //horz overlap
-      (e2.cPos.y > e1.cPos.y - e1.cHitbox.radius)) {
-        return true;
-      }
-    }
-    return false;
-}
+boxPointOverlap(e1,...args){
 
-boxXYOverlap(e1,x2,y2){
+  let e2X;
+  let e2Y;
+
+  if (args.length === 1){
+    console.log('length=1');
+    console.log(args[0]);
+    e2X = args[0].cPos.x; // FIXME
+    e2Y = args[0].cPos.y;
+  } else if (args.length === 2){
+    console.log('length=2');
+    e2X = args[0];
+    e2Y = args[1];
+  } else {
+    console.log('wrong number of arguments!');
+  }
+
   //bounding box collision check
-  if ((e1.cPos.x + e1.cHitbox.radius > x2) && //horz overlap
-    (x2 > e1.cPos.x - e1.cHitbox.radius)) {
-    if ((e1.cPos.y + e1.cHitbox.radius > y2) && //horz overlap
-      (y2 > e1.cPos.y - e1.cHitbox.radius)) {
+  if ((e1.cPos.x + e1.cHitbox.radius > e2X) && //horz overlap
+    (e2X > e1.cPos.x - e1.cHitbox.radius)) {
+    if ((e1.cPos.y + e1.cHitbox.radius > e2Y) && //horz overlap
+      (e2Y > e1.cPos.y - e1.cHitbox.radius)) {
         return true;
       }
     }
@@ -227,52 +232,57 @@ boxXYOverlap(e1,x2,y2){
 }
 
 boxCircleOverlap(e1,e2){
+  console.log('boxcircleoverlap');
   //first check if the x/y of the circle is within the box and exit function if true (for performance)
-  if (boxPointOverlap(e1,e2){ return true}); //else do more computationally expensive test
+  if (this.boxPointOverlap(e1,e2)){
+    return true;
+  } //else do more computationally expensive test
+  console.log(this.boxPointOverlap(e1,globalObj.mouse.x,globalObj.mouse.y));
+  //
+  // const overlapAccuracy = 2; //higher is more precise
+  // let arrayOfCollisionPointsX = [];
+  // let arrayOfCollisionPointsY = [];
+  // const maxDistBetweenPoints =  (e2.cHitbox.radius*2)/overlapAccuracy;
+  // //generate enough points that when space evenly they don't exceede max distBetweenPoints
+  // const pointsPerSide = Math.ceil(e1.cHitbox.radius/maxDistBetweenPoints);
+  // const evenSpaceBetweenPoints = (e2.cHitbox.radius*2)/pointsPerSide;
+  // console.log('pointsPerSide:'+   pointsPerSide);
+  // const topOfBox =   e1.cPos.y-e1.cHitbox.radius;
+  // const botOfBox =   e1.cPos.y+e1.cHitbox.radius;
+  // const leftOfBox =  e1.cPos.x-e1.cHitbox.radius;
+  // const rightOfBox = e1.cPos.x+e1.cHitbox.radius;
+  //
+  // for (let i = 0; i < pointsPerSide; i++){
+  //   const topOfBox =   e1.cPos.y-e1.cHitbox.radius;
+  //   const botOfBox =   e1.cPos.y+e1.cHitbox.radius;
+  //   const leftOfBox =  e1.cPos.x-e1.cHitbox.radius;
+  //   const rightOfBox = e1.cPos.x+e1.cHitbox.radius;
+  //
+  //   //points from top-left of box to bot-left
+  //   arrayOfCollisionPointsX[i] = leftOfBox;
+  //   arrayOfCollisionPointsY[i] = topOfBox + (i*evenSpaceBetweenPoints);
+  //
+  //   //points from bot-left of box to bot-right
+  //   arrayOfCollisionPointsX[i+(pointsPerSide*1)-1] = leftOfBox + (i*evenSpaceBetweenPoints);
+  //   arrayOfCollisionPointsY[i+(pointsPerSide*1)-1] = botOfBox;
+  //
+  //   //points from bot-right to bot-top of box
+  //   arrayOfCollisionPointsX[i+(pointsPerSide*2)-1] = rightOfBox;
+  //   arrayOfCollisionPointsY[i+(pointsPerSide*2)-1] = botOfBox - (i*evenSpaceBetweenPoints);
+  //
+  //   //topright to topleft
+  //   arrayOfCollisionPointsX[i+(pointsPerSide*3)-1] = rightOfBox - (i*evenSpaceBetweenPoints);
+  //   arrayOfCollisionPointsY[i+(pointsPerSide*3)-1] = topOfBox;
+  // }
+  // console.log(arrayOfCollisionPointsX);
+  //
+  // for (let i = 0; i < arrayOfCollisionPointsX.length; i++){
+  //     console.log('arrayOfCollisionPointsX'+i+arrayOfCollisionPointsX[i]);
+  //   if (this.boxCircleOverlap(e1,arrayOfCollisionPointsX[i],arrayOfCollisionPointsY[i])){
+  //     return true;
+  //   }
+  // }
 
-  const overlapAccuracy = 2; //higher is more precise
-  let arrayOfCollisionPointsX = [];
-  let arrayOfCollisionPointsY = [];
-
-  const maxDistBetweenPoints =  (e2.cHitbox.radius*2)/overlapAccuracy;
-  //generate enough points that when space evenly they don't exceede max distBetweenPoints
-  const pointsPerSide = Math.ceil(e1.cHitbox.radius/maxDistBetweenPoints);
-  const evenSpaceBetweenPoints = (e2.cHitbox.radius*2)/pointsPerSide;
-
-  const topOfBox =   e1.cPos.y-e1.cHitbox.radius;
-  const botOfBox =   e1.cPos.y+e1.cHitbox.radius;
-  const leftOfBox =  e1.cPos.x-e1.cHitbox.radius;
-  const rightOfBox = e1.cPos.x+e1.cHitbox.radius;
-
-  for (let i = 0; i < pointsPerSide; i++){
-    const topOfBox =   e1.cPos.y-e1.cHitbox.radius;
-    const botOfBox =   e1.cPos.y+e1.cHitbox.radius;
-    const leftOfBox =  e1.cPos.x-e1.cHitbox.radius;
-    const rightOfBox = e1.cPos.x+e1.cHitbox.radius;
-
-
-    //points from top-left of box to bot-left
-    arrayOfCollisionsPointsX[i] = leftOfBox;
-    arrayOfCollisionsPointsY[i] = topOfBox + (i*evenSpaceBetweenPoints);
-
-    //points from bot-left of box to bot-right
-    arrayOfCollisionsPointsX[i+(pointsPerSide*1)-1] = leftOfBox + (i*evenSpaceBetweenPoints);
-    arrayOfCollisionsPointsY[i+(pointsPerSide*1)-1] = botOfBox;
-
-    //points from bot-right to bot-top of box
-    arrayOfCollisionsPointsX[i+(pointsPerSide*2)-1] = rightOfBox;
-    arrayOfCollisionsPointsY[i+(pointsPerSide*2)-1] = botOfBox - (i*evenSpaceBetweenPoints);
-
-    //topright to topleft
-    arrayOfCollisionsPointsX[i+(pointsPerSide*3)-1] = rightOfBox - (i*evenSpaceBetweenPoints);
-    arrayOfCollisionsPointsY[i+(pointsPerSide*3)-1] = topOfBox;
-  }
-
-  for (let i = 0; i < arrayOfCollisionPointsX.length; i++){
-    if (boxXYOverlap(e1,arrayOfCollisionPointsX[i],arrayOfCollisionPointsY[i]){
-      return true;
-    }
-  }
   return false;
 }
 
