@@ -102,13 +102,12 @@ class sDrag extends System { //transforms image to entity position
     }
 
     if (!(globalObj.drag.dragEntityRef === null)) {
-console.log(globalObj.drag.dragEntityRef);
-      if (globalObj.drag.dragEntityRef.cDraggable.draggable === false) { //release if not draggable
-        console.log('NOT DRAGGABLEEEE');
+      if (!(globalObj.drag.dragEntityRef.cDraggable.draggable === true)) { //release if not draggable
         if (systemManager.entityHasComponent('cPhysics', globalObj.drag.dragEntityRef)) {
           this.setDragEntityReleaseVelocity();
         }
         globalObj.drag.dragEntityRef = null; //stop dragging
+        return;
       }
 
       if (systemManager.entityHasComponent('cPhysics', globalObj.drag.dragEntityRef)) {//set vel and pos of entity being dragged
@@ -435,6 +434,8 @@ class sDraggable extends System { //subsystem which doesn't have independant tic
   }
 
   systemExecution(e1, e2) {
+    // console.log(e1.cDraggable);
         e1.cDraggable = e2.cDragArea.value;
+            // console.log(e1.cDraggable);
 }
 }
