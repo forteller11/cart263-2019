@@ -52,3 +52,10 @@ class cDraggable{
     this.draggable = drag;
   }
 }
+
+class cDragArea{
+  constructor(value=false){
+    this.name = 'cDragArea';
+    this.value = value;
+  }
+}

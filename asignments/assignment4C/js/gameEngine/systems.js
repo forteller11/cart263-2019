@@ -101,17 +101,17 @@ class sDrag extends System { //transforms image to entity position
       globalObj.mouse.histY.push(globalObj.mouse.y);
     }
 
-    if (!(globalObj.drag.dragEntityRef === null)) { //stop dragging if draggable becomes false
-      if (globalObj.drag.dragEntityRef.cDraggable.draggable === false) { //if during update entity becomes undraggable...
+    if (!(globalObj.drag.dragEntityRef === null)) {
+console.log(globalObj.drag.dragEntityRef);
+      if (globalObj.drag.dragEntityRef.cDraggable.draggable === false) { //release if not draggable
+        console.log('NOT DRAGGABLEEEE');
         if (systemManager.entityHasComponent('cPhysics', globalObj.drag.dragEntityRef)) {
           this.setDragEntityReleaseVelocity();
         }
         globalObj.drag.dragEntityRef = null; //stop dragging
       }
-    }
 
-    if (!(globalObj.drag.dragEntityRef === null)) { //set vel and pos of entity being dragged
-      if (systemManager.entityHasComponent('cPhysics', globalObj.drag.dragEntityRef)) {
+      if (systemManager.entityHasComponent('cPhysics', globalObj.drag.dragEntityRef)) {//set vel and pos of entity being dragged
         const velX = globalObj.mouse.histX[globalObj.mouse.histX.length - 1] - globalObj.mouse.histX[globalObj.mouse.histX.length - 2];
         const velY = globalObj.mouse.histY[globalObj.mouse.histY.length - 1] - globalObj.mouse.histY[globalObj.mouse.histY.length - 2];
         globalObj.drag.dragEntityRef.cPhysics.vel.x = velX * .75;
@@ -136,12 +136,12 @@ class sDrag extends System { //transforms image to entity position
     let throwComponentX = 0;
     let throwComponentY = 0;
     for (let i = 0; i < globalObj.mouse.histX.length - 1; i++) { //find delta between mouseHist
-      const weight = i / (globalObj.mouse.histMaxLength - 1); //most recent histories have full delta weight;
-      throwComponentX += (globalObj.mouse.histX[i + 1] - globalObj.mouse.histX[i]) * weight;
-      throwComponentY += (globalObj.mouse.histY[i + 1] - globalObj.mouse.histY[i]) * weight;
+      // const weight = i / (globalObj.mouse.histMaxLength); //most recent histories have full delta weight;
+      throwComponentX += (globalObj.mouse.histX[i + 1] - globalObj.mouse.histX[i]) ;
+      throwComponentY += (globalObj.mouse.histY[i + 1] - globalObj.mouse.histY[i]) ;
     }
-    throwComponentX = throwComponentX / (globalObj.mouse.histX.length - 1); //find mean kinda
-    throwComponentY = throwComponentY / (globalObj.mouse.histY.length - 1);
+    throwComponentX = throwComponentX / (globalObj.mouse.histX.length ); //find mean kinda
+    throwComponentY = throwComponentY / (globalObj.mouse.histY.length );
     globalObj.drag.dragEntityRef.cPhysics.vel.x = throwComponentX;
     globalObj.drag.dragEntityRef.cPhysics.vel.y = throwComponentY;
   }
@@ -428,10 +428,13 @@ class sCollisionResolution extends System { //subsystem which doesn't have indep
 }
 
 
-//class dragEvents (stores mouse info), class dragble (tells it can be dragged, stores offsets)
-//sDrag requires dragEvents, dragable, pos, physics, tests collision,
+class sDraggable extends System { //subsystem which doesn't have independant tick or relevant entities
+  constructor(arrayOfRelevantEntities) {
+    super(arrayOfRelevantEntities);
+    // this.requiredComponents = ['cPos', 'cDraggable',];
+  }
 
-//collision system, static/dynamic resolution ssytems... draggable, component which stores drag events
-
-
-// class handleSprites(){} for food entity and animations
+  systemExecution(e1, e2) {
+        e1.cDraggable = e2.cDragArea.value;
+}
+}

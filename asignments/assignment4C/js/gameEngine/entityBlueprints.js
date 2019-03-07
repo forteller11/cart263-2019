@@ -25,7 +25,7 @@ function playFieldBlueprint() {
   newHead.addComponent(new cPos(0, ran(window.innerWidth / 2), ran(window.innerHeight)));
   newHead.addComponent(new cHitbox(radius,'boundingbox'));
   newHead.addComponent(new cImage('assets/rorty.jpg', radius * 2,-1));
-
+  newHead.addComponent(new cDragArea());
 systemManager.addEntity(newHead);
 }
 

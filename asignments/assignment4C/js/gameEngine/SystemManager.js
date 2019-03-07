@@ -5,6 +5,8 @@ class SystemManager {
   constructor() {
     this.systems = []; //array of systems
 
+//if not pushed into system then this represents a subsystem whos update does
+//not occur on regular tick but rather is called from some event from another system
     this.sOverlap = new sOverlap();
     this.systems.push(this.sOverlap);
 
@@ -12,6 +14,8 @@ class SystemManager {
 
     this.sDrag = new sDrag();
     this.systems.push(this.sDrag);
+
+    this.sDraggable = new sDraggable();
 
     this.sPhysicsTransform = new sPhysicsTransform();
     this.systems.push(this.sPhysicsTransform);
@@ -43,9 +47,9 @@ class SystemManager {
 
     this.sOverlap.update(); //this has multiple subsystems
 
-    this.sDrag.update();
-
     this.sPhysicsTransform.update();
+
+      this.sDrag.update();
 
     this.sImageTransform.update();
   }

@@ -7,7 +7,17 @@ function onCollisionEvent(e1,e2){
        systemManager.sCollisionResolution.systemExecution(e1,e2);
   }
 
-  // if (systemManager.entityContainsRequiredComponents('cCookable',e1)){
-  //
-  // }
+//change status of draggable
+  if (systemManager.entityHasComponent('cDragArea',e1)){
+    if (systemManager.entityHasComponent('cDraggable',e2)){
+      systemManager.sDraggable.systemExecution(e2,e1);
+    }
+  }
+
+  if (systemManager.entityHasComponent('cDragArea',e2)){
+    if (systemManager.entityHasComponent('cDraggable',e1)){
+      systemManager.sDraggable.systemExecution(e1,e2);
+    }
+  }
+
 }
