@@ -15,21 +15,29 @@ class Choice{
     this.animalReversed = reverseString(animals[index]);
 
     this.div.addEventListener('mousedown',()=>{
+      attempts ++;
+      if (attempts > attemptsMax){
+        highlightCorrectAnswer();
+        responsiveVoice.speak(this.animal,"UK English Male", 1);
+        setTimeout(()=>{newRound();},1500);
+      }
 
-      highlightCorrectAnswer();
       if (this.answer){
         console.log('RIGHT ANSWER');
+        responsiveVoice.speak(this.animal,"UK English Male", 1);
         score++;
-      } else {
+        highlightCorrectAnswer();
+        setTimeout(()=>{newRound();},1500);
+      }
+
+      else {
+        this.div.style.color = 'red';
         console.log('WRONG ANSWER');
-        score --;
+        responsiveVoice.speak(choices[answerIndex].animalReversed,"UK English Male", {rate: 1/(attempts+1)});
+        score -= attempts/2;
       }
       scoreDiv.innerHTML = score;
-      setTimeout(()=>{
-      removeDivs();
-      newRound();
-    },1500);
-    })
-
+    });
   }
+
 }

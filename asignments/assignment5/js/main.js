@@ -7,6 +7,9 @@ let animals = [];
 let gameStart = false;
 let score = 0;
 let choices = [];
+let attempts;
+const attemptsMax = 2;
+let answerIndex;
 
 function main(){
     body = document.getElementById('body');
@@ -45,8 +48,10 @@ function clickToBegin(){
 }
 
 function newRound(){
+
+  removeDivs();
   let choicesPerRound = 6;
-  let answerIndex = Math.floor(ran(choicesPerRound-.0001)); //index of choice which is the right answer
+  answerIndex = Math.floor(ran(choicesPerRound-.0001)); //index of choice which is the right answer
   let spaceBetweenEachOption = window.innerHeight/choicesPerRound+2; //+2 to account for borders
   //make text with width of
   const xO = window.innerWidth/2;
@@ -59,11 +64,13 @@ function newRound(){
     const index = Math.floor(ran(animals.length-.00001));
     choices[i] = new Choice(xO,y,index,answer);
   }
+    responsiveVoice.speak(choices[answerIndex].animalReversed,"UK English Male", {rate: 1/(attempts+1)});
   console.log(choices);
 console.log('newRound')
 }
 
 function reverseString(string){
+  attempts = 0;
   let reversedArr = [];
   for (let i = string.length-1; i >= 0; i --){
     reversedArr.push(string[i]);
