@@ -11,6 +11,8 @@ let attempts;
 const attemptsMax = 2;
 let answerIndex;
 
+
+
 function main(){
     body = document.getElementById('body');
   clickToBegin();
@@ -49,6 +51,7 @@ function clickToBegin(){
 
 function newRound(){
 
+annyang.start();
   removeDivs();
   let choicesPerRound = 6;
   answerIndex = Math.floor(ran(choicesPerRound-.0001)); //index of choice which is the right answer
@@ -67,6 +70,8 @@ function newRound(){
     responsiveVoice.speak(choices[answerIndex].animalReversed,"UK English Male", {rate: 1/(attempts+1)});
   console.log(choices);
 console.log('newRound')
+let commandIGiveUp = {'I give up': transitionRound};
+annyang.addCommands(commandIGiveUp,false);
 }
 
 function reverseString(string){
@@ -94,5 +99,11 @@ function removeDivs(){
     choices[i].div.remove();
     choices[i] = null;
   }
+}
+
+function transitionRound(){
+  highlightCorrectAnswer();
+  responsiveVoice.speak(choices[answerIndex].animal,"UK English Male", 1);
+  setTimeout(()=>{newRound();},1500);
 }
 //create choice object which has

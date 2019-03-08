@@ -17,17 +17,14 @@ class Choice{
     this.div.addEventListener('mousedown',()=>{
       attempts ++;
       if (attempts > attemptsMax){
-        highlightCorrectAnswer();
-        responsiveVoice.speak(this.animal,"UK English Male", 1);
-        setTimeout(()=>{newRound();},1500);
+        transitionRound();
       }
 
       if (this.answer){
         console.log('RIGHT ANSWER');
-        responsiveVoice.speak(this.animal,"UK English Male", 1);
+        transitionRound();
         score++;
-        highlightCorrectAnswer();
-        setTimeout(()=>{newRound();},1500);
+
       }
 
       else {
