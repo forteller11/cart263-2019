@@ -20,6 +20,17 @@ function main(){
 }
 
 function clickToBegin(){
+  if (annyang){
+    annyang.removeCommands(); //clean slate
+    let commands = {'begin':(animalName)=>{
+      beginText.remove();
+      newRound();
+      gameStart = true;
+  }};
+    //i choose... name, then cycles through all choices until it finds matching name, then it sees if answer...
+    annyang.addCommands(commands);
+    annyang.start();
+}
   console.log('clicktobegin');
   let beginText;
   beginText = document.createElement('DIV');
@@ -70,9 +81,50 @@ annyang.start();
     responsiveVoice.speak(choices[answerIndex].animalReversed,"UK English Male", {rate: 1/(attempts+1)});
   console.log(choices);
 console.log('newRound')
-let commandIGiveUp = {'I give up': transitionRound};
-annyang.addCommands(commandIGiveUp,false);
+
+console.log(annyang);
+if (annyang){
+  annyang.removeCommands(); //clean slate
+  let commands = {'I think it is *animal':(animalName)=>{
+    const indexOfName = matchIndexToName(animalName);
+    if (indexOfName===null){
+      responsiveVoice.speak("speak with clarity","UK English Male", {rate: 1});
+    } else {
+      console.log(choices[indexOfName]);
+      choices[indexOfName].chosen();
+      console.log(animalName);
+    }
+},
+'I give up':()=>{
+  transitionRound();
+  responsiveVoice.speak("the answer was "+choices[answerIndex].animal,"UK English Male", {rate: 1});
+  score--;
+},
+'Say it again':()=>{
+  responsiveVoice.speak(choices[answerIndex].animalReversed,"UK English Male", {rate: 1});
 }
+}
+  //i choose... name, then cycles through all choices until it finds matching name, then it sees if answer...
+  annyang.addCommands(commands);
+  annyang.start();
+}
+// let commandIGiveUp = {'I give up': transitionRound};
+// annyang.init(commandIGiveUp,true);
+// annyang.start({ autoRestart: true });
+}
+
+function matchIndexToName(name){
+  const nameLowerCase = name.toLowerCase();
+  for (let i = 0; i < choices.length; i ++){
+    console.log(nameLowerCase + choices[i].animal);
+    if (nameLowerCase === choices[i].animal){
+      console.log('index === '+i);
+      return i;
+    }
+  }
+  return null;
+}
+
 
 function reverseString(string){
   attempts = 0;
@@ -103,7 +155,6 @@ function removeDivs(){
 
 function transitionRound(){
   highlightCorrectAnswer();
-  responsiveVoice.speak(choices[answerIndex].animal,"UK English Male", 1);
-  setTimeout(()=>{newRound();},1500);
+  setTimeout(()=>{newRound();},2000);
 }
 //create choice object which has

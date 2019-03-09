@@ -15,6 +15,12 @@ class Choice{
     this.animalReversed = reverseString(animals[index]);
 
     this.div.addEventListener('mousedown',()=>{
+      this.chosen();
+    });
+  }
+
+    chosen(){
+      console.log('i am chosen');
       attempts ++;
       if (attempts > attemptsMax){
         transitionRound();
@@ -22,6 +28,7 @@ class Choice{
 
       if (this.answer){
         console.log('RIGHT ANSWER');
+        responsiveVoice.speak("wow, good job!","UK English Male", {rate: 1});
         transitionRound();
         score++;
 
@@ -34,7 +41,7 @@ class Choice{
         score -= attempts/2;
       }
       scoreDiv.innerHTML = score;
-    });
-  }
+    }
+
 
 }
