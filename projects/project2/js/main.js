@@ -5,11 +5,17 @@ window.onload = main;
 
 function main(){
   let id = videoIds[Math.floor(ran(videoIds.length-0.000001))];
+  let offset = 20;
+  let borderRadius = 180;
+  let videoHalfSideLength = 200;
+
 
 let div = document.createElement('div');
 div.style.position = 'fixed';
 div.style.top = window.innerHeight/2+'px'
 div.style.left = window.innerWidth/2+'px'
+div.style.width = borderRadius+'px';
+div.style.height = borderRadius+'px';
 document.body.appendChild(div);
 
 let iframe = document.createElement('iframe');
@@ -23,7 +29,12 @@ iframe.height = 'auto';
 
 iframe.src = "https://www.youtube.com/embed/"+id;
 console.log(iframe.src);
-iframe.frameborder = '200px';
+iframe.width =  videoHalfSideLength;
+iframe.height = videoHalfSideLength;
+iframe.style.position = 'absolute';
+iframe.style.top = '-10%';
+iframe.style.left = '0%';
+iframe.frameborder = '0';
 iframe.autoplay = 'true';
 iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
 iframe.allowfullscreen = 'true'

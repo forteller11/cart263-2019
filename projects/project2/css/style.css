@@ -12,11 +12,12 @@ so the canvas is flush with the top left corner.
 }
 
 div{
-  z-index: 100;
-  border: 2px red solid;
+  overflow:hidden;
+  z-index: -100;
    border-radius: 100%;
 }
 iframe{
   z-index: 1;
+  position:fixed;
 
 }
