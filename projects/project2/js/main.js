@@ -18,7 +18,7 @@ div.style.width = borderRadius+'px';
 div.style.height = borderRadius+'px';
 document.body.appendChild(div);
 
-let iframe = document.createElement('iframe');
+let iframe = document.createElement('IFRAME');
 iframe.width = '200';
 iframe.height = 'auto';
 
@@ -27,19 +27,30 @@ iframe.height = 'auto';
 // iframe.style.left = window.innerWidth/2+'px'
 
 
-iframe.src = "https://www.youtube.com/embed/"+id;
+iframe.src = "https://www.youtube.com/embed/"+id+"?autoplay=1&mute=1&controls=0&showinfo=0&modestbranding=1&autohide=1";
 console.log(iframe.src);
-iframe.width =  videoHalfSideLength;
 iframe.height = videoHalfSideLength;
+iframe.width =  'auto';
 iframe.style.position = 'absolute';
-iframe.style.top = '-10%';
+iframe.style.top = '0%';
 iframe.style.left = '0%';
-iframe.frameborder = '0';
-iframe.autoplay = 'true';
+iframe.autoplay = 1;
+iframe.seamless = true;
 iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
-iframe.allowfullscreen = 'true'
-
+iframe.allowfullscreen = 'false'
+iframe.style.border = 'none'
 div.appendChild(iframe);
+console.log(iframe);
+
+let clickCover = document.createElement('span');
+iframe.style.position = 'absolute';
+clickCover.style.width = 400+'px';
+clickCover.style.height = 400+'px';
+div.appendChild(clickCover);
+
+
+
+
 //
 // let video = document.createElement('video');
 // iframe.appendChild(video);
