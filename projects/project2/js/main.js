@@ -14,7 +14,7 @@ function main(){
 
   createEntitiesFromBlueprint(playFieldBlueprint,1);
   createEntitiesFromBlueprint(headBlueprint,3);
-
+  createEntitiesFromBlueprint(embedVideoBlueprint,2);
 
   setInterval(update, 16.7);
 

@@ -44,15 +44,15 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
 class sImageTransform extends System { //transforms image to entity position
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
-    this.requiredComponents = ['cPos', 'cImage'];
+    this.requiredComponents = ['cPos', 'cHtmlDisplay'];
   }
 
   systemExecution(entity) {
     const angleDegrees = entity.cPos.angle * 180;
-    entity.cImage.image.style.transform = 'rotate(' + angleDegrees + 'deg)';
+    entity.cHtmlDisplay.span.style.transform = 'rotate(' + angleDegrees + 'deg)';
 
-    entity.cImage.image.style.left = (entity.cPos.x - entity.cImage.image.width / 2) + 'px';
-    entity.cImage.image.style.top = (entity.cPos.y - entity.cImage.image.height / 2) + 'px';
+    entity.cHtmlDisplay.span.style.left = (entity.cPos.x - entity.cHtmlDisplay.width / 2) + 'px';
+    entity.cHtmlDisplay.span.style.top = (entity.cPos.y - entity.cHtmlDisplay.height / 2) + 'px';
   }
 
 }
