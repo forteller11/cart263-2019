@@ -5,9 +5,8 @@ window.onload = main;
 
 function main(){
   let id = videoIds[Math.floor(ran(videoIds.length-0.000001))];
-  let offset = 20;
-  let borderRadius = 180;
   let videoHalfSideLength = 200;
+  let borderRadius = videoHalfSideLength*.9;
 
 
 let div = document.createElement('div');
@@ -19,33 +18,29 @@ div.style.height = borderRadius+'px';
 document.body.appendChild(div);
 
 let iframe = document.createElement('IFRAME');
-iframe.width = '200';
-iframe.height = 'auto';
 
-// iframe.style.position = 'fixed';
-// iframe.style.top = window.innerHeight/2+'px'
-// iframe.style.left = window.innerWidth/2+'px'
-
-
-iframe.src = "https://www.youtube.com/embed/"+id+"?autoplay=1&mute=1&controls=0&showinfo=0&modestbranding=1&autohide=1";
+iframe.src = "https://www.youtube.com/embed/"+id+"?autoplay=1&controls=0&showinfo=0&modestbranding=1&autohide=1&loop=1&disablekb=1&enablejsapi=1";
 console.log(iframe.src);
 iframe.height = videoHalfSideLength;
 iframe.width =  'auto';
 iframe.style.position = 'absolute';
-iframe.style.top = '0%';
-iframe.style.left = '0%';
-iframe.autoplay = 1;
+iframe.style.top = -borderRadius/10+'px'
+iframe.style.left = -borderRadius/3+'px';
 iframe.seamless = true;
 iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
 iframe.allowfullscreen = 'false'
 iframe.style.border = 'none'
+iframe.mute = false;
 div.appendChild(iframe);
 console.log(iframe);
 
-let clickCover = document.createElement('span');
-iframe.style.position = 'absolute';
-clickCover.style.width = 400+'px';
-clickCover.style.height = 400+'px';
+let clickCover = document.createElement('IMG');
+clickCover.src = 'assets/placeholder.jpg';
+clickCover.style.position = 'absolute';
+clickCover.style.top = -borderRadius/10+'px'
+clickCover.style.left =  0+'px'
+clickCover.style.width = videoHalfSideLength+'px';
+clickCover.style.height = videoHalfSideLength+'px';
 div.appendChild(clickCover);
 
 

@@ -12,7 +12,7 @@ so the canvas is flush with the top left corner.
 }
 
 div{
-  /* overflow:hidden; */
+  overflow:hidden;
   z-index: -100;
    border-radius: 100%;
 }
@@ -22,7 +22,7 @@ iframe{
   /* display:none; */
 
 }
-span{
-  z-index:-100;
-  outline: 5px solid red;
+img{
+  z-index:100;
+  opacity: 0;
 }
