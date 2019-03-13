@@ -1,6 +1,6 @@
 'use strict';
 
-let trendingYoutubeVideoIds = [
+const videoIds = [
 'bF014EUJrSI',
 'C-o0RgiXQfA',
 'B1Kaq0_FqGs',
