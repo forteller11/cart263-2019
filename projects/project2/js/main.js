@@ -6,6 +6,7 @@ let globalObj;
 let systemManager;
 let firstEntity;
 function main(){
+  console.log('main');
   body = document.getElementById('body');
   globalObj = new Globals();
   console.log(globalObj);
