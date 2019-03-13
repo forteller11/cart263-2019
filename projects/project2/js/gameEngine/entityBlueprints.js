@@ -18,17 +18,18 @@ systemManager.addEntity(newHead);
 }
 
 function embedVideoBlueprint() {
-  let radius = ran(32, 128);
+  let radius = ran(64, 256);
   const initVel = 10;
   const initRot = .1;
   const mass = 4 / 3 * radius * radius * radius * Math.PI;
+  let randomIndex = ranIndexOfArray(videoIds);
 
   let newHead = new Entity();
 
   newHead.addComponent(new cPos(ran(Math.PI), ran(window.innerWidth / 2), ran(window.innerHeight)));
   newHead.addComponent(new cHitbox(radius));
   newHead.addComponent(new cPhysics(mass, ran(-initVel, initVel), ran(-initVel, initVel), ran(-initRot, initRot)));
-  newHead.addComponent(new cHtmlDisplay('embedVideo','_cyVDoyI6NE', radius * 2));
+  newHead.addComponent(new cHtmlDisplay('embedVideo',videoIds[randomIndex], radius * 2));
   newHead.addComponent(new cDraggable());
 
 systemManager.addEntity(newHead);

@@ -88,6 +88,7 @@ function dotProduct(v1,v2){ //returns dot product of two vectors
   return (v1.x*v2.x)+(v1.y*v2.y);
 }
 
-function hashFunction(value){ //generate deterministic but random key from value
-
+function ranIndexOfArray(arr){
+  const ranNumberBelowArrLength = ran(arr.length-Number.MIN_VALUE); //- min value so this number can never === arr.length
+  return Math.ceil(ranNumberBelowArrLength);
 }

@@ -104,14 +104,22 @@ class cHtmlDisplay{
       case 'embedVideo': //width === height
         this.span.style.borderRadius = '100%';
         this.span.style.overflow = 'hidden';
+
+        const xx = 0 + 'px';
+        const yy = 0 + 'px';
+
+        const w = this.width+'px';
+        const h = this.height+'px';
+
+
         this.iframe = document.createElement('IFRAME');
         this.iframe.src = "https://www.youtube.com/embed/"+this.link+"?autoplay=1&controls=0&showinfo=0&modestbranding=1&autohide=1&loop=1&disablekb=1&enablejsapi=1";
         console.log(this.iframe.src);
-        this.iframe.height = this.height;
-        this.iframe.width =  'auto';
         this.iframe.style.position = 'absolute';
-        this.iframe.style.top = this.width/10+'px'
-        this.iframe.style.left = -this.height/3+'px';
+        this.iframe.height = h;
+        this.iframe.width =  w;
+        this.iframe.style.top = yy;
+        this.iframe.style.left = xx;
         this.iframe.seamless = true;
         this.iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
         this.iframe.allowfullscreen = 'false'
@@ -123,10 +131,10 @@ class cHtmlDisplay{
         this.clickCover = document.createElement('IMG');
         this.clickCover.src = 'assets/placeholder.jpg';
         this.clickCover.style.position = 'absolute';
-        this.clickCover.style.top = -this.width/10+'px'
-        this.clickCover.style.left =  0+'px'
-        this.clickCover.style.width = this.width+'px';
-        this.clickCover.style.height = this.height+'px';
+        this.clickCover.style.top = yy;
+        this.clickCover.style.left =  xx;
+        this.clickCover.style.width = w;
+        this.clickCover.style.height = h;
         this.clickCover.style.opacity = 0.0;
         this.clickCover.style.zIndex = 10; //cover other elements
         this.span.appendChild(this.clickCover);
