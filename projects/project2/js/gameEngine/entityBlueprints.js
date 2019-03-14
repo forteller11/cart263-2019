@@ -28,7 +28,7 @@ function embedVideoBlueprint() {
   let newHead = new Entity();
   newHead.addComponent(new cPos(ran(Math.PI), ran(window.innerWidth / 2), ran(window.innerHeight)));
   newHead.addComponent(new cHitbox('circle',radius));
-  newHead.addComponent(new cPhysics(mass, ran(-initVel, initVel), ran(-initVel, initVel), ran(-initRot, initRot)));
+  newHead.addComponent(new cPhysics(mass, ran(-initVel, initVel), ran(-initVel, initVel), ran(-initRot, initRot),false));
   newHead.addComponent(new cHtmlDisplay('embedVideo',videoIds[randomIndex], radius * 2));
   newHead.addComponent(new cDraggable());
 
@@ -45,7 +45,7 @@ function floorBlueprint() {
   let newHead = new Entity();
   newHead.addComponent(new cPos(ran(Math.PI), ran(window.innerWidth / 2), ran(window.innerHeight)));
   newHead.addComponent(new cHitbox('circle',radius));
-  newHead.addComponent(new cPhysics(mass,0,0,0));
+  newHead.addComponent(new cPhysics(mass,0,0,0,true)); //static = true
   newHead.addComponent(new cHtmlDisplay('image','assets/youtubeLogo.png', radius*2));
   // newHead.addComponent(new cDraggable());
 

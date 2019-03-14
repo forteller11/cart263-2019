@@ -57,7 +57,7 @@ class cHitbox extends Component{ //circle hitbox
 }
 
 class cPhysics extends Component {
-  constructor(mass=null,xVel=0,yVel=0,angularVel=0){
+  constructor(mass=null,xVel=0,yVel=0,angularVel=0, inert = false){
     super();
     this.name = 'cPhysics';
     this.mass = mass;
@@ -65,6 +65,7 @@ class cPhysics extends Component {
     this.momentOfInertia = 0.0012; //how easily this object is rotated
     this.vel = new Vector(xVel,yVel);
     this.angularVel = angularVel;
+    this.inert = inert;
     this.restitution = 0.8; //bouncyness or % force transferred in collisions, 1 = bouncy, 0=not
     if (mass===null){console.log('mass not set, define by cCollision as PI r ^2');}
   }
