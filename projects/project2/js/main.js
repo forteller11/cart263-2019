@@ -16,8 +16,12 @@ function main(){
 
   // createEntitiesFromBlueprint(playFieldBlueprint,1);
   // createEntitiesFromBlueprint(headBlueprint,3);
-  createEntitiesFromBlueprint(embedVideoBlueprint,8);
+  createEntitiesFromBlueprint(embedVideoBlueprint,4);
 
+
+  // systemManager.removeEntityWithId(0);
+  // systemManager.removeEntityWithId(1);
+  // systemManager.removeEntityWithId(2);
   setInterval(update, 16.7);
 
 }

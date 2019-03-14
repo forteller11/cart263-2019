@@ -20,7 +20,7 @@ class Entity{
   }
 
   removeHtml(){
-    for (component of this.component)
+    for (let component of this.components)
     component.removeHtml();
   }
 }

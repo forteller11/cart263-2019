@@ -37,11 +37,14 @@ class SystemManager {
     }
 
   }
-  removeEntity(entity) { //remove this entity from all sytems
+  removeEntityWithId(id) { //remove this entity from all sytems
 // console.log(entity);
     for (let system of this.systems){
-      for (let i = 0; i < system.relevantEntities; i ++){
-        if (system.relevantEntities[i] === entity.id){
+      for (let i = 0; i < system.relevantEntities.length; i ++){
+        if (system.relevantEntities[i].id === id){
+          console.log('splice');
+          console.log(system.relevantEntities[i])
+          system.relevantEntities[i].removeHtml();
           system.relevantEntities.splice(i,1);
           break;
         }

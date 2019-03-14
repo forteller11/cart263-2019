@@ -160,16 +160,19 @@ class cHtmlDisplay extends Component{
     }
   }
 
-  removeHtml(){ //removes html from component 
+  removeHtml(){ //removes html from component
     switch(this.type){
+
       case 'image':
-      this.span.remove(this.image);
-      document.body.remove(this.span);
-      break;
+        this.span.remove();
+        break;
+      
       case 'embedVideo':
-      this.span.remove(this.iframe);
-      this.span.remove(this.clickCover);
-      document.body.remove(this.span);
+        this.iframe.remove();
+        this.clickCover.remove();
+        this.span.remove();
+        break;
+
     }
   }
 }
