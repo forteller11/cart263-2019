@@ -25,7 +25,9 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
   }
 
   systemExecution(entity) {
-
+  entity.cPos.angle += entity.cPhysics.angularVel;
+  entity.cPhysics.angularVel *= globalObj.physics.polarDrag;
+  entity.cPhysics.angularVel = constrain(entity.cPhysics.angularVel, -globalObj.physics.maxPolarVel, globalObj.physics.maxPolarVel);
     if (entity.cPhysics.inert) { //if a inert entity
       entity.cPhysics.x = 0;
       entity.cPhysics.y = 0;
@@ -39,14 +41,9 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
       //transform position based on velocties
       entity.cPos.x += entity.cPhysics.vel.x;
       entity.cPos.y += entity.cPhysics.vel.y;
-      entity.cPos.angle += entity.cPhysics.angularVel;
 
       //apply drag and constrain velocties
       entity.cPhysics.vel.mult(globalObj.physics.cartesianDrag);
-      entity.cPhysics.angularVel *= globalObj.physics.polarDrag;
-      entity.cPhysics.angularVel = constrain(entity.cPhysics.angularVel, -globalObj.physics.maxPolarVel, globalObj.physics.maxPolarVel);
-      entity.cPos.angle += entity.cPhysics.angularVel;
-
     }
   }
 
@@ -421,11 +418,20 @@ class sCollisionResolution extends System { //subsystem which doesn't have indep
     }
 
     function staticResolution(e1, e2, collisionBetween) {
-      e1.cPos.x -= collisionBetween.x / 2;
-      e2.cPos.x += collisionBetween.x / 2;
+      if (e1.cPhysics.inert === e2.cPhysics.inert) { //if both inert, or both not inert, displace evenly
+        e1.cPos.x -= collisionBetween.x / 2;
+        e2.cPos.x += collisionBetween.x / 2;
 
-      e1.cPos.y -= collisionBetween.y / 2;
-      e2.cPos.y += collisionBetween.y / 2;
+        e1.cPos.y -= collisionBetween.y / 2;
+        e2.cPos.y += collisionBetween.y / 2;
+      } else if (e1.cPhysics.inert === true){ //if e1 inert is true,
+        e2.cPos.x += collisionBetween.x;
+        e2.cPos.y += collisionBetween.y;
+      } else { //if e2 is inert
+        e1.cPos. x -= collisionBetween.x;
+        e1.cPos.y -= collisionBetween.y;
+      }
+
 
     }
   }

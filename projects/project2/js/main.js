@@ -18,13 +18,15 @@ function main(){
   // createEntitiesFromBlueprint(headBlueprint,3);
 
   let xx = 0;
-  createEntitiesFromBlueprint(floorBlueprint,6,(e)=>{
-    xx+=e.cHitbox.radius*2;
-    e.cPos.x = xx;
-      e.cPos.y = window.innerHeight/2 - e.cHitbox.radius;
-  });
+  while (xx < window.innerWidth){
+    createEntitiesFromBlueprint(floorBlueprint,1,(e)=>{
+      e.cPos.x = xx;
+      xx+=e.cHitbox.radius*3;
+        e.cPos.y = window.innerHeight/1.1 - e.cHitbox.radius;
+    });
+  }
 
-  createEntitiesFromBlueprint(embedVideoBlueprint,4);
+  createEntitiesFromBlueprint(embedVideoBlueprint,7);
 
 
 
