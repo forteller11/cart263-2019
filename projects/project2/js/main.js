@@ -16,7 +16,7 @@ function main(){
 
   // createEntitiesFromBlueprint(playFieldBlueprint,1);
   // createEntitiesFromBlueprint(headBlueprint,3);
-  createEntitiesFromBlueprint(embedVideoBlueprint,4);
+  createEntitiesFromBlueprint(embedVideoBlueprint,12);
 
 
   // systemManager.removeEntityWithId(0);

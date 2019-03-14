@@ -21,11 +21,38 @@ class cPos extends Component { //stores position
 }
 
 class cHitbox extends Component{ //circle hitbox
-  constructor(radius,type='circle'){
+  constructor(type = 'circle',...args){
     super();
     this.name = 'cHitbox';
-    this.radius = radius;
-    this.type = type; //can be 'circle',boundingbox,(polygon)
+    this.type = type; //type of hitbox, circle, square, rect, line.
+
+    switch(this.type){
+      case 'circle':
+      this.radius = args[0];
+      break;
+
+      case 'rect':
+        this.width = args[0];
+        if (args.length === 1) {this.height = args[0]} //make width===height if only one argument,
+        else {this.height = args[1]}//else width and height are unique
+        break;
+
+      case 'line':
+        this.x1 = args[0];
+        this.y1 = args[1];
+        this.x2 = args[2];
+        this.y2 = args[3];
+        if (args.length === 4){
+          this.x1 = args[0];
+          this.y1 = args[1];
+          this.x2 = args[2];
+          this.y2 = args[3];
+        } else {console.log("wrong number of arguments for line hitbox (x1,y1,x2,y2)")}
+      default:
+        console.log('not a valid type for cHitbox!');
+        break;
+    }
+
   }
 }
 
@@ -166,7 +193,7 @@ class cHtmlDisplay extends Component{
       case 'image':
         this.span.remove();
         break;
-      
+
       case 'embedVideo':
         this.iframe.remove();
         this.clickCover.remove();

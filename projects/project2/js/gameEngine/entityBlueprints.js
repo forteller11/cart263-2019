@@ -9,7 +9,7 @@ function headBlueprint() {
   let newHead = new Entity();
 
   newHead.addComponent(new cPos(ran(Math.PI), ran(window.innerWidth / 2), ran(window.innerHeight)));
-  newHead.addComponent(new cHitbox(radius));
+  newHead.addComponent(new cHitbox('circle',radius));
   newHead.addComponent(new cPhysics(mass, ran(-initVel, initVel), ran(-initVel, initVel), ran(-initRot, initRot)));
   newHead.addComponent(new cHtmlDisplay('image','assets/face1.png', radius * 2));
   newHead.addComponent(new cDraggable());
@@ -27,7 +27,7 @@ function embedVideoBlueprint() {
   let newHead = new Entity();
 
   newHead.addComponent(new cPos(ran(Math.PI), ran(window.innerWidth / 2), ran(window.innerHeight)));
-  newHead.addComponent(new cHitbox(radius));
+  newHead.addComponent(new cHitbox('circle',radius));
   newHead.addComponent(new cPhysics(mass, ran(-initVel, initVel), ran(-initVel, initVel), ran(-initRot, initRot)));
   newHead.addComponent(new cHtmlDisplay('embedVideo',videoIds[randomIndex], radius * 2));
   newHead.addComponent(new cDraggable());
@@ -41,8 +41,8 @@ function playFieldBlueprint() {
   let newHead = new Entity();
 
   newHead.addComponent(new cPos(0, ran(window.innerWidth / 2), ran(window.innerHeight)));
-  newHead.addComponent(new cHitbox(radius,'boundingbox'));
-  newHead.addComponent(new cImage('assets/rorty.jpg', radius * 2,-1));
+  newHead.addComponent(new cHitbox('boundingbox',radius));
+  newHead.addComponent(new cImage('assets/clickerCover.jpg', radius * 2,-1));
   newHead.addComponent(new cDragArea());
 systemManager.addEntity(newHead);
 }

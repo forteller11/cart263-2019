@@ -25,7 +25,10 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
   }
 
   systemExecution(entity) {
-    //generalize to 3 dimensions
+    //apply wind
+    entity.cPhysics.vel.x += globalObj.physics.windX;
+    entity.cPhysics.vel.y += globalObj.physics.windY;
+
     //apply drag and constrain velocties
     entity.cPhysics.vel.mult(globalObj.physics.cartesianDrag);
     entity.cPhysics.angularVel *= globalObj.physics.polarDrag;
