@@ -2,6 +2,7 @@
 
 function onCollisionEvent(e1,e2){
   // console.log('collisionEvent');
+  systemManager.removeEntity(e1);
   if (systemManager.entityHasComponent('cPhysics',e1) &&
      (systemManager.entityHasComponent('cPhysics',e2))){
        systemManager.sCollisionResolution.systemExecution(e1,e2);

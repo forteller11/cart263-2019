@@ -50,5 +50,6 @@ systemManager.addEntity(newHead);
 function createEntitiesFromBlueprint(entityBlueprint, numberToCreate) {
   for (let i = 0; i < numberToCreate; i++) {
     entityBlueprint();
+
   }
 }

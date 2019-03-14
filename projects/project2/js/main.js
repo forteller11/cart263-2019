@@ -5,6 +5,8 @@ let body;
 let globalObj;
 let systemManager;
 let firstEntity;
+let globalEntityIdCounter = 0; //everytime an entity is created it is given a unique identifier
+
 function main(){
   console.log('main');
   body = document.getElementById('body');
@@ -14,7 +16,7 @@ function main(){
 
   // createEntitiesFromBlueprint(playFieldBlueprint,1);
   // createEntitiesFromBlueprint(headBlueprint,3);
-  createEntitiesFromBlueprint(embedVideoBlueprint,4);
+  createEntitiesFromBlueprint(embedVideoBlueprint,8);
 
   setInterval(update, 16.7);
 

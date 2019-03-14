@@ -1,7 +1,18 @@
 'use strict';
 
-class cPos { //stores position
+class Component {
+  constructor(){
+    this.name = null;
+    this.htmlElements = []; //array of html elements, used for all html elements the component has, used for removing them on deletion of an entity
+  }
+  removeHtml(){
+
+  }
+}
+
+class cPos extends Component { //stores position
   constructor(angle=0,x=0,y=0,z=0){
+    super();
     this.name = 'cPos';
     this.x = x;
     this.y = y;
@@ -9,16 +20,18 @@ class cPos { //stores position
   }
 }
 
-class cHitbox{ //circle hitbox
+class cHitbox extends Component{ //circle hitbox
   constructor(radius,type='circle'){
+    super();
     this.name = 'cHitbox';
     this.radius = radius;
     this.type = type; //can be 'circle',boundingbox,(polygon)
   }
 }
 
-class cPhysics {
+class cPhysics extends Component {
   constructor(mass=null,xVel=0,yVel=0,angularVel=0){
+    super();
     this.name = 'cPhysics';
     this.mass = mass;
     this.invMass = 1/mass; //inverse mass
@@ -30,8 +43,9 @@ class cPhysics {
   }
 }
 
-class cImage { //contains html image element
+class cImage extends Component { //contains html image element
   constructor(imgUrl=null,sizeOfImage=null,depth = 0){
+    super();
     this.name = 'cImage';
     this.image = document.createElement('IMG');
     this.image.src = imgUrl;
@@ -48,8 +62,9 @@ class cImage { //contains html image element
 
 
 
-class cHtmlDisplay{
+class cHtmlDisplay extends Component{
   constructor(type,...args){
+    super();
     this.name = 'cHtmlDisplay';
     this.type = type;
     this.link = null;
@@ -143,19 +158,33 @@ class cHtmlDisplay{
       default:
         console.log(this.type + ' is not a valid type in cHtmlDisplay!')
     }
+  }
 
+  removeHtml(){ //removes html from component 
+    switch(this.type){
+      case 'image':
+      this.span.remove(this.image);
+      document.body.remove(this.span);
+      break;
+      case 'embedVideo':
+      this.span.remove(this.iframe);
+      this.span.remove(this.clickCover);
+      document.body.remove(this.span);
+    }
   }
 }
 
-class cDraggable{
+class cDraggable  extends Component{
   constructor(drag=true){
+    super();
     this.name = 'cDraggable';
     this.draggable = drag;
   }
 }
 
-class cDragArea{
+class cDragArea  extends Component{
   constructor(value=false){
+    super();
     this.name = 'cDragArea';
     this.value = value;
   }

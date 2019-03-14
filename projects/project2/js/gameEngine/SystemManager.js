@@ -4,7 +4,6 @@ class SystemManager {
 
   constructor() {
     this.systems = []; //array of systems
-
 //if not pushed into system then this represents a subsystem whos update does
 //not occur on regular tick but rather is called from some event from another system
     this.sOverlap = new sOverlap();
@@ -38,9 +37,23 @@ class SystemManager {
     }
 
   }
-
-  removeEntity() { //remove all components and tell systems
-    //delete entity from relevant entities, keep list of free spaces in middle of relevant entities array
+  removeEntity(entity) { //remove this entity from all sytems
+// console.log(entity);
+    for (let system of this.systems){
+      for (let i = 0; i < system.relevantEntities; i ++){
+        if (system.relevantEntities[i] === entity.id){
+          system.relevantEntities.splice(i,1);
+          break;
+        }
+      }
+    }
+    /*this algorithim scales linearly with number of entities and also linearly
+    with number of systems which is pretty inefficient,
+    this could be achieved in constant time wish hashing but I don't think JS
+     lends itself to hashtables and i am not comfortable with this way of storing acessing vars
+     and in this particular project there is a trival number of systems and entities
+     so I will worry about fixing it in future itterations
+    */
   }
 
   update() {
@@ -49,7 +62,7 @@ class SystemManager {
 
     this.sPhysicsTransform.update();
 
-      this.sDrag.update();
+    this.sDrag.update();
 
     this.sImageTransform.update();
   }
@@ -74,8 +87,5 @@ class SystemManager {
       }
       return entityRelevance;
     }
-
-
-
 
 }
