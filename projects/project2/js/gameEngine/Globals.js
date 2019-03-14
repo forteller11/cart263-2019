@@ -16,11 +16,11 @@ class gPhysicsConstants { //stores physics constants
     this.name = 'cPhysicsConstants';
     this.maxPolarVel = Math.PI/4//max/min polar velocity
     this.cartesianDrag = 0.98; //rate at which linear vel approaches 0
-    this.polarDrag = .96; //rate at which rotational vel approaches 0
+    this.polarDrag = .3; //rate at which rotational vel approaches 0
     this.angularVelEffectOnLinear = 10; //how much angle vel effects resultant post collision linear vel
     this.rotationTransferOnCollision = .2;
     this.windX = 0;
-    this.windY = 0;
+    this.windY = .1;
   }
 }
 

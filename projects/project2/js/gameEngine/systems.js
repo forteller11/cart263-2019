@@ -29,15 +29,15 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
     entity.cPhysics.vel.x += globalObj.physics.windX;
     entity.cPhysics.vel.y += globalObj.physics.windY;
 
+    //transform position based on velocties
+    entity.cPos.x += entity.cPhysics.vel.x;
+    entity.cPos.y += entity.cPhysics.vel.y;
+    entity.cPos.angle += entity.cPhysics.angularVel;
+
     //apply drag and constrain velocties
     entity.cPhysics.vel.mult(globalObj.physics.cartesianDrag);
     entity.cPhysics.angularVel *= globalObj.physics.polarDrag;
     entity.cPhysics.angularVel = constrain(entity.cPhysics.angularVel, -globalObj.physics.maxPolarVel, globalObj.physics.maxPolarVel);
-    entity.cPos.angle += entity.cPhysics.angularVel;
-
-    //transform position based on velocties
-    entity.cPos.x += entity.cPhysics.vel.x;
-    entity.cPos.y += entity.cPhysics.vel.y;
     entity.cPos.angle += entity.cPhysics.angularVel;
   }
 
@@ -306,7 +306,7 @@ update() { //cycle through all pairs of collidable components,
 
 }
 
-class sCollisionResolution extends System { //subsystem which doesn't have independant tick or relevant entities
+class sCollisionResolution extends System { //subsystem which doesn't have independant tick or relevant entities but is triggered by overlap system
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
     this.requiredComponents = ['cPos', 'cPhysics'];
@@ -323,29 +323,6 @@ class sCollisionResolution extends System { //subsystem which doesn't have indep
     const deltaMassE2 = e2.cPhysics.invMass / e1.cPhysics.invMass; //how much more e1 shud be effected then e2
     ///dynamic resolution for angles\\\\\
 
-    const rotationToBeTransferredFromEntity1 = e1.cPhysics.angularVel * globalObj.physics.rotationTransferOnCollision;
-    const rotationToBeTransferredFromEntity2 = e2.cPhysics.angularVel * globalObj.physics.rotationTransferOnCollision;
-    //
-    e1.cPhysics.angularVel -= rotationToBeTransferredFromEntity1 * deltaMassE1;
-    e2.cPhysics.angularVel += rotationToBeTransferredFromEntity1 * deltaMassE2 * meanAngularRestitution;
-
-    e1.cPhysics.angularVel += rotationToBeTransferredFromEntity2 * deltaMassE1 * meanAngularRestitution;
-    e2.cPhysics.angularVel -= rotationToBeTransferredFromEntity2 * deltaMassE2;
-
-    //the more at a right angle the velocity to collision vector is the more angular momentum changes
-    let deltaVelocityVector = new Vector(e2.cPhysics.vel.x - e1.cPhysics.vel.x, e2.cPhysics.vel.y - e1.cPhysics.vel.y);
-    let deltaBetweenCollisionAndEntity1 = Math.sin(collisionBetween.angle() - e1.cPhysics.vel.angle());
-    let deltaBetweenCollisionAndEntity2 = Math.sin(collisionBetween.angle() - e2.cPhysics.vel.angle());
-
-    deltaBetweenCollisionAndEntity1 *= e1.cPhysics.momentOfInertia * e1.cPhysics.vel.mag;
-    deltaBetweenCollisionAndEntity2 *= e2.cPhysics.momentOfInertia * e2.cPhysics.vel.mag;
-    //
-    e1.cPhysics.angularVel += (deltaBetweenCollisionAndEntity1) * deltaMassE1; //if at right angle want maxium angle change
-    e2.cPhysics.angularVel += (deltaBetweenCollisionAndEntity1) * deltaMassE2; //if at right angle want maxium angle change
-
-    e1.cPhysics.angularVel -= (deltaBetweenCollisionAndEntity2) * deltaMassE1; //if at right angle want maxium angle change
-    e2.cPhysics.angularVel -= (deltaBetweenCollisionAndEntity2) * deltaMassE2; //if at right angle want maxium angle change
-
 
     //////dynamic resolution (Change velocities of balls accordingly)\\\\\\\\\
     let collisionVector = new Vector(collisionBetween.angle(), 1, 'polar'); //normalized vector from e1 to e2;
@@ -361,22 +338,17 @@ class sCollisionResolution extends System { //subsystem which doesn't have indep
     projectedVectorEntity1.mult(meanRestitution); //shorten vector
     projectedVectorEntity2.mult(meanRestitution);
 
-    //how much to change resultant forces considering rotation of bodies collided with, can only change by max of 90degrees
-    const rotateE1VecBy = constrain(e2.cPhysics.angularVel * globalObj.physics.angularVelEffectOnLinear, -Math.PI / 2, Math.PI / 2);
-    const rotateE2VecBy = constrain(e1.cPhysics.angularVel * globalObj.physics.angularVelEffectOnLinear, -Math.PI / 2, Math.PI / 2);
 
     //change vectors depending on mass differences
     let c1e1 = new Vector(projectedVectorEntity1.x, projectedVectorEntity1.y);
-    c1e1.rotate(rotateE1VecBy);
 
     let c1e2 = new Vector(projectedVectorEntity1.x, projectedVectorEntity1.y);
-    c1e2.rotate(rotateE2VecBy);
 
     let c2e1 = new Vector(projectedVectorEntity2.x, projectedVectorEntity2.y);
-    c2e1.rotate(rotateE1VecBy);
 
     let c2e2 = new Vector(projectedVectorEntity2.x, projectedVectorEntity2.y);
-    c2e2.rotate(rotateE2VecBy);
+
+
 
 
     if (deltaMassE1 < deltaMassE2) { //if entity one is heavier then e2, make sure e2 only goes as fast as e1
@@ -389,6 +361,8 @@ class sCollisionResolution extends System { //subsystem which doesn't have indep
       c2e2.mult(deltaMassE2);
 
       c2e1.mult(meanRestitution);
+
+
     }
 
     e1.cPhysics.vel.sub(c1e1); //remove all vel going towards other entity
@@ -397,6 +371,44 @@ class sCollisionResolution extends System { //subsystem which doesn't have indep
     e2.cPhysics.vel.sub(c2e2); //remove all vel going towards other entity
     e1.cPhysics.vel.add(c2e1); //add that vel to other entity
 
+    /////////////angular dynamic resolution\\\\\\\\\\\\\\\\\\\\\\\\\
+    //make entities roll over eachother pseudo releastically
+
+    //projection of entity velocity with vector parrellel to collision normal
+    collisionVector.rotate(90);
+    let reverseProjectedMagEntity1 = dotProduct(e1.cPhysics.vel, collisionVector);
+    let reverseProjectedMagEntity2 = dotProduct(e2.cPhysics.vel, collisionVector);
+    let combinedReverseProjectedMag =  mean( reverseProjectedMagEntity1,  reverseProjectedMagEntity2);
+
+    e1.cPhysics.angularVel -= ( reverseProjectedMagEntity1)/e1.cHitbox.radius; //if at right angle want maxium angle change
+    e2.cPhysics.angularVel += ( reverseProjectedMagEntity2)/e2.cHitbox.radius; //if at right angle want maxium angle change
+
+    e1.cPhysics.angularVel += ( reverseProjectedMagEntity2)/e1.cHitbox.radius; //if at right angle want maxium angle change
+    e2.cPhysics.angularVel -= ( reverseProjectedMagEntity1)/e2.cHitbox.radius; //if at right angle want maxium angle change
+
+
+    const rotationToBeTransferredFromEntity1 = e1.cPhysics.angularVel * globalObj.physics.rotationTransferOnCollision;
+    const rotationToBeTransferredFromEntity2 = e2.cPhysics.angularVel * globalObj.physics.rotationTransferOnCollision;
+    //
+    // e1.cPhysics.angularVel -= rotationToBeTransferredFromEntity1 * deltaMassE1;
+    // e2.cPhysics.angularVel += rotationToBeTransferredFromEntity1 * deltaMassE2 * meanAngularRestitution;
+    //
+    // e1.cPhysics.angularVel += rotationToBeTransferredFromEntity2 * deltaMassE1 * meanAngularRestitution;
+    // e2.cPhysics.angularVel -= rotationToBeTransferredFromEntity2 * deltaMassE2;
+
+    //the more at a right angle the velocity to collision vector is the more angular momentum changes
+    let deltaVelocityVector = new Vector(e2.cPhysics.vel.x - e1.cPhysics.vel.x, e2.cPhysics.vel.y - e1.cPhysics.vel.y);
+    let deltaBetweenCollisionAndEntity1 = Math.sin(collisionBetween.angle() - e1.cPhysics.vel.angle());
+    let deltaBetweenCollisionAndEntity2 = Math.sin(collisionBetween.angle() - e2.cPhysics.vel.angle());
+
+    deltaBetweenCollisionAndEntity1 *= e1.cPhysics.momentOfInertia * e1.cPhysics.vel.mag;
+    deltaBetweenCollisionAndEntity2 *= e2.cPhysics.momentOfInertia * e2.cPhysics.vel.mag;
+    //
+    // e1.cPhysics.angularVel += (e1.cPhysics.vel.mag)/e1.cHitbox.radius; //if at right angle want maxium angle change
+    // e2.cPhysics.angularVel += (e2.cPhysics.vel.mag)/e2.cHitbox.radius; //if at right angle want maxium angle change
+
+    // e1.cPhysics.angularVel -= (deltaBetweenCollisionAndEntity2) * deltaMassE1; //if at right angle want maxium angle change
+    // e2.cPhysics.angularVel -= (deltaBetweenCollisionAndEntity2) * deltaMassE2; //if at right angle want maxium angle change
 
 
     /////////////static resolution\\\\\\\\\\\\\\\\\\\\\\\\\

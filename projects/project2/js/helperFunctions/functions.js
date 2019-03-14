@@ -92,3 +92,11 @@ function ranIndexOfArray(arr){
   const ranNumberBelowArrLength = ran(arr.length-Number.MIN_VALUE); //- min value so this number can never === arr.length
   return Math.ceil(ranNumberBelowArrLength);
 }
+
+function mean(...args){ //finds the mean between a set of numbers
+  let sum = 0;
+  for (let i = 0; i < args.length; i ++){
+    sum += args[i];
+  }
+  return sum/args.length;
+}
