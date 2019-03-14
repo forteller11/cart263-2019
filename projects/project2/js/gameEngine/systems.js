@@ -25,9 +25,9 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
   }
 
   systemExecution(entity) {
-  entity.cPos.angle += entity.cPhysics.angularVel;
-  entity.cPhysics.angularVel *= globalObj.physics.polarDrag;
-  entity.cPhysics.angularVel = constrain(entity.cPhysics.angularVel, -globalObj.physics.maxPolarVel, globalObj.physics.maxPolarVel);
+    entity.cPos.angle += entity.cPhysics.angularVel;
+    entity.cPhysics.angularVel *= globalObj.physics.polarDrag;
+    entity.cPhysics.angularVel = constrain(entity.cPhysics.angularVel, -globalObj.physics.maxPolarVel, globalObj.physics.maxPolarVel);
     if (entity.cPhysics.inert) { //if a inert entity
       entity.cPhysics.x = 0;
       entity.cPhysics.y = 0;
@@ -171,19 +171,19 @@ class sOverlap extends System { //transforms image to entity position
     }
 
     //collision between box:box
-    if ((e1.cHitbox.type === 'boundingbox') && (e2.cHitbox.type === 'boundingbox')) {
+    if ((e1.cHitbox.type === 'rect') && (e2.cHitbox.type === 'rect')) {
       if (this.boxBoxOverlap(e1, e2)) {
         return true
       };
     }
 
-    if ((e1.cHitbox.type === 'boundingbox') && (e2.cHitbox.type === 'circle')) {
+    if ((e1.cHitbox.type === 'rect') && (e2.cHitbox.type === 'circle')) {
       if (this.boxCircleOverlap(e1, e2)) {
         return true
       };
     }
 
-    if ((e1.cHitbox.type === 'circle') && (e2.cHitbox.type === 'boundingbox')) {
+    if ((e1.cHitbox.type === 'circle') && (e2.cHitbox.type === 'rect')) {
       if (this.boxCircleOverlap(e2, e1)) {
         return true
       };
@@ -193,7 +193,18 @@ class sOverlap extends System { //transforms image to entity position
   }
 
   boxBoxOverlap(e1, e2) {
+    //bounding box collision check
+    if ((e1.cPos.x + e1.cHitbox.width / 2 > e2.cPos.x - e2.cHitbox.width / 2) && //horz overlap
+      (e2.cPos.x + e2.cHitbox.width / 2 > e1.cPos.x - e1.cHitbox.width / 2)) {
+      if ((e1.cPos.y + e1.cHitbox.height / 2 > e2.cPos.y - e2.cHitbox.height / 2) && //horz overlap
+        (e2.cPos.y + e2.cHitbox.height / 2 > e1.cPos.y - e1.cHitbox.height / 2)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
+  circleCircleBoundingBoxOverlap(e1, e2) {
     //bounding box collision check
     if ((e1.cPos.x + e1.cHitbox.radius > e2.cPos.x - e2.cHitbox.radius) && //horz overlap
       (e2.cPos.x + e2.cHitbox.radius > e1.cPos.x - e1.cHitbox.radius)) {
@@ -207,7 +218,7 @@ class sOverlap extends System { //transforms image to entity position
 
   circleCircleOverlap(e1, e2) {
     // first do bounding box collision (quicker)
-    if (this.boxBoxOverlap(e1, e2)) {
+    if (this.circleCircleBoundingBoxOverlap(e1, e2)) {
       //then perform pixel perfect collision using square root (slower)
       const minDistBeforeOverlap = e1.cHitbox.radius + e2.cHitbox.radius;
       if (distBetween(e1.cPos.x, e1.cPos.y, e2.cPos.x, e2.cPos.y) < minDistBeforeOverlap) {
@@ -255,6 +266,7 @@ class sOverlap extends System { //transforms image to entity position
   }
 
   boxCircleOverlap(e1, e2) {
+    console.log('boxCIrcleOverlap');
     //first check if the x/y of the circle is within the box and exit function if true (for performance)
     if (this.boxPointOverlap(e1, e2)) {
       return true;
@@ -266,39 +278,47 @@ class sOverlap extends System { //transforms image to entity position
     let arrayOfCollisionPointsY = [];
     const maxDistBetweenPoints = (e2.cHitbox.radius * 2) / overlapAccuracy;
     //generate enough points that when space evenly they don't exceede max distBetweenPoints
-    const pointsPerSide = Math.ceil(e1.cHitbox.radius / maxDistBetweenPoints);
-    const evenSpaceBetweenPoints = (e2.cHitbox.radius * 2) / pointsPerSide;
+    const pointsPerHorzSide = Math.ceil(e1.cHitbox.width / maxDistBetweenPoints);
+    const pointsPerVertSide = Math.ceil(e1.cHitbox.height / maxDistBetweenPoints);
+    const evenSpaceBetweenPoints = ((e2.cHitbox.width * 2) + (e2.cHitbox.height * 2)) / (pointsPerHorzSide + pointsPerVertSide);
 
-    const topOfBox = e1.cPos.y - e1.cHitbox.radius;
-    const botOfBox = e1.cPos.y + e1.cHitbox.radius;
-    const leftOfBox = e1.cPos.x - e1.cHitbox.radius;
-    const rightOfBox = e1.cPos.x + e1.cHitbox.radius;
+    const topOfBox = e1.cPos.y - e1.cHitbox.height / 2;
+    const botOfBox = e1.cPos.y + e1.cHitbox.height / 2;
+    const leftOfBox = e1.cPos.x - e1.cHitbox.width / 2;
+    const rightOfBox = e1.cPos.x + e1.cHitbox.width / 2;
 
-    for (let i = 0; i < pointsPerSide; i++) {
-      const topOfBox = e1.cPos.y - e1.cHitbox.radius;
-      const botOfBox = e1.cPos.y + e1.cHitbox.radius;
-      const leftOfBox = e1.cPos.x - e1.cHitbox.radius;
-      const rightOfBox = e1.cPos.x + e1.cHitbox.radius;
-
+    let index = 0;
+    for (let i = index; i < pointsPerVertSide; i++) {
       //points from top-left of box to bot-left
-      arrayOfCollisionPointsX[i] = leftOfBox;
-      arrayOfCollisionPointsY[i] = topOfBox + (i * evenSpaceBetweenPoints);
-
-      //points from bot-left of box to bot-right
-      arrayOfCollisionPointsX[i + (pointsPerSide * 1) - 1] = leftOfBox + (i * evenSpaceBetweenPoints);
-      arrayOfCollisionPointsY[i + (pointsPerSide * 1) - 1] = botOfBox;
-
-      //points from bot-right to bot-top of box
-      arrayOfCollisionPointsX[i + (pointsPerSide * 2) - 1] = rightOfBox;
-      arrayOfCollisionPointsY[i + (pointsPerSide * 2) - 1] = botOfBox - (i * evenSpaceBetweenPoints);
-
-      //topright to topleft
-      arrayOfCollisionPointsX[i + (pointsPerSide * 3) - 1] = rightOfBox - (i * evenSpaceBetweenPoints);
-      arrayOfCollisionPointsY[i + (pointsPerSide * 3) - 1] = topOfBox;
+      arrayOfCollisionPointsX[index] = leftOfBox;
+      arrayOfCollisionPointsY[index] = topOfBox + (i * evenSpaceBetweenPoints);
+      index++;
     }
+
+    for (let i = index; i < pointsPerHorzSide; i++) {
+      //points from bot-left of box to bot-right
+      arrayOfCollisionPointsX[index] = leftOfBox + (i * evenSpaceBetweenPoints);
+      arrayOfCollisionPointsY[index] = botOfBox;
+      index++;
+    }
+    for (let i = index; i < pointsPerVertSide; i++) {
+      //points from bot-right to bot-top of box
+      arrayOfCollisionPointsX[index] = rightOfBox;
+      arrayOfCollisionPointsY[index] = botOfBox - (i * evenSpaceBetweenPoints);
+      index++;
+    }
+    for (let i = 0; i < pointsPerHorzSide; i++) {
+      //topright to topleft
+      arrayOfCollisionPointsX[index] = rightOfBox - (i * evenSpaceBetweenPoints);
+      arrayOfCollisionPointsY[index] = topOfBox;
+      index++;
+    }
+
+    // do for next array
 
     for (let i = 0; i < arrayOfCollisionPointsX.length; i++) {
       if (this.circlePointOverlap(e2, arrayOfCollisionPointsX[i], arrayOfCollisionPointsY[i])) {
+        console.log('TRUE');
         return true;
       }
     }
@@ -424,11 +444,11 @@ class sCollisionResolution extends System { //subsystem which doesn't have indep
 
         e1.cPos.y -= collisionBetween.y / 2;
         e2.cPos.y += collisionBetween.y / 2;
-      } else if (e1.cPhysics.inert === true){ //if e1 inert is true,
+      } else if (e1.cPhysics.inert === true) { //if e1 inert is true,
         e2.cPos.x += collisionBetween.x;
         e2.cPos.y += collisionBetween.y;
       } else { //if e2 is inert
-        e1.cPos. x -= collisionBetween.x;
+        e1.cPos.x -= collisionBetween.x;
         e1.cPos.y -= collisionBetween.y;
       }
 

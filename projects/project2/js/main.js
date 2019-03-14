@@ -14,19 +14,19 @@ function main(){
   console.log(globalObj);
   systemManager = new SystemManager();
 
-  // createEntitiesFromBlueprint(playFieldBlueprint,1);
+  createEntitiesFromBlueprint(playFieldBlueprint,1);
   // createEntitiesFromBlueprint(headBlueprint,3);
 
-  let xx = 0;
-  while (xx < window.innerWidth){
-    createEntitiesFromBlueprint(floorBlueprint,1,(e)=>{
-      e.cPos.x = xx;
-      xx+=e.cHitbox.radius*3;
-        e.cPos.y = window.innerHeight/1.1 - e.cHitbox.radius;
-    });
-  }
+  // let xx = 0;
+  // while (xx < window.innerWidth){
+  //   createEntitiesFromBlueprint(floorBlueprint,1,(e)=>{
+  //     e.cPos.x = xx;
+  //     xx+=e.cHitbox.radius*3;
+  //       e.cPos.y = window.innerHeight/1.1 - e.cHitbox.radius;
+  //   });
+  // }
 
-  createEntitiesFromBlueprint(embedVideoBlueprint,7);
+  createEntitiesFromBlueprint(embedVideoBlueprint,3);
 
 
 
