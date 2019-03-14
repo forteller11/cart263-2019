@@ -373,42 +373,17 @@ class sCollisionResolution extends System { //subsystem which doesn't have indep
 
     /////////////angular dynamic resolution\\\\\\\\\\\\\\\\\\\\\\\\\
     //make entities roll over eachother pseudo releastically
-
     //projection of entity velocity with vector parrellel to collision normal
     collisionVector.rotate(90);
     let reverseProjectedMagEntity1 = dotProduct(e1.cPhysics.vel, collisionVector);
     let reverseProjectedMagEntity2 = dotProduct(e2.cPhysics.vel, collisionVector);
     let combinedReverseProjectedMag =  mean( reverseProjectedMagEntity1,  reverseProjectedMagEntity2);
 
-    e1.cPhysics.angularVel -= ( reverseProjectedMagEntity1)/e1.cHitbox.radius; //if at right angle want maxium angle change
-    e2.cPhysics.angularVel += ( reverseProjectedMagEntity2)/e2.cHitbox.radius; //if at right angle want maxium angle change
+    e1.cPhysics.angularVel -= ( reverseProjectedMagEntity1)/e1.cHitbox.radius * globalObj.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
+    e2.cPhysics.angularVel += ( reverseProjectedMagEntity2)/e2.cHitbox.radius * globalObj.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
 
-    e1.cPhysics.angularVel += ( reverseProjectedMagEntity2)/e1.cHitbox.radius; //if at right angle want maxium angle change
-    e2.cPhysics.angularVel -= ( reverseProjectedMagEntity1)/e2.cHitbox.radius; //if at right angle want maxium angle change
-
-
-    const rotationToBeTransferredFromEntity1 = e1.cPhysics.angularVel * globalObj.physics.rotationTransferOnCollision;
-    const rotationToBeTransferredFromEntity2 = e2.cPhysics.angularVel * globalObj.physics.rotationTransferOnCollision;
-    //
-    // e1.cPhysics.angularVel -= rotationToBeTransferredFromEntity1 * deltaMassE1;
-    // e2.cPhysics.angularVel += rotationToBeTransferredFromEntity1 * deltaMassE2 * meanAngularRestitution;
-    //
-    // e1.cPhysics.angularVel += rotationToBeTransferredFromEntity2 * deltaMassE1 * meanAngularRestitution;
-    // e2.cPhysics.angularVel -= rotationToBeTransferredFromEntity2 * deltaMassE2;
-
-    //the more at a right angle the velocity to collision vector is the more angular momentum changes
-    let deltaVelocityVector = new Vector(e2.cPhysics.vel.x - e1.cPhysics.vel.x, e2.cPhysics.vel.y - e1.cPhysics.vel.y);
-    let deltaBetweenCollisionAndEntity1 = Math.sin(collisionBetween.angle() - e1.cPhysics.vel.angle());
-    let deltaBetweenCollisionAndEntity2 = Math.sin(collisionBetween.angle() - e2.cPhysics.vel.angle());
-
-    deltaBetweenCollisionAndEntity1 *= e1.cPhysics.momentOfInertia * e1.cPhysics.vel.mag;
-    deltaBetweenCollisionAndEntity2 *= e2.cPhysics.momentOfInertia * e2.cPhysics.vel.mag;
-    //
-    // e1.cPhysics.angularVel += (e1.cPhysics.vel.mag)/e1.cHitbox.radius; //if at right angle want maxium angle change
-    // e2.cPhysics.angularVel += (e2.cPhysics.vel.mag)/e2.cHitbox.radius; //if at right angle want maxium angle change
-
-    // e1.cPhysics.angularVel -= (deltaBetweenCollisionAndEntity2) * deltaMassE1; //if at right angle want maxium angle change
-    // e2.cPhysics.angularVel -= (deltaBetweenCollisionAndEntity2) * deltaMassE2; //if at right angle want maxium angle change
+    e1.cPhysics.angularVel += ( reverseProjectedMagEntity2)/e1.cHitbox.radius * globalObj.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
+    e2.cPhysics.angularVel -= ( reverseProjectedMagEntity1)/e2.cHitbox.radius * globalObj.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
 
 
     /////////////static resolution\\\\\\\\\\\\\\\\\\\\\\\\\
