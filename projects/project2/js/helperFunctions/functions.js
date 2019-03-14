@@ -90,7 +90,7 @@ function dotProduct(v1,v2){ //returns dot product of two vectors
 
 function ranIndexOfArray(arr){
   const ranNumberBelowArrLength = ran(arr.length-Number.MIN_VALUE); //- min value so this number can never === arr.length
-  return Math.ceil(ranNumberBelowArrLength);
+  return Math.floor(ranNumberBelowArrLength);
 }
 
 function mean(...args){ //finds the mean between a set of numbers

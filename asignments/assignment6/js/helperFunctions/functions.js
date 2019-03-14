@@ -88,6 +88,15 @@ function dotProduct(v1,v2){ //returns dot product of two vectors
   return (v1.x*v2.x)+(v1.y*v2.y);
 }
 
-function hashFunction(value){ //generate deterministic but random key from value
+function ranIndexOfArr(arr){
+  const ranNumberBelowArrLength = ran(arr.length-Number.MIN_VALUE); //- min value so this number can never === arr.length
+  return Math.floor(ranNumberBelowArrLength);
+}
 
+function mean(...args){ //finds the mean between a set of numbers
+  let sum = 0;
+  for (let i = 0; i < args.length; i ++){
+    sum += args[i];
+  }
+  return sum/args.length;
 }
