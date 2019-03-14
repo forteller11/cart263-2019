@@ -156,7 +156,6 @@ class cHtmlDisplay extends Component{
 
         this.iframe = document.createElement('IFRAME');
         this.iframe.src = "https://www.youtube.com/embed/"+this.link+"?autoplay=1&controls=0&showinfo=0&modestbranding=1&autohide=1&loop=1&disablekb=1&enablejsapi=1";
-        console.log(this.iframe.src);
         this.iframe.style.position = 'absolute';
         this.iframe.height = h;
         this.iframe.width =  w;
@@ -168,7 +167,6 @@ class cHtmlDisplay extends Component{
         this.iframe.style.border = 'none'
         this.iframe.mute = false;
         this.span.appendChild(this.iframe);
-        console.log(this.iframe);
 
         this.clickCover = document.createElement('IMG');
         this.clickCover.src = 'assets/placeholder.jpg';

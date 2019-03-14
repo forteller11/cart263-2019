@@ -16,7 +16,16 @@ function main(){
 
   // createEntitiesFromBlueprint(playFieldBlueprint,1);
   // createEntitiesFromBlueprint(headBlueprint,3);
+
+  let xx = 0;
+  createEntitiesFromBlueprint(floorBlueprint,12,(e)=>{
+    xx+=e.cHitbox.radius*2;
+    e.cPos.x = xx;
+      e.cPos.y = window.innerHeight/2 - e.cHitbox.radius;
+  });
+  
   createEntitiesFromBlueprint(embedVideoBlueprint,12);
+
 
 
   // systemManager.removeEntityWithId(0);
