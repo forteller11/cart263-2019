@@ -172,7 +172,7 @@ class sOverlap extends System { //transforms image to entity position
 
     //collision between box:box
     if ((e1.cHitbox.type === 'rect') && (e2.cHitbox.type === 'rect')) {
-      if (this.boxBoxOverlap(e1, e2)) {
+      if (this.boundingBoxBoundingBox(e1, e2)) {
         return true
       };
     }
@@ -192,24 +192,30 @@ class sOverlap extends System { //transforms image to entity position
 
   }
 
-  boxBoxOverlap(e1, e2) {
-    //bounding box collision check
-    if ((e1.cPos.x + e1.cHitbox.width / 2 > e2.cPos.x - e2.cHitbox.width / 2) && //horz overlap
-      (e2.cPos.x + e2.cHitbox.width / 2 > e1.cPos.x - e1.cHitbox.width / 2)) {
-      if ((e1.cPos.y + e1.cHitbox.height / 2 > e2.cPos.y - e2.cHitbox.height / 2) && //horz overlap
-        (e2.cPos.y + e2.cHitbox.height / 2 > e1.cPos.y - e1.cHitbox.height / 2)) {
-        return true;
-      }
-    }
-    return false;
-  }
+  boundingBoxBoundingBoxOverlap(e1, e2) {
 
-  circleCircleBoundingBoxOverlap(e1, e2) {
+    let w;
+    let h;
+    switch(e1.cHitbox.type){
+      case 'circle':
+        w = e1.cHitbox.radius*2;
+        h = e1.cHitbox.radius*2;
+        break;
+
+      case 'rect':
+        w = e1.cHitbox.width;
+        h = e1.cHitbox.width;
+        break;
+
+      default:
+      console.log('e1 not valid type of hitbox');
+    }
+
     //bounding box collision check
-    if ((e1.cPos.x + e1.cHitbox.radius > e2.cPos.x - e2.cHitbox.radius) && //horz overlap
-      (e2.cPos.x + e2.cHitbox.radius > e1.cPos.x - e1.cHitbox.radius)) {
-      if ((e1.cPos.y + e1.cHitbox.radius > e2.cPos.y - e2.cHitbox.radius) && //horz overlap
-        (e2.cPos.y + e2.cHitbox.radius > e1.cPos.y - e1.cHitbox.radius)) {
+    if ((e1.cPos.x + w / 2 > e2.cPos.x - w / 2) && //horz overlap
+      (e2.cPos.x + w / 2 > e1.cPos.x - w / 2)) {
+      if ((e1.cPos.y + h / 2 > e2.cPos.y - h / 2) && //horz overlap
+        (e2.cPos.y + h / 2 > e1.cPos.y - h / 2)) {
         return true;
       }
     }
@@ -218,7 +224,7 @@ class sOverlap extends System { //transforms image to entity position
 
   circleCircleOverlap(e1, e2) {
     // first do bounding box collision (quicker)
-    if (this.circleCircleBoundingBoxOverlap(e1, e2)) {
+    if (this.boundingBoxBoundingBoxOverlap(e1, e2)) {
       //then perform pixel perfect collision using square root (slower)
       const minDistBeforeOverlap = e1.cHitbox.radius + e2.cHitbox.radius;
       if (distBetween(e1.cPos.x, e1.cPos.y, e2.cPos.x, e2.cPos.y) < minDistBeforeOverlap) {
@@ -229,36 +235,55 @@ class sOverlap extends System { //transforms image to entity position
   }
 
   circlePointOverlap(e1, x2, y2) {
-    if (this.boxPointOverlap(e1, x2, y2)) { //do boundingbox collision first for performance's sake, then do pythag theorum
+
       const minDistBeforeOverlap = e1.cHitbox.radius;
       if (distBetween(e1.cPos.x, e1.cPos.y, x2, y2) < minDistBeforeOverlap) {
         return true;
       }
-    }
     return false;
   }
 
 
-  boxPointOverlap(e1, ...args) {
-console.log(e1.cHitbox.type);
+  boundingBoxPointOverlap(e1, ...args) {
+    let w;
+    let h;
+    switch(e1.cHitbox.type){
+      case 'circle':
+        w = e1.cHitbox.radius*2;
+        h = e1.cHitbox.radius*2;
+        break;
+
+      case 'rect':
+        w = e1.cHitbox.width;
+        h = e1.cHitbox.width;
+        break;
+
+      default:
+        console.log('e1 not valid type of hitbox');
+        break;
+    }
+
+
+//define point
     let e2X;
     let e2Y;
 
-    if (args.length === 1) {
+    if (args.length === 1) { //if passed in entity
       e2X = args[0].cPos.x; // FIXME
       e2Y = args[0].cPos.y;
-    } else if (args.length === 2) {
+    } else if (args.length === 2) { //if passed in x,y of points directly
       e2X = args[0];
       e2Y = args[1];
     } else {
       console.log('wrong number of arguments!');
     }
 
+console.log(args);
     //bounding box collision check
-    if ((e1.cPos.x + e1.cHitbox.width/2 > e2X) && //horz overlap
-      (e2X > e1.cPos.x - e1.cHitbox.width/2)) {
-      if ((e1.cPos.y + e1.cHitbox.width/2 > e2Y) && //horz overlap
-        (e2Y > e1.cPos.y - e1.cHitbox.width/2)) {
+    if   ((e1.cPos.x + w/2 > e2X) && //horz overlap
+         ( e1.cPos.x - w/2 < e2X)) {
+      if ((e1.cPos.y + h/2 > e2Y) && //horz overlap
+          (e1.cPos.y - h/2 < e2Y)) {
         return true;
       }
     }
@@ -266,9 +291,10 @@ console.log(e1.cHitbox.type);
   }
 
   boxCircleOverlap(e1, e2) {
+    console.log(e1.cHitbox.type);
     console.log('boxCIrcleOverlap');
-    //first check if the x/y of the circle is within the box and exit function if true (for performance)
-    if (this.boxPointOverlap(e1, e2)) {
+    // //first check if the x/y of the circle is within the box and exit function if true (for performance)
+    if ((this.boundingBoxPointOverlap(e1, e2)) || (this.boundingBoxPointOverlap(e2,e1))) {
       console.log('POINT OVERLAPS')
       return true;
     } //else do more computationally expensive test
