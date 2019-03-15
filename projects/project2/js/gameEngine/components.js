@@ -71,24 +71,6 @@ class cPhysics extends Component {
   }
 }
 
-class cImage extends Component { //contains html image element
-  constructor(imgUrl=null,sizeOfImage=null,depth = 0){
-    super();
-    this.name = 'cImage';
-    this.image = document.createElement('IMG');
-    this.image.src = imgUrl;
-    this.image.style.position = 'fixed';
-    this.image.width = sizeOfImage;
-    this.image.height = sizeOfImage;
-    this.image.style.zIndex = depth;
-    body.appendChild(this.image);
-
-    if (sizeOfImage === null){console.log('imgUrl === null');}
-    if (sizeOfImage === null){console.log('size of image=== null, set to cHitbox.radius*2');}
-  }
-}
-
-
 
 class cHtmlDisplay extends Component{
   constructor(type,...args){

@@ -193,7 +193,6 @@ class sOverlap extends System { //transforms image to entity position
       };
     }
 
-
   }
 
   boundingBoxBoundingBoxOverlap(e1, e2) {
@@ -324,87 +323,58 @@ class sOverlap extends System { //transforms image to entity position
 
     //
     const overlapAccuracy = 1; //higher is more precise
-    let arrayOfCollisionPointsX = [];
-    let arrayOfCollisionPointsY = [];
+    let collisionPointsX = [];
+    let collisionPointsY = [];
 
     const minDistBetweenPoints = (e2.cHitbox.radius) / overlapAccuracy; //no large thne radius of e2
     //generate enough points that when space evenly they don't exceede max distBetweenPoints
-    const pointsPerHorzSide = Math.ceil(e1.cHitbox.width  / minDistBetweenPoints);
-    const pointsPerVertSide = Math.ceil(e1.cHitbox.height / minDistBetweenPoints);
-    const evenSpaceBetweenPoints = ((e2.cHitbox.radius * 2) + (e2.cHitbox.radius * 2)) / (pointsPerHorzSide + pointsPerVertSide);
-
-    const spaceBetweenHorz = ((pointsPerHorzSide+1)/e1.width);
-    const spaceBetweenVert = ((pointsPerVertSide+1)/e1.height);
-
-    const topOfBox = e1.cPos.y - e1.cHitbox.height;
-    const botOfBox = e1.cPos.y + e1.cHitbox.height;
-    const leftOfBox = e1.cPos.x - e1.cHitbox.width;
-    const rightOfBox = e1.cPos.x + e1.cHitbox.width;
+    const pointsPerHorzSide = Math.ceil(e1.cHitbox.width / minDistBetweenPoints) + 2;
+    const pointsPerVertSide = Math.ceil(e1.cHitbox.height / minDistBetweenPoints) + 2;
 
 
-    //4 corners manually give points
-    arrayOfCollisionPointsX[0] = leftOfBox;
-    arrayOfCollisionPointsY[0] = topOfBox;
+    const spaceBetweenHorz = (e1.cHitbox.width  / (pointsPerHorzSide + 0));
+    const spaceBetweenVert = (e1.cHitbox.height / (pointsPerVertSide + 0));
 
-    arrayOfCollisionPointsX[1] = rightOfBox;
-    arrayOfCollisionPointsY[1] = topOfBox;
-
-    arrayOfCollisionPointsX[2] = rightOfBox;
-    arrayOfCollisionPointsY[2] = botOfBox;
-
-    arrayOfCollisionPointsX[3] = leftOfBox;
-    arrayOfCollisionPointsY[3] = botOfBox;
-    console.log(`vertside ${evenSpaceBetweenPoints}`);
-    let index = 4.5;
-    let itterations = 0;
-    for (let i = index; i < pointsPerVertSide+index; i++) {
-      //points from top-left of box to bot-left
-      arrayOfCollisionPointsX[index] = leftOfBox;
-      arrayOfCollisionPointsY[index] = topOfBox + (i * evenSpaceBetweenPoints);
-      itterations++;
+    const topOfBox =   e1.cPos.y - e1.cHitbox.height/2;
+    const botOfBox =   e1.cPos.y + e1.cHitbox.height/2;
+    const leftOfBox =  e1.cPos.x - e1.cHitbox.width/2;
+    const rightOfBox = e1.cPos.x + e1.cHitbox.width/2;
+    console.log('PER HORZ SIDE'+pointsPerHorzSide);
+    let index = 0;
+    for (let i = 0; i < pointsPerHorzSide; i++) { //topleft to topright points EXCLUDING topright corner
+      collisionPointsX[index] = leftOfBox + i * spaceBetweenHorz;
+      collisionPointsY[index] = topOfBox;
+      index++;
     }
-    index+=itterations;
-    itterations = 0;
-
-    for (let i = index; i < pointsPerVertSide+index; i++) {
-      //points from bot-right to bot-top of box
-      arrayOfCollisionPointsX[index] = rightOfBox;
-      arrayOfCollisionPointsY[index] = botOfBox - (i * evenSpaceBetweenPoints);
-      itterations++;
+    for (let i = 0; i <= pointsPerHorzSide; i++) { //botleft to botright corner EXCLUDING botleft corner
+      collisionPointsX[index] = leftOfBox + i * spaceBetweenHorz;
+      collisionPointsY[index] = botOfBox;
+      index++;
     }
-    index+=itterations;
-    itterations = 0;
-
-    for (let i = index; i < pointsPerHorzSide+index; i++) {
-      //points from bot-left of box to bot-right
-      arrayOfCollisionPointsX[index] = leftOfBox + (i * evenSpaceBetweenPoints);
-      arrayOfCollisionPointsY[index] = botOfBox;
-      itterations++;
+    for (let i = 1; i < pointsPerVertSide; i++) { //topleft to botright poitns EXCLUDING topleft corner
+      collisionPointsX[index] = leftOfBox;
+      collisionPointsY[index] = topOfBox + i * spaceBetweenVert;
+      index++;
     }
-    index+=itterations;
-    itterations = 0;
-
-    for (let i = 0; i < pointsPerHorzSide+index; i++) {
-      //topright to topleft
-      arrayOfCollisionPointsX[index] = rightOfBox - (i * evenSpaceBetweenPoints);
-      arrayOfCollisionPointsY[index] = topOfBox;
-      itterations++;
+    for (let i = 0; i < pointsPerVertSide; i++) { //topright to botright points EXCLUDING botright corner
+      collisionPointsX[index] = rightOfBox;
+      collisionPointsY[index] = topOfBox + i * spaceBetweenVert;
+      index++;
     }
 
-    console.log(arrayOfCollisionPointsX);
-    console.log(arrayOfCollisionPointsY);
+    console.log(collisionPointsX);
+    console.log(collisionPointsY);
     if (debugMode) {
       canvasCtx.strokeStyle = "#3984c6";
 
-      for (let i = 0; i < arrayOfCollisionPointsX.length; i++) {
-        canvasCtx.strokeRect(arrayOfCollisionPointsX[i], arrayOfCollisionPointsY[i], 2, 2);
-
+      for (let i = 0; i < collisionPointsX.length; i++) {
+        canvasCtx.strokeRect(collisionPointsX[i], collisionPointsY[i], 7, 7);
       }
     }
 
 
-    for (let i = 0; i < arrayOfCollisionPointsX.length; i++) {
-      if (this.circlePointOverlap(e2, arrayOfCollisionPointsX[i], arrayOfCollisionPointsY[i])) {
+    for (let i = 0; i < collisionPointsX.length; i++) {
+      if (this.circlePointOverlap(e2, collisionPointsX[i], collisionPointsY[i])) {
         console.log('TRUE');
         return true;
       }
