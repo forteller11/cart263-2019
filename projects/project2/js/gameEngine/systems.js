@@ -323,46 +323,74 @@ class sOverlap extends System { //transforms image to entity position
     } //else do more computationally expensive test
 
     //
-    const overlapAccuracy = 2; //higher is more precise
+    const overlapAccuracy = 1; //higher is more precise
     let arrayOfCollisionPointsX = [];
     let arrayOfCollisionPointsY = [];
-    const maxDistBetweenPoints = (e2.cHitbox.radius * 2) / overlapAccuracy; //no large thne radius of e2
+
+    const minDistBetweenPoints = (e2.cHitbox.radius) / overlapAccuracy; //no large thne radius of e2
     //generate enough points that when space evenly they don't exceede max distBetweenPoints
-    const pointsPerHorzSide = Math.ceil(e1.cHitbox.width / maxDistBetweenPoints) + 2;
-    const pointsPerVertSide = Math.ceil(e1.cHitbox.height / maxDistBetweenPoints) + 2;
-    const evenSpaceBetweenPoints = ((e2.cHitbox.width * 2) + (e2.cHitbox.height * 2)) / (pointsPerHorzSide + pointsPerVertSide);
+    const pointsPerHorzSide = Math.ceil(e1.cHitbox.width  / minDistBetweenPoints);
+    const pointsPerVertSide = Math.ceil(e1.cHitbox.height / minDistBetweenPoints);
+    const evenSpaceBetweenPoints = ((e2.cHitbox.radius * 2) + (e2.cHitbox.radius * 2)) / (pointsPerHorzSide + pointsPerVertSide);
 
-    const topOfBox = e1.cPos.y - e1.cHitbox.height / 2;
-    const botOfBox = e1.cPos.y + e1.cHitbox.height / 2;
-    const leftOfBox = e1.cPos.x - e1.cHitbox.width / 2;
-    const rightOfBox = e1.cPos.x + e1.cHitbox.width / 2;
+    const spaceBetweenHorz = ((pointsPerHorzSide+1)/e1.width);
+    const spaceBetweenVert = ((pointsPerVertSide+1)/e1.height);
 
-    let index = 0;
-    for (let i = index; i < pointsPerVertSide; i++) {
+    const topOfBox = e1.cPos.y - e1.cHitbox.height;
+    const botOfBox = e1.cPos.y + e1.cHitbox.height;
+    const leftOfBox = e1.cPos.x - e1.cHitbox.width;
+    const rightOfBox = e1.cPos.x + e1.cHitbox.width;
+
+
+    //4 corners manually give points
+    arrayOfCollisionPointsX[0] = leftOfBox;
+    arrayOfCollisionPointsY[0] = topOfBox;
+
+    arrayOfCollisionPointsX[1] = rightOfBox;
+    arrayOfCollisionPointsY[1] = topOfBox;
+
+    arrayOfCollisionPointsX[2] = rightOfBox;
+    arrayOfCollisionPointsY[2] = botOfBox;
+
+    arrayOfCollisionPointsX[3] = leftOfBox;
+    arrayOfCollisionPointsY[3] = botOfBox;
+    console.log(`vertside ${evenSpaceBetweenPoints}`);
+    let index = 4.5;
+    let itterations = 0;
+    for (let i = index; i < pointsPerVertSide+index; i++) {
       //points from top-left of box to bot-left
       arrayOfCollisionPointsX[index] = leftOfBox;
       arrayOfCollisionPointsY[index] = topOfBox + (i * evenSpaceBetweenPoints);
-      index++;
+      itterations++;
     }
+    index+=itterations;
+    itterations = 0;
 
-    for (let i = index; i < pointsPerHorzSide; i++) {
-      //points from bot-left of box to bot-right
-      arrayOfCollisionPointsX[index] = leftOfBox + (i * evenSpaceBetweenPoints);
-      arrayOfCollisionPointsY[index] = botOfBox;
-      index++;
-    }
-    for (let i = index; i < pointsPerVertSide; i++) {
+    for (let i = index; i < pointsPerVertSide+index; i++) {
       //points from bot-right to bot-top of box
       arrayOfCollisionPointsX[index] = rightOfBox;
       arrayOfCollisionPointsY[index] = botOfBox - (i * evenSpaceBetweenPoints);
-      index++;
+      itterations++;
     }
-    for (let i = 0; i < pointsPerHorzSide; i++) {
+    index+=itterations;
+    itterations = 0;
+
+    for (let i = index; i < pointsPerHorzSide+index; i++) {
+      //points from bot-left of box to bot-right
+      arrayOfCollisionPointsX[index] = leftOfBox + (i * evenSpaceBetweenPoints);
+      arrayOfCollisionPointsY[index] = botOfBox;
+      itterations++;
+    }
+    index+=itterations;
+    itterations = 0;
+
+    for (let i = 0; i < pointsPerHorzSide+index; i++) {
       //topright to topleft
       arrayOfCollisionPointsX[index] = rightOfBox - (i * evenSpaceBetweenPoints);
       arrayOfCollisionPointsY[index] = topOfBox;
-      index++;
+      itterations++;
     }
+
     console.log(arrayOfCollisionPointsX);
     console.log(arrayOfCollisionPointsY);
     if (debugMode) {

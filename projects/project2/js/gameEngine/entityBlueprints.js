@@ -54,7 +54,7 @@ return newHead;
 }
 
 function playFieldBlueprint() {
-  let radius = ran(32, 128);
+  let radius = 400;
 
   let newHead = new Entity();
 

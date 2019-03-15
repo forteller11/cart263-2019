@@ -41,7 +41,7 @@ function main(){
   //   });
   // }
 
-  createEntitiesFromBlueprint(embedVideoBlueprint,3);
+  createEntitiesFromBlueprint(embedVideoBlueprint,1);
 
 
 
