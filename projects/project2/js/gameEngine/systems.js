@@ -240,7 +240,7 @@ class sOverlap extends System { //transforms image to entity position
 
 
   boxPointOverlap(e1, ...args) {
-
+console.log(e1.cHitbox.type);
     let e2X;
     let e2Y;
 
@@ -255,10 +255,10 @@ class sOverlap extends System { //transforms image to entity position
     }
 
     //bounding box collision check
-    if ((e1.cPos.x + e1.cHitbox.radius > e2X) && //horz overlap
-      (e2X > e1.cPos.x - e1.cHitbox.radius)) {
-      if ((e1.cPos.y + e1.cHitbox.radius > e2Y) && //horz overlap
-        (e2Y > e1.cPos.y - e1.cHitbox.radius)) {
+    if ((e1.cPos.x + e1.cHitbox.width/2 > e2X) && //horz overlap
+      (e2X > e1.cPos.x - e1.cHitbox.width/2)) {
+      if ((e1.cPos.y + e1.cHitbox.width/2 > e2Y) && //horz overlap
+        (e2Y > e1.cPos.y - e1.cHitbox.width/2)) {
         return true;
       }
     }
@@ -269,6 +269,7 @@ class sOverlap extends System { //transforms image to entity position
     console.log('boxCIrcleOverlap');
     //first check if the x/y of the circle is within the box and exit function if true (for performance)
     if (this.boxPointOverlap(e1, e2)) {
+      console.log('POINT OVERLAPS')
       return true;
     } //else do more computationally expensive test
 
