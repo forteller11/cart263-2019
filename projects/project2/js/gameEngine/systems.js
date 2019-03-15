@@ -25,6 +25,10 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
   }
 
   systemExecution(entity) {
+    if (debugMode) {
+      canvasCtx.strokeStyle = "#5cc639";
+      canvasCtx.strokeRect(entity.cPos.x, entity.cPos.y, 2, 2);
+    }
     entity.cPos.angle += entity.cPhysics.angularVel;
     entity.cPhysics.angularVel *= globalObj.physics.polarDrag;
     entity.cPhysics.angularVel = constrain(entity.cPhysics.angularVel, -globalObj.physics.maxPolarVel, globalObj.physics.maxPolarVel);
@@ -193,13 +197,14 @@ class sOverlap extends System { //transforms image to entity position
   }
 
   boundingBoxBoundingBoxOverlap(e1, e2) {
+    //takes two entities, places a bounding box around them, and checks for collision
 
     let w;
     let h;
-    switch(e1.cHitbox.type){
+    switch (e1.cHitbox.type) {
       case 'circle':
-        w = e1.cHitbox.radius*2;
-        h = e1.cHitbox.radius*2;
+        w = e1.cHitbox.radius * 2;
+        h = e1.cHitbox.radius * 2;
         break;
 
       case 'rect':
@@ -208,7 +213,7 @@ class sOverlap extends System { //transforms image to entity position
         break;
 
       default:
-      console.log('e1 not valid type of hitbox');
+        console.log('e1 not valid type of hitbox');
     }
 
     //bounding box collision check
@@ -234,12 +239,33 @@ class sOverlap extends System { //transforms image to entity position
     return false;
   }
 
-  circlePointOverlap(e1, x2, y2) {
+  circlePointOverlap(e1, ...args) {
+    let x2;
+    let y2;
 
+    switch (args.length) {
+      case 1: //parameters are two entities
+        x2 = args[0].cPos.x;
+        y2 = args[0].cPos.y;
+        break;
+
+      case 2: //paramters are x/y positions
+        x2 = args[0];
+        y2 = args[1];
+        break;
+
+      default:
+        console.log('not valid number of argumnets at circlePointOverlap!');
+    }
+
+    //first do bounding box collision (quicker)
+    if (this.boundingBoxPointOverlap(e1, x2, y2)) {
+      //then perform peixel perfect collision using square root
       const minDistBeforeOverlap = e1.cHitbox.radius;
       if (distBetween(e1.cPos.x, e1.cPos.y, x2, y2) < minDistBeforeOverlap) {
         return true;
       }
+    }
     return false;
   }
 
@@ -247,10 +273,10 @@ class sOverlap extends System { //transforms image to entity position
   boundingBoxPointOverlap(e1, ...args) {
     let w;
     let h;
-    switch(e1.cHitbox.type){
+    switch (e1.cHitbox.type) {
       case 'circle':
-        w = e1.cHitbox.radius*2;
-        h = e1.cHitbox.radius*2;
+        w = e1.cHitbox.radius * 2;
+        h = e1.cHitbox.radius * 2;
         break;
 
       case 'rect':
@@ -264,10 +290,9 @@ class sOverlap extends System { //transforms image to entity position
     }
 
 
-//define point
+    //define point
     let e2X;
     let e2Y;
-
     if (args.length === 1) { //if passed in entity
       e2X = args[0].cPos.x; // FIXME
       e2Y = args[0].cPos.y;
@@ -278,12 +303,11 @@ class sOverlap extends System { //transforms image to entity position
       console.log('wrong number of arguments!');
     }
 
-console.log(args);
     //bounding box collision check
-    if   ((e1.cPos.x + w/2 > e2X) && //horz overlap
-         ( e1.cPos.x - w/2 < e2X)) {
-      if ((e1.cPos.y + h/2 > e2Y) && //horz overlap
-          (e1.cPos.y - h/2 < e2Y)) {
+    if ((e1.cPos.x + w / 2 > e2X) && //horz overlap
+      (e1.cPos.x - w / 2 < e2X)) {
+      if ((e1.cPos.y + h / 2 > e2Y) && //horz overlap
+        (e1.cPos.y - h / 2 < e2Y)) {
         return true;
       }
     }
@@ -291,10 +315,9 @@ console.log(args);
   }
 
   boxCircleOverlap(e1, e2) {
-    console.log(e1.cHitbox.type);
-    console.log('boxCIrcleOverlap');
+
     // //first check if the x/y of the circle is within the box and exit function if true (for performance)
-    if ((this.boundingBoxPointOverlap(e1, e2)) || (this.boundingBoxPointOverlap(e2,e1))) {
+    if ((this.boundingBoxPointOverlap(e1, e2)) || (this.boundingBoxPointOverlap(e2, e1))) {
       console.log('POINT OVERLAPS')
       return true;
     } //else do more computationally expensive test
@@ -303,10 +326,10 @@ console.log(args);
     const overlapAccuracy = 2; //higher is more precise
     let arrayOfCollisionPointsX = [];
     let arrayOfCollisionPointsY = [];
-    const maxDistBetweenPoints = (e2.cHitbox.radius * 2) / overlapAccuracy;
+    const maxDistBetweenPoints = (e2.cHitbox.radius * 2) / overlapAccuracy; //no large thne radius of e2
     //generate enough points that when space evenly they don't exceede max distBetweenPoints
-    const pointsPerHorzSide = Math.ceil(e1.cHitbox.width / maxDistBetweenPoints);
-    const pointsPerVertSide = Math.ceil(e1.cHitbox.height / maxDistBetweenPoints);
+    const pointsPerHorzSide = Math.ceil(e1.cHitbox.width / maxDistBetweenPoints) + 2;
+    const pointsPerVertSide = Math.ceil(e1.cHitbox.height / maxDistBetweenPoints) + 2;
     const evenSpaceBetweenPoints = ((e2.cHitbox.width * 2) + (e2.cHitbox.height * 2)) / (pointsPerHorzSide + pointsPerVertSide);
 
     const topOfBox = e1.cPos.y - e1.cHitbox.height / 2;
@@ -340,8 +363,17 @@ console.log(args);
       arrayOfCollisionPointsY[index] = topOfBox;
       index++;
     }
+    console.log(arrayOfCollisionPointsX);
+    console.log(arrayOfCollisionPointsY);
+    if (debugMode) {
+      canvasCtx.strokeStyle = "#3984c6";
 
-    // do for next array
+      for (let i = 0; i < arrayOfCollisionPointsX.length; i++) {
+        canvasCtx.strokeRect(arrayOfCollisionPointsX[i], arrayOfCollisionPointsY[i], 2, 2);
+
+      }
+    }
+
 
     for (let i = 0; i < arrayOfCollisionPointsX.length; i++) {
       if (this.circlePointOverlap(e2, arrayOfCollisionPointsX[i], arrayOfCollisionPointsY[i])) {
@@ -388,8 +420,8 @@ class sCollisionResolution extends System { //subsystem which doesn't have indep
     let collisionVector = new Vector(collisionBetween.angle(), 1, 'polar'); //normalized vector from e1 to e2;
 
     //velocity to remove to entity and add to other entity
-    let projectedMagEntity1 = dotProduct(e1.cPhysics.vel, collisionVector);
-    let projectedMagEntity2 = dotProduct(e2.cPhysics.vel, collisionVector);
+    let projectedMagEntity1 = e1.cPhysics.vel.projectOnTo(collisionVector);
+    let projectedMagEntity2 = e2.cPhysics.vel.projectOnTo(collisionVector);
 
     //vector with all the x/y velocities going from entity to entity
     let projectedVectorEntity1 = new Vector(collisionBetween.angle(), projectedMagEntity1, 'polar');
@@ -435,8 +467,8 @@ class sCollisionResolution extends System { //subsystem which doesn't have indep
     //make entities roll over eachother pseudo releastically
     //projection of entity velocity with vector parrellel to collision normal
     collisionVector.rotate(90);
-    let reverseProjectedMagEntity1 = dotProduct(e1.cPhysics.vel, collisionVector);
-    let reverseProjectedMagEntity2 = dotProduct(e2.cPhysics.vel, collisionVector);
+    let reverseProjectedMagEntity1 = e1.cPhysics.vel.projectOnTo(collisionVector);
+    let reverseProjectedMagEntity2 = e2.cPhysics.vel.projectOnTo(collisionVector);
     let combinedReverseProjectedMag = mean(reverseProjectedMagEntity1, reverseProjectedMagEntity2);
 
     e1.cPhysics.angularVel -= (reverseProjectedMagEntity1) / e1.cHitbox.radius * globalObj.physics.rotationTransferOnCollision; //if at right angle want maxium angle change

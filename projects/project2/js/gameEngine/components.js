@@ -141,6 +141,7 @@ class cHtmlDisplay extends Component{
       this.image.width = this.width;
       this.image.height = this.height;
       this.image.style.zIndex = 0;
+      if (debugMode) this.image.style.opacity = debugOpacity;
       this.span.appendChild(this.image);
         break;
 
@@ -167,6 +168,7 @@ class cHtmlDisplay extends Component{
         this.iframe.allowfullscreen = 'false'
         this.iframe.style.border = 'none'
         this.iframe.mute = false;
+        if (debugMode) this.iframe.style.opacity = debugOpacity;
         this.span.appendChild(this.iframe);
 
         this.clickCover = document.createElement('IMG');

@@ -60,7 +60,7 @@ function playFieldBlueprint() {
 
   newHead.addComponent(new cPos(0, ran(window.innerWidth / 2), ran(window.innerHeight)));
   newHead.addComponent(new cHitbox('rect',radius));
-  newHead.addComponent(new cImage('assets/rorty.jpg', radius * 2,-1));
+  newHead.addComponent(new cHtmlDisplay('image','assets/rorty.jpg', radius * 2));
   newHead.addComponent(new cDragArea());
 systemManager.addEntity(newHead);
 return newHead;

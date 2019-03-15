@@ -79,4 +79,8 @@ class Vector {
     this.y = Math.sin(thetaStore + rotateAmount) * this.mag;
   }
 
+  projectOnTo(otherVector){ //dot product
+    return (this.x*otherVector.x)+(this.y*otherVector.y);
+  }
+
 }
