@@ -29,7 +29,11 @@ function main(){
   console.log(globalObj);
   systemManager = new SystemManager();
 
-  createEntitiesFromBlueprint(playFieldBlueprint,1);
+  createEntitiesFromBlueprint('embedVideo',1);
+  createEntitiesFromBlueprint('playfield',1);
+
+  // createEntitiesFromBlueprint('playfield').cHitbox.doOnOverlap = someFunction;
+
   // createEntitiesFromBlueprint(headBlueprint,3);
 
   // let xx = 0;
@@ -41,13 +45,11 @@ function main(){
   //   });
   // }
 
-  createEntitiesFromBlueprint(embedVideoBlueprint,1);
 
-
-
-  // systemManager.removeEntityWithId(0);
-  // systemManager.removeEntityWithId(1);
-  // systemManager.removeEntityWithId(2);
   setInterval(update, 16.7);
 
+}
+
+function someFunction(){
+  console.log('do this on overlap (open window/splice)');
 }

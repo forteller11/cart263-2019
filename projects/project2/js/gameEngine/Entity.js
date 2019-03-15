@@ -1,8 +1,8 @@
 'use strict';
 
 class Entity{
-  constructor(){
-
+  constructor(blueprintName){
+    this.blueprintName = blueprintName;
     this.id = globalEntityIdCounter;
     globalEntityIdCounter++;
     this.components = []; //array of references to components

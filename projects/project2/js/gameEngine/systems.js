@@ -339,7 +339,7 @@ class sOverlap extends System { //transforms image to entity position
     const botOfBox =   e1.cPos.y + e1.cHitbox.height/2;
     const leftOfBox =  e1.cPos.x - e1.cHitbox.width/2;
     const rightOfBox = e1.cPos.x + e1.cHitbox.width/2;
-    console.log('PER HORZ SIDE'+pointsPerHorzSide);
+
     let index = 0;
     for (let i = 0; i < pointsPerHorzSide; i++) { //topleft to topright points EXCLUDING topright corner
       collisionPointsX[index] = leftOfBox + i * spaceBetweenHorz;
@@ -362,8 +362,6 @@ class sOverlap extends System { //transforms image to entity position
       index++;
     }
 
-    console.log(collisionPointsX);
-    console.log(collisionPointsY);
     if (debugMode) {
       canvasCtx.strokeStyle = "#3984c6";
 

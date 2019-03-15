@@ -25,7 +25,8 @@ class cHitbox extends Component{ //circle hitbox
     super();
     this.name = 'cHitbox';
     this.type = type; //type of hitbox, circle, square, rect, line.
-
+    this.doOnOverlap = null; //a execution to perform on overlap with other entity
+    
     switch(this.type){
       case 'circle':
       this.radius = args[0];
