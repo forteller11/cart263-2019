@@ -34,10 +34,15 @@ function main() {
   createEntitiesFromBlueprint('embedVideo', 4);
 
   let spacing = 64;
+  let sinIndex = 0;
   for (let i = 0; i * spacing < window.innerWidth; i++){
+    sinIndex = mapFromRanges(i*spacing,0,window.innerWidth,0,Math.PI);
     let floor = createEntitiesFromBlueprint('floor');
       floor.cPos.x = spacing*i;
-      floor.cPos.y = window.innerHeight/1.1 - floor.cHitbox.radius;
+        const curveAmount = floor.cHitbox.radius*6;
+        const yyOrigin = window.innerHeight - curveAmount;
+        const curve = Math.sin(sinIndex)*curveAmount/1.5;
+      floor.cPos.y = yyOrigin+curve;
   }
 
 

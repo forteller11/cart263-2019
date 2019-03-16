@@ -475,17 +475,7 @@ class sCollisionResolution extends System { //subsystem which doesn't have indep
 
     /////////////static resolution\\\\\\\\\\\\\\\\\\\\\\\\\
     //will circles be overlapping next frame?
-    const e1NxtX = e1.cPos.x + e1.cPhysics.vel.x; //x on next frame given velocities
-    const e1NxtY = e1.cPos.y + e1.cPhysics.vel.y;
-    const e2NxtX = e2.cPos.x + e2.cPhysics.vel.x;
-    const e2NxtY = e2.cPos.y + e2.cPhysics.vel.y;
 
-    const nxtCollisionDeltaX = e2NxtX - e1NxtX;
-    const nxtCollisionDeltaY = e2NxtY - e1NxtY;
-    const nxtCollisionBetween = new Vector(collisionDeltaX, collisionDeltaY);
-
-    if (nxtCollisionBetween.mag < e1.cHitbox.radius + e2.cHitbox.radius) { //if overlapping next frame
-      //static resolution (make it so circles don't overlap post collision)
       const distOverlapping = e1.cHitbox.radius + e2.cHitbox.radius - collisionBetween.mag;
       collisionBetween.setMag(distOverlapping); //CARFUL because rewriting over vector which dynamic resoltuion needs
       staticResolution(e1, e2, collisionBetween);
