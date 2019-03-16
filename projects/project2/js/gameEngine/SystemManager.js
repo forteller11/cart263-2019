@@ -62,9 +62,11 @@ class SystemManager {
   }
 
   entityContainsARequiredBlueprint(requiredBlueprints, entity) {
-    //if it is created by a listed blueprint return true
-    for (let i = 0; i < requiredBlueprints.length; i++) { //for every required component in system
-      if (entity.blueprintName === requiredBlueprints[i]) { //does entity of x component?
+    if (requiredBlueprints.length === 0) { //if system doesn't have any required blueprints, then entity passes by default
+      return true;
+    }
+    for (let i = 0; i < requiredBlueprints.length; i++) { //if entity has at least one requiredBlueprints, it passes
+      if (entity.blueprintName === requiredBlueprints[i]) {
         return true;
       }
     }
@@ -74,9 +76,9 @@ class SystemManager {
   addEntity(newEntity) { //find all systems which cocern the entity and track them
     for (let i = 0; i < this.systems.length; i++) { //itterate through systems and
       if (this.entityContainsRequiredComponents(this.systems[i].requiredComponents, newEntity)) {
-        // if (this.entityContainsARequiredBlueprint(this.systems[i], newEntity)) {
+        if (this.entityContainsARequiredBlueprint(this.systems[i].requiredBlueprints, newEntity)) {
           this.systems[i].relevantEntities.push(newEntity); //add entity to relevant entities of system
-        // }
+        }
       }
 
     }

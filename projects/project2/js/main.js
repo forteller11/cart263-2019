@@ -33,36 +33,12 @@ function main() {
 
   createEntitiesFromBlueprint('embedVideo', 4);
 
-
-  // let swipeLeftChecker = createEntitiesFromBlueprint('playfield');
-  // swipeLeftChecker.cPos.x = -200;
-  // swipeLeftChecker.cPos.y = window.innerHeight/2;
-  // swipeLeftChecker.cHitbox.doOnOverlap = removeEntity;
-  //
-  // let swipeRightChecker = createEntitiesFromBlueprint('playfield');
-  // swipeRightChecker.cPos.x = window.innerWidth + swipeRightChecker.cHitbox.width;
-  // swipeRightChecker.cPos.y = window.innerHeight / 2;
-  // swipeRightChecker.cHitbox.doOnOverlap = openVideo;
-
-  // let offBottomChecker = createEntitiesFromBlueprint('playfield');
-  // offBottomChecker.cHitbox.width = window.innerWidth*2;
-  // offBottomChecker.cHitbox.height = -600;
-  // offBottomChecker.cPos.x = window.innerWidth / 2;
-  // offBottomChecker.cPos.y = window.innerHeight - offBottomChecker.cHitbox.height;
-  // offBottomChecker.cHitbox.doOnOverlap = removeEntity;
-
-  // createEntitiesFromBlueprint('playfield').cHitbox.doOnOverlap = someFunction;
-
-  // createEntitiesFromBlueprint(headBlueprint,3);
-
-  // let xx = 0;
-  // while (xx < window.innerWidth){
-  //   createEntitiesFromBlueprint(floorBlueprint,1,(e)=>{
-  //     e.cPos.x = xx;
-  //     xx+=e.cHitbox.radius*3;
-  //       e.cPos.y = window.innerHeight/1.1 - e.cHitbox.radius;
-  //   });
-  // }
+  let spacing = 64;
+  for (let i = 0; i * spacing < window.innerWidth; i++){
+    let floor = createEntitiesFromBlueprint('floor');
+      floor.cPos.x = spacing*i;
+      floor.cPos.y = window.innerHeight/1.1 - floor.cHitbox.radius;
+  }
 
 
   setInterval(update, 16.7);

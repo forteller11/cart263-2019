@@ -526,8 +526,8 @@ class sDraggable extends System { //subsystem which doesn't have independant tic
 class sOutOfBoundsHandler extends System { //determines what to do when embedVideo is out of bounds (open it or delete it)
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
-    this.requiredBlueprints = ['playfield'];
-    // this.requiredComponents = ['cPos', 'cDraggable',];
+    this.requiredBlueprints = ['embedVideo'];
+    this.requiredComponents = ['cPos', 'cHitbox'];
   }
 
   systemExecution() {
@@ -536,8 +536,6 @@ class sOutOfBoundsHandler extends System { //determines what to do when embedVid
       if (entity.cPos.x > window.innerWidth) {
         //begin fading video out off edge of screen
       entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.x, window.innerWidth, window.innerWidth + entity.cHitbox.radius, 1, 0);
-        console.log(mapFromRanges(entity.cPos.x, window.innerWidth, window.innerWidth + entity.cHitbox.radius, 1, 0));
-        console.log(mapFromRanges(175, 0, 200, 1, 0));
         //if completely off edge of screen
         if (entity.cPos.x > window.innerWidth + entity.cHitbox.radius) {
           const rr = entity.cHitbox.radius * 3;
