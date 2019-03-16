@@ -32,7 +32,9 @@ function main(){
 
   createEntitiesFromBlueprint('embedVideo',1);
   let swipeRightChecker = createEntitiesFromBlueprint('playfield').cHitbox.doOnOverlap = openVideo;
-  let swipeLeftChecker = createEntitiesFromBlueprint('playfield').cHitbox.doOnOverlap = deleteEntity;
+  let swipeLeftChecker = createEntitiesFromBlueprint('playfield').cHitbox.doOnOverlap = systemManager.removeEntity;
+  swipeLeftChecker.x = 0;
+  swipeRightChecker.x = window.innerWidth;
   // createEntitiesFromBlueprint('playfield').cHitbox.doOnOverlap = someFunction;
 
   // createEntitiesFromBlueprint(headBlueprint,3);
@@ -53,15 +55,17 @@ function main(){
 
 function openVideo(other){
   if (other.blueprintName === 'embedVideo'){
-    window.open(`https://www.youtube.com/watch?v=${other.cHtmlDisplay.link}`);
-    deleteEntity(other);
+    console.log('OPEN VIDEO');
+    console.log(this.systems)
+    // window.open(`https://www.youtube.com/watch?v=${other.cHtmlDisplay.link}`);
+    systemManager.removeEntity(other);
   }
 
 }
 
 function deleteEntity(other){
   if (other.blueprintName === 'embedVideo'){
-    systemanager.deleteEntity(other);
+    systemManager.removeEntity(other);
 if (debugMode) console.log('entity deleted!');
   }
 }
