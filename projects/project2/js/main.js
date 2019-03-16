@@ -8,7 +8,7 @@ let firstEntity;
 let globalEntityIdCounter = 0; //everytime an entity is created it is given a unique identifier
 let canvas;
 let canvasCtx;
-let debugMode = true;
+let debugMode = false;
 let debugOpacity = 0.2;
 
 function main() {
@@ -33,9 +33,9 @@ function main() {
 
   createEntitiesFromBlueprint('embedVideo', 4);
 
-  let spacing = 64;
+  let spacing = window.innerWidth/12;
   let sinIndex = 0;
-  for (let i = 0; i * spacing < window.innerWidth; i++){
+  for (let i = 1; i * spacing < window.innerWidth; i++){
     sinIndex = mapFromRanges(i*spacing,0,window.innerWidth,0,Math.PI);
     let floor = createEntitiesFromBlueprint('floor');
       floor.cPos.x = spacing*i;

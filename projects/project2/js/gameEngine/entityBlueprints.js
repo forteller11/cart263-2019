@@ -64,7 +64,7 @@ function addComponentsBasedOnBlueprint(newEntity, blueprintName) {
       break;
 }
     case 'floor':{
-      let radius = 32;
+      let radius = window.innerWidth/48;
       const initVel = 0;
       const initRot = 0;
       let mass = Number.MAX_SAFE_INTEGER;

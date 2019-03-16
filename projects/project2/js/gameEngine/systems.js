@@ -582,7 +582,15 @@ class sOutOfBoundsHandler extends System { //determines what to do when embedVid
         entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.y,
           window.innerHeight - entity.cHitbox.radius, window.innerHeight + entity.cHitbox.radius, 1, 0, );
         //if completely off edge of screen
-        if (entity.cPos.y > window.innerWidth + entity.cHitbox.radius) {
+        if (entity.cPos.y > window.innerHeight + entity.cHitbox.radius) {
+          if (entity.cPos.y > window.innerWidth/2){
+            if (!(debugMode)) {
+              const rr = entity.cHitbox.radius * 3;
+              const xx = (entity.cPos.x);
+              const yy = ran(window.innerHeight);
+              window.open(`https://www.youtube.com/watch?v=${entity.cHtmlDisplay.link}`, '_blank', `toolbar=no,scrollbars=no,resizable=no,top=${yy},left=${xx-rr},width=${rr},height=${rr}`);
+            }
+          }
           systemManager.removeEntity(entity);
         }
       }
@@ -598,11 +606,8 @@ class sVideoSpawner extends System { //determines what to do when embedVideo is 
   }
 
   systemExecution() {
-
-    console.log(this.relevantEntities.length)
     let dynamicSpawnRate = mapFromRanges(this.relevantEntities.length, 0, 10, globalObj.spawn.rate * 1, globalObj.spawn.rate / 5);
     const r = ran();
-    console.log(`if ${dynamicSpawnRate} > ${r}`);
     if (dynamicSpawnRate > r) {
       createEntitiesFromBlueprint('embedVideo');
       console.log('SPAWWWWWWWWWWNED');
