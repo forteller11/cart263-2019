@@ -55,11 +55,12 @@ function addComponentsBasedOnBlueprint(newEntity, blueprintName) {
       break;
 }
     case 'playfield': {
-      let radius = 400;
+      let width = 64;
+      let height = window.innerHeight;
       newEntity.addComponent(new cPos(0, ran(window.innerWidth / 2), ran(window.innerHeight)));
-      newEntity.addComponent(new cHitbox('rect', radius, radius * 7));
-      newEntity.addComponent(new cHtmlDisplay('image', 'assets/rorty.jpg', radius, radius * 7));
-      newEntity.addComponent(new cDragArea());
+      newEntity.addComponent(new cHitbox('rect', width, height));
+      newEntity.addComponent(new cHtmlDisplay('image', 'assets/rorty.jpg', width, height));
+      // newEntity.addComponent(new cDragArea());
       break;
 }
     case 'floor':{

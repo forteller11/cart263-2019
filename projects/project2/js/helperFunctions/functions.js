@@ -63,7 +63,7 @@ function min(){ //returns smallest argument
   return currentMin;
 }
 
-function linearInterpolate(value1,value2,lerpAmount){
+function linearInterpolate(lerpAmount, value1, value2){
   const valueDelta = value1 - value2; //find difference between values
   const lerpAdd = lerpAmount * valueDelta; //find percentage of delta which user wants to lerp by
   const lerpResult = lerpAdd + value2; //add constant
@@ -73,11 +73,12 @@ function linearInterpolate(value1,value2,lerpAmount){
 function mapFromRanges(value,range1a,range1b,range2a,range2b){
   //map value 1 between range1 --> range2
   const range1 = range1b-range1a;
-  const percentageOfRange1 = value/range1;
+  const valuesInterpolationBetweenRange1 = (value-range1a)/range2a;
 
   const range2 = range2b-range2a;
-  const lerpRange2ByPercentageOfRange1 = range2*percentageOfRange1;
-  return lerpRange2ByPercentageOfRange1 + range2a; //add constant
+
+  return (range2*valuesInterpolationBetweenRange1) + range2a;
+
 
   if (!(arguments.length === 5)){
     console.log("ERROR: invalid num of arguments in map function!");

@@ -3,6 +3,7 @@ class System { //base functionality for all systems
   constructor(arrayOfRelevantEntities) {
     this.relevantEntities = []; //array of relevant entities to system
     this.requiredComponents = []; //array of relevant components
+    this.requiredBlueprints = []; //array of required blueprints the entity must have
   }
 
   systemExecution(entity) {
@@ -331,13 +332,13 @@ class sOverlap extends System { //transforms image to entity position
     const pointsPerVertSide = Math.ceil(e1.cHitbox.height / minDistBetweenPoints) + 2;
 
 
-    const spaceBetweenHorz = (e1.cHitbox.width  / (pointsPerHorzSide + 0));
+    const spaceBetweenHorz = (e1.cHitbox.width / (pointsPerHorzSide + 0));
     const spaceBetweenVert = (e1.cHitbox.height / (pointsPerVertSide + 0));
 
-    const topOfBox =   e1.cPos.y - e1.cHitbox.height/2;
-    const botOfBox =   e1.cPos.y + e1.cHitbox.height/2;
-    const leftOfBox =  e1.cPos.x - e1.cHitbox.width/2;
-    const rightOfBox = e1.cPos.x + e1.cHitbox.width/2;
+    const topOfBox = e1.cPos.y - e1.cHitbox.height / 2;
+    const botOfBox = e1.cPos.y + e1.cHitbox.height / 2;
+    const leftOfBox = e1.cPos.x - e1.cHitbox.width / 2;
+    const rightOfBox = e1.cPos.x + e1.cHitbox.width / 2;
 
     let index = 0;
     for (let i = 0; i < pointsPerHorzSide; i++) { //topleft to topright points EXCLUDING topright corner
@@ -504,11 +505,8 @@ class sCollisionResolution extends System { //subsystem which doesn't have indep
         e1.cPos.x -= collisionBetween.x;
         e1.cPos.y -= collisionBetween.y;
       }
-
-
     }
   }
-
 }
 
 
@@ -522,5 +520,57 @@ class sDraggable extends System { //subsystem which doesn't have independant tic
     // console.log(e1.cDraggable);
     e1.cDraggable = e2.cDragArea.value;
     // console.log(e1.cDraggable);
+  }
+}
+
+class sOutOfBoundsHandler extends System { //determines what to do when embedVideo is out of bounds (open it or delete it)
+  constructor(arrayOfRelevantEntities) {
+    super(arrayOfRelevantEntities);
+    this.requiredBlueprints = ['playfield'];
+    // this.requiredComponents = ['cPos', 'cDraggable',];
+  }
+
+  systemExecution() {
+    for (let entity of this.relevantEntities) {
+      //if center off edge of screen right side fade video, open url in new window, then delete
+      if (entity.cPos.x > window.innerWidth) {
+        //begin fading video out off edge of screen
+        console.log(mapFromRanges(entity.cPos.x, window.innerWidth, window.innerWidth + entity.cHitbox.radius, 1, 0));
+        console.log(mapFromRanges(150, 100, 200, 1, 0));
+        //if completely off edge of screen
+        if (entity.cPos.x > window.innerWidth + entity.cHitbox.radius) {
+          const rr = entity.cHitbox.radius * 3;
+          const xx = ran(window.innerWidth);
+          const yy = entity.cPos.y;
+          window.open(`https://www.youtube.com/watch?v=${entity.cHtmlDisplay.link}`, '_blank', `toolbar=no,scrollbars=no,resizable=no,top=${yy},left=${xx},width=${rr},height=${rr}`);
+          systemManager.removeEntity(entity);
+        }
+      }
+
+      // //if center off edge of screen left side fade video and delete
+      // if (entity.cPos.x < window.innerWidth) {
+      //   //begin fading video out off edge of screen
+      //   entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.x, 1, 0, 0, -entity.cHitbox.radius);
+      //   //if completely off edge of screen
+      //   if (entity.cPos.x < -entity.cHitbox.radius) {
+      //     systemManager.removeEntity(entity);
+      //   }
+      // }
+      //
+      // //if off bottom of video, fade, then delete
+      // if (entity.cPos.y > window.innerWidth - entity.cHitbox.radius) {
+      //   //begin fading video out off edge of screen
+      //   entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.y, 1, 0,
+      //     window.innerHeight - entity.cHitbox.radius, window.innerHeight + entity.cHitbox.radius);
+      //   //if completely off edge of screen
+      //   if (entity.cPos.y > window.innerWidth + entity.cHitbox.radius) {
+      //     systemManager.removeEntity(entity);
+      //   }
+      // }
+
+
+
+
+    }
   }
 }
