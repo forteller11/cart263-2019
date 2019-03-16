@@ -79,16 +79,12 @@ class SystemManager {
         // }
       }
 
-      // if (this.entityContainsRequiredComponents(this.systems[i], newEntity)) { //if the entity has all required components
-      //   this.systems[i].relevantEntities.push(newEntity); //add entity to relevant entities of system
-      // }
     }
 
   }
 
   removeEntity(entity) { //remove this entity from all sytems
-    console.log(entity);
-    console.log(this.systems);
+    console.log('entity removed!');
     for (let i = 0; i < this.systems.length; i++) {
       for (let j = 0; j < this.systems[i].relevantEntities.length; j++) {
         if (this.systems[i].relevantEntities[j].id === entity.id) {

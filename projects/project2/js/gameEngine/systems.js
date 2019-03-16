@@ -535,8 +535,9 @@ class sOutOfBoundsHandler extends System { //determines what to do when embedVid
       //if center off edge of screen right side fade video, open url in new window, then delete
       if (entity.cPos.x > window.innerWidth) {
         //begin fading video out off edge of screen
+      entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.x, window.innerWidth, window.innerWidth + entity.cHitbox.radius, 1, 0);
         console.log(mapFromRanges(entity.cPos.x, window.innerWidth, window.innerWidth + entity.cHitbox.radius, 1, 0));
-        console.log(mapFromRanges(150, 100, 200, 1, 0));
+        console.log(mapFromRanges(175, 0, 200, 1, 0));
         //if completely off edge of screen
         if (entity.cPos.x > window.innerWidth + entity.cHitbox.radius) {
           const rr = entity.cHitbox.radius * 3;
@@ -547,26 +548,26 @@ class sOutOfBoundsHandler extends System { //determines what to do when embedVid
         }
       }
 
-      // //if center off edge of screen left side fade video and delete
-      // if (entity.cPos.x < window.innerWidth) {
-      //   //begin fading video out off edge of screen
-      //   entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.x, 1, 0, 0, -entity.cHitbox.radius);
-      //   //if completely off edge of screen
-      //   if (entity.cPos.x < -entity.cHitbox.radius) {
-      //     systemManager.removeEntity(entity);
-      //   }
-      // }
-      //
-      // //if off bottom of video, fade, then delete
-      // if (entity.cPos.y > window.innerWidth - entity.cHitbox.radius) {
-      //   //begin fading video out off edge of screen
-      //   entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.y, 1, 0,
-      //     window.innerHeight - entity.cHitbox.radius, window.innerHeight + entity.cHitbox.radius);
-      //   //if completely off edge of screen
-      //   if (entity.cPos.y > window.innerWidth + entity.cHitbox.radius) {
-      //     systemManager.removeEntity(entity);
-      //   }
-      // }
+      //if center off edge of screen left side fade video and delete
+      if (entity.cPos.x < window.innerWidth) {
+        //begin fading video out off edge of screen
+        entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.x, 0, -entity.cHitbox.radius, 1, 0,);
+        //if completely off edge of screen
+        if (entity.cPos.x < -entity.cHitbox.radius) {
+          systemManager.removeEntity(entity);
+        }
+      }
+
+      //if off bottom of video, fade, then delete
+      if (entity.cPos.y > window.innerHeight - entity.cHitbox.radius) {
+        //begin fading video out off edge of screen
+        entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.y,
+          window.innerHeight - entity.cHitbox.radius, window.innerHeight + entity.cHitbox.radius,  1, 0,);
+        //if completely off edge of screen
+        if (entity.cPos.y > window.innerWidth + entity.cHitbox.radius) {
+          systemManager.removeEntity(entity);
+        }
+      }
 
 
 

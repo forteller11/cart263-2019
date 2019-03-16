@@ -64,20 +64,17 @@ function min(){ //returns smallest argument
 }
 
 function linearInterpolate(lerpAmount, value1, value2){
-  const valueDelta = value1 - value2; //find difference between values
+  const valueDelta = value2 - value1; //find difference between values
   const lerpAdd = lerpAmount * valueDelta; //find percentage of delta which user wants to lerp by
-  const lerpResult = lerpAdd + value2; //add constant
+  const lerpResult = lerpAdd + value1; //add constant
   return lerpResult;
 }
 
 function mapFromRanges(value,range1a,range1b,range2a,range2b){
   //map value 1 between range1 --> range2
   const range1 = range1b-range1a;
-  const valuesInterpolationBetweenRange1 = (value-range1a)/range2a;
-
-  const range2 = range2b-range2a;
-
-  return (range2*valuesInterpolationBetweenRange1) + range2a;
+  const valuesInterpolationBetweenRange1 = (value-range1a)/range1;
+  return linearInterpolate(valuesInterpolationBetweenRange1,range2a,range2b);
 
 
   if (!(arguments.length === 5)){
