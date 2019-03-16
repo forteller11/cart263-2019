@@ -9,7 +9,7 @@ function onCollisionEvent(e1,e2){
     if (!(e2.cHitbox.doOnOverlap===null)){
       e2.cHitbox.doOnOverlap(e1);
     }
-  
+
 
   if (systemManager.entityHasComponent('cPhysics',e1) &&
      (systemManager.entityHasComponent('cPhysics',e2))){

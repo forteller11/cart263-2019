@@ -5,6 +5,7 @@ class Globals{
     this.physics = new gPhysicsConstants();
     this.mouse = new gMouseEvents();
     this.drag = new gDragData();
+    this.spawn = new gSpawnRate();
   }
   update(){
     this.mouseEvents.update();
@@ -42,5 +43,11 @@ class gPhysicsConstants { //stores physics constants
       this.dragOffsetX = null;
       this.dragOffsetY = null;
       this.dragEntityRef = null;
+    }
+  }
+
+  class gSpawnRate{
+    constructor(){
+      this.rate = 1/(60*50) //avg every 5 s;
     }
   }

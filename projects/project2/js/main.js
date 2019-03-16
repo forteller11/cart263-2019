@@ -49,26 +49,3 @@ function main() {
   setInterval(update, 16.7);
 
 }
-
-function openVideo(other) {
-  if (other.blueprintName === 'embedVideo') {
-    if (other.cPos)
-    console.log('OPEN VIDEO');
-    console.log(systemManager.systems);
-    const xx = ran(window.innerWidth);
-    const yy = ran(window.innerHeight);
-    const rr = other.cHitbox.radius * 3;
-    // const r
-    window.open(`https://www.youtube.com/watch?v=${other.cHtmlDisplay.link}`, '_blank', `toolbar=no,scrollbars=no,resizable=no,top=${yy},left=${xx},width=${rr},height=${rr}`);
-    // window.focus();
-    systemManager.removeEntity(other);
-  }
-
-}
-
-function removeEntity(other) {
-  if (other.blueprintName === 'embedVideo') {
-    systemManager.removeEntity(other);
-    if (debugMode) console.log('entity deleted!');
-  }
-}

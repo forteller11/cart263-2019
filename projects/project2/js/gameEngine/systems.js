@@ -169,6 +169,8 @@ class sOverlap extends System { //transforms image to entity position
 
   systemExecution(e1, e2) {
     //collision between circle:circle
+    if ((e1.cPhysics.inert) && (e2.cPhysics.inert)) return false; //dont check/resolve collision of two static objects
+
     if ((e1.cHitbox.type === 'circle') && (e2.cHitbox.type === 'circle')) {
       if (this.circleCircleOverlap(e1, e2)) {
         return true
@@ -198,28 +200,44 @@ class sOverlap extends System { //transforms image to entity position
 
   boundingBoxBoundingBoxOverlap(e1, e2) {
     //takes two entities, places a bounding box around them, and checks for collision
-    let w;
-    let h;
+    let w1;
+    let h1;
     switch (e1.cHitbox.type) {
       case 'circle':
-        w = e1.cHitbox.radius * 2;
-        h = e1.cHitbox.radius * 2;
+        w1 = e1.cHitbox.radius * 2;
+        h1 = e1.cHitbox.radius * 2;
         break;
 
       case 'rect':
-        w = e1.cHitbox.width;
-        h = e1.cHitbox.width;
+        w1 = e1.cHitbox.width;
+        h1 = e1.cHitbox.width;
         break;
 
       default:
         console.log('e1 not valid type of hitbox');
     }
+let w2;
+let h2;
+    switch (e2.cHitbox.type) {
+      case 'circle':
+        w2 = e2.cHitbox.radius * 2;
+        h2 = e2.cHitbox.radius * 2;
+        break;
+
+      case 'rect':
+        w2 = e2.cHitbox.width;
+        h2 = e2.cHitbox.width;
+        break;
+
+      default:
+        console.log('e2 not valid type of hitbox');
+    }
 
     //bounding box collision check
-    if ((e1.cPos.x + w / 2 > e2.cPos.x - w / 2) && //horz overlap
-      (e2.cPos.x + w / 2 > e1.cPos.x - w / 2)) {
-      if ((e1.cPos.y + h / 2 > e2.cPos.y - h / 2) && //horz overlap
-        (e2.cPos.y + h / 2 > e1.cPos.y - h / 2)) {
+    if ((e1.cPos.x + w1 / 2 > e2.cPos.x - w2 / 2) && //horz overlap
+      (e2.cPos.x + w2 / 2 > e1.cPos.x - w1 / 2)) {
+      if ((e1.cPos.y + h1 / 2 > e2.cPos.y - h2 / 2) && //horz overlap
+        (e2.cPos.y + h2 / 2 > e1.cPos.y - h1 / 2)) {
         return true;
       }
     }
@@ -475,7 +493,17 @@ class sCollisionResolution extends System { //subsystem which doesn't have indep
 
     /////////////static resolution\\\\\\\\\\\\\\\\\\\\\\\\\
     //will circles be overlapping next frame?
+    const e1NxtX = e1.cPos.x + e1.cPhysics.vel.x; //x on next frame given velocities
+    const e1NxtY = e1.cPos.y + e1.cPhysics.vel.y;
+    const e2NxtX = e2.cPos.x + e2.cPhysics.vel.x;
+    const e2NxtY = e2.cPos.y + e2.cPhysics.vel.y;
 
+    const nxtCollisionDeltaX = e2NxtX - e1NxtX;
+    const nxtCollisionDeltaY = e2NxtY - e1NxtY;
+    const nxtCollisionBetween = new Vector(collisionDeltaX, collisionDeltaY);
+
+    if (nxtCollisionBetween.mag < e1.cHitbox.radius + e2.cHitbox.radius) { //if overlapping next frame
+      //static resolution (make it so circles don't overlap post collision)
       const distOverlapping = e1.cHitbox.radius + e2.cHitbox.radius - collisionBetween.mag;
       collisionBetween.setMag(distOverlapping); //CARFUL because rewriting over vector which dynamic resoltuion needs
       staticResolution(e1, e2, collisionBetween);
@@ -517,7 +545,7 @@ class sOutOfBoundsHandler extends System { //determines what to do when embedVid
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
     this.requiredBlueprints = ['embedVideo'];
-    this.requiredComponents = ['cPos', 'cHitbox'];
+    this.requiredComponents = [];
   }
 
   systemExecution() {
@@ -525,13 +553,15 @@ class sOutOfBoundsHandler extends System { //determines what to do when embedVid
       //if center off edge of screen right side fade video, open url in new window, then delete
       if (entity.cPos.x > window.innerWidth) {
         //begin fading video out off edge of screen
-      entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.x, window.innerWidth, window.innerWidth + entity.cHitbox.radius, 1, 0);
+        entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.x, window.innerWidth, window.innerWidth + entity.cHitbox.radius, 1, 0);
         //if completely off edge of screen
         if (entity.cPos.x > window.innerWidth + entity.cHitbox.radius) {
           const rr = entity.cHitbox.radius * 3;
           const xx = ran(window.innerWidth);
           const yy = entity.cPos.y;
-          window.open(`https://www.youtube.com/watch?v=${entity.cHtmlDisplay.link}`, '_blank', `toolbar=no,scrollbars=no,resizable=no,top=${yy},left=${xx},width=${rr},height=${rr}`);
+          if (!(debugMode)) {
+            window.open(`https://www.youtube.com/watch?v=${entity.cHtmlDisplay.link}`, '_blank', `toolbar=no,scrollbars=no,resizable=no,top=${yy},left=${xx},width=${rr},height=${rr}`);
+          }
           systemManager.removeEntity(entity);
         }
       }
@@ -539,7 +569,7 @@ class sOutOfBoundsHandler extends System { //determines what to do when embedVid
       //if center off edge of screen left side fade video and delete
       if (entity.cPos.x < window.innerWidth) {
         //begin fading video out off edge of screen
-        entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.x, 0, -entity.cHitbox.radius, 1, 0,);
+        entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.x, 0, -entity.cHitbox.radius, 1, 0, );
         //if completely off edge of screen
         if (entity.cPos.x < -entity.cHitbox.radius) {
           systemManager.removeEntity(entity);
@@ -550,15 +580,32 @@ class sOutOfBoundsHandler extends System { //determines what to do when embedVid
       if (entity.cPos.y > window.innerHeight - entity.cHitbox.radius) {
         //begin fading video out off edge of screen
         entity.cHtmlDisplay.iframe.style.opacity = mapFromRanges(entity.cPos.y,
-          window.innerHeight - entity.cHitbox.radius, window.innerHeight + entity.cHitbox.radius,  1, 0,);
+          window.innerHeight - entity.cHitbox.radius, window.innerHeight + entity.cHitbox.radius, 1, 0, );
         //if completely off edge of screen
         if (entity.cPos.y > window.innerWidth + entity.cHitbox.radius) {
           systemManager.removeEntity(entity);
         }
       }
+    }
+  }
+}
 
+class sVideoSpawner extends System { //determines what to do when embedVideo is out of bounds (open it or delete it)
+  constructor(arrayOfRelevantEntities) {
+    super(arrayOfRelevantEntities);
+    this.requiredBlueprints = ['embedVideo'];
+    this.requiredComponents = [];
+  }
 
+  systemExecution() {
 
+    console.log(this.relevantEntities.length)
+    let dynamicSpawnRate = mapFromRanges(this.relevantEntities.length, 0, 10, globalObj.spawn.rate * 1, globalObj.spawn.rate / 5);
+    const r = ran();
+    console.log(`if ${dynamicSpawnRate} > ${r}`);
+    if (dynamicSpawnRate > r) {
+      createEntitiesFromBlueprint('embedVideo');
+      console.log('SPAWWWWWWWWWWNED');
 
     }
   }

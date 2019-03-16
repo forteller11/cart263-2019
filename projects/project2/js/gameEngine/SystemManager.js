@@ -6,6 +6,9 @@ class SystemManager {
     this.systems = []; //array of systems
     //if not pushed into system then this represents a subsystem whos update does
     //not occur on regular tick but rather is called from some event from another system
+    this.sVideoSpawner = new sVideoSpawner();
+    this.systems.push(this.sVideoSpawner);
+
     this.sOverlap = new sOverlap();
     this.systems.push(this.sOverlap);
 
@@ -29,6 +32,7 @@ class SystemManager {
   }
 
   update() {
+    this.sVideoSpawner.update();
 
     this.sOverlap.update(); //this has multiple subsystems
 
