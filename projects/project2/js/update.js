@@ -1,4 +1,3 @@
 function update(){
-
 systemManager.update();
 }

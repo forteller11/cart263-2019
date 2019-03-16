@@ -1,4 +1,4 @@
-//barebones 2D vector class (only added methods needed for this specefic projects purposes)
+//barebones 2D vector class
 "use strict";
 class Vector {
   constructor(a1 = 1, a2 = 1, createMode = 'cartesian') {

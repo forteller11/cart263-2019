@@ -5,7 +5,7 @@ class SystemManager {
   constructor() {
     this.systems = []; //array of systems
     //if not pushed into system then this represents a subsystem whos update does
-    //not occur on regular tick but rather is called from some event from another system
+    //not occur on regular tick but rather is called as a cosequence of some event from another system
     this.sVideoSpawner = new sVideoSpawner();
     this.systems.push(this.sVideoSpawner);
 
@@ -13,6 +13,9 @@ class SystemManager {
     this.systems.push(this.sOverlap);
 
     this.sCollisionResolution = new sCollisionResolution(); //sub system, not responsible for own tick/update
+
+    this.sPhysicsTransform = new sPhysicsTransform();
+    this.systems.push(this.sPhysicsTransform);
 
     this.sDrag = new sDrag();
     this.systems.push(this.sDrag);
@@ -22,9 +25,6 @@ class SystemManager {
     this.sOutOfBoundsHandler = new sOutOfBoundsHandler();
     this.systems.push(this.sOutOfBoundsHandler);
 
-    this.sPhysicsTransform = new sPhysicsTransform();
-    this.systems.push(this.sPhysicsTransform);
-
     this.sImageTransform = new sImageTransform();
     this.systems.push(this.sImageTransform);
 
@@ -32,20 +32,13 @@ class SystemManager {
   }
 
   update() {
-    this.sVideoSpawner.update();
+    for (let system of this.systems){ //update all systems (some of them contain virtual update methods)
+      system.update();
+    }
 
-    this.sOverlap.update(); //this has multiple subsystems
-
-    this.sPhysicsTransform.update();
-
-    this.sDrag.update();
-
-    this.sOutOfBoundsHandler.update();
-
-    this.sImageTransform.update();
   }
 
-  entityHasComponent(component, entity) { //returns true or false
+  entityHasComponent(component, entity) { //does entity have this component?
     for (let j = 0; j < entity.componentNames.length; j++) { //make sure there is a crresponding comopnent in entity
       if (entity.componentNames[j] === component) {
         return true;
@@ -54,7 +47,7 @@ class SystemManager {
     return false;
   }
 
-  entityContainsRequiredComponents(requiredComponent, entity) {
+  entityContainsRequiredComponents(requiredComponent, entity) { //does entitiy contain array of required components?
     let entityRelevance = true;
     for (let i = 0; i < requiredComponent.length; i++) { //for every required component in system
       if (this.entityHasComponent(requiredComponent[i], entity) === false) { //does entity of x component?
@@ -65,7 +58,7 @@ class SystemManager {
     return entityRelevance;
   }
 
-  entityContainsARequiredBlueprint(requiredBlueprints, entity) {
+  entityContainsARequiredBlueprint(requiredBlueprints, entity) { //was entity created with one of the required blueprints?
     if (requiredBlueprints.length === 0) { //if system doesn't have any required blueprints, then entity passes by default
       return true;
     }
@@ -77,25 +70,21 @@ class SystemManager {
     return false;
   }
 
-  addEntity(newEntity) { //find all systems which cocern the entity and track them
+  addEntity(newEntity) { //add entity to all appropriate systems
     for (let i = 0; i < this.systems.length; i++) { //itterate through systems and
       if (this.entityContainsRequiredComponents(this.systems[i].requiredComponents, newEntity)) {
         if (this.entityContainsARequiredBlueprint(this.systems[i].requiredBlueprints, newEntity)) {
           this.systems[i].relevantEntities.push(newEntity); //add entity to relevant entities of system
         }
       }
-
     }
-
   }
 
   removeEntity(entity) { //remove this entity from all sytems
-    console.log('entity removed!');
+    if ( debugMode)console.log('entity removed!');
     for (let i = 0; i < this.systems.length; i++) {
       for (let j = 0; j < this.systems[i].relevantEntities.length; j++) {
         if (this.systems[i].relevantEntities[j].id === entity.id) {
-          // console.log('splice');
-          // console.log(system.relevantEntities[i])
           this.systems[i].relevantEntities[j].removeHtml();
           this.systems[i].relevantEntities.splice(j, 1);
           break;

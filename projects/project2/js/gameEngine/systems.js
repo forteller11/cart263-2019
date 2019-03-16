@@ -199,6 +199,39 @@ class sOverlap extends System { //transforms image to entity position
 
   }
 
+  onCollisionEvent(e1,e2){ //on collision, do ___
+     //if entities have doOnOverlap functions execute them and pass other entity as argument
+     if (!(e1.cHitbox.doOnOverlap===null)){
+       e1.cHitbox.doOnOverlap(e1,e2);
+     }
+     if (!(e2.cHitbox.doOnOverlap===null)){
+       e2.cHitbox.doOnOverlap(e2,e1);
+     }
+
+ //if entities have physics and have overlapped,
+   if (systemManager.entityHasComponent('cPhysics',e1) &&
+      (systemManager.entityHasComponent('cPhysics',e2))){
+        systemManager.sCollisionResolution.systemExecution(e1,e2);
+        return;
+   }
+
+ //change status of draggable
+   if (systemManager.entityHasComponent('cDragArea',e1)){
+     if (systemManager.entityHasComponent('cDraggable',e2)){
+       systemManager.sDraggable.systemExecution(e2,e1);
+       return;
+     }
+   }
+
+   if (systemManager.entityHasComponent('cDragArea',e2)){
+     if (systemManager.entityHasComponent('cDraggable',e1)){
+       systemManager.sDraggable.systemExecution(e1,e2);
+       return;
+     }
+   }
+
+ }
+
   boundingBoxBoundingBoxOverlap(e1, e2) {
     //takes two entities, places a bounding box around them, and checks for collision
     let w1;
@@ -403,7 +436,7 @@ let h2;
     for (let i = 0; i < this.relevantEntities.length; i++) {
       for (let j = i + 1; j < this.relevantEntities.length; j++) {
         if (this.systemExecution(this.relevantEntities[i], this.relevantEntities[j])) { //check overlap
-          onCollisionEvent(this.relevantEntities[i], this.relevantEntities[j]); //propogate event
+          this.onCollisionEvent(this.relevantEntities[i], this.relevantEntities[j]); //propogate event
         }
       }
     }
