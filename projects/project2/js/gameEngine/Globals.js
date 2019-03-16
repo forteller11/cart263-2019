@@ -48,6 +48,6 @@ class gPhysicsConstants { //stores physics constants
 
   class gSpawnRate{
     constructor(){
-      this.rate = 1/(60*50) //avg every 5 s;
+      this.rate = 1/(60*20) //avg every 5 s;
     }
   }

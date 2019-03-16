@@ -72,12 +72,12 @@ class sImageTransform extends System { //transforms image to entity position
 }
 
 
-class sDrag extends System { //transforms image to entity position
+class sDrag extends System { //handles dragging behavior and transforming the entity being dragged
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
     this.requiredComponents = ['cPos', 'cHitbox', 'cDraggable'];
 
-    document.addEventListener('mousedown', (e) => {
+    document.addEventListener('mousedown', (e) => { //n mouse click
       for (let i = 0; i < this.relevantEntities.length; i++) {
         if (this.relevantEntities[i].cDraggable.draggable) {
           if (this.pointCircleOverlap(e.clientX, e.clientY, this.relevantEntities[i])) {
@@ -90,14 +90,14 @@ class sDrag extends System { //transforms image to entity position
       }
     });
 
-    document.addEventListener('mousemove', (e) => {
-      globalObj.mouse.x = e.clientX; //update mouse pos
+    document.addEventListener('mousemove', (e) => { //update mouse pos
+      globalObj.mouse.x = e.clientX;
       globalObj.mouse.y = e.clientY;
     });
 
-    document.addEventListener('mouseup', (e) => { //calculate
-      if (!(globalObj.drag.dragEntityRef === null)) {
-        this.setDragEntityReleaseVelocity();
+    document.addEventListener('mouseup', (e) => { // on release of mouse
+      if (!(globalObj.drag.dragEntityRef === null)) { //if dragging entity
+        this.setDragEntityReleaseVelocity(); //set vel of entity
       }
       globalObj.drag.dragEntityRef = null; //stop dragging
     });
@@ -115,10 +115,10 @@ class sDrag extends System { //transforms image to entity position
       globalObj.mouse.histY.push(globalObj.mouse.y);
     }
 
-    if (!(globalObj.drag.dragEntityRef === null)) {
-      if (!(globalObj.drag.dragEntityRef.cDraggable.draggable === true)) { //release if not draggable
-        if (systemManager.entityHasComponent('cPhysics', globalObj.drag.dragEntityRef)) {
-          this.setDragEntityReleaseVelocity();
+    if (!(globalObj.drag.dragEntityRef === null)) { //if currently dragging an entity
+      if (!(globalObj.drag.dragEntityRef.cDraggable.draggable === true)) { //release if no longer draggable
+        if (systemManager.entityHasComponent('cPhysics', globalObj.drag.dragEntityRef)) { //if has physics
+          this.setDragEntityReleaseVelocity(); //set release velocity
         }
         globalObj.drag.dragEntityRef = null; //stop dragging
         return;
@@ -145,23 +145,25 @@ class sDrag extends System { //transforms image to entity position
     }
     return false;
   }
-  setDragEntityReleaseVelocity() {
+
+  setDragEntityReleaseVelocity() { //calculate velocity to give entity on release
     let throwComponentX = 0;
     let throwComponentY = 0;
+    //find recent mouse velocity history (delta in position), average it, and set that number as entity's relase vleocity
     for (let i = 0; i < globalObj.mouse.histX.length - 1; i++) { //find delta between mouseHist
-      // const weight = i / (globalObj.mouse.histMaxLength); //most recent histories have full delta weight;
       throwComponentX += (globalObj.mouse.histX[i + 1] - globalObj.mouse.histX[i]);
       throwComponentY += (globalObj.mouse.histY[i + 1] - globalObj.mouse.histY[i]);
     }
     throwComponentX = throwComponentX / (globalObj.mouse.histX.length); //find mean kinda
     throwComponentY = throwComponentY / (globalObj.mouse.histY.length);
+    //set velocity
     globalObj.drag.dragEntityRef.cPhysics.vel.x = throwComponentX;
     globalObj.drag.dragEntityRef.cPhysics.vel.y = throwComponentY;
   }
 }
 
 
-class sOverlap extends System { //transforms image to entity position
+class sOverlap extends System { //this system is responsble for checking for collisions and then resolving them if appropriate
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
     this.requiredComponents = ['cPos', 'cHitbox'];
@@ -199,7 +201,8 @@ class sOverlap extends System { //transforms image to entity position
 
   }
 
-  onCollisionEvent(e1,e2){ //on collision, do ___
+  onCollisionEvent(e1,e2){ //on collision, do ___ depnding on...
+
      //if entities have doOnOverlap functions execute them and pass other entity as argument
      if (!(e1.cHitbox.doOnOverlap===null)){
        e1.cHitbox.doOnOverlap(e1,e2);
@@ -373,25 +376,29 @@ let h2;
       return true;
     } //else do more computationally expensive test
 
-    //
+    //create a outline of points sourronding the axis aligned box and check circle collisions with every point....
+
     const overlapAccuracy = 1; //higher is more precise
     let collisionPointsX = [];
     let collisionPointsY = [];
 
     const minDistBetweenPoints = (e2.cHitbox.radius) / overlapAccuracy; //no large thne radius of e2
+
     //generate enough points that when space evenly they don't exceede max distBetweenPoints
     const pointsPerHorzSide = Math.ceil(e1.cHitbox.width / minDistBetweenPoints) + 2;
     const pointsPerVertSide = Math.ceil(e1.cHitbox.height / minDistBetweenPoints) + 2;
 
-
+    //how much space between each point
     const spaceBetweenHorz = (e1.cHitbox.width / (pointsPerHorzSide + 0));
     const spaceBetweenVert = (e1.cHitbox.height / (pointsPerVertSide + 0));
 
+    //corners
     const topOfBox = e1.cPos.y - e1.cHitbox.height / 2;
     const botOfBox = e1.cPos.y + e1.cHitbox.height / 2;
     const leftOfBox = e1.cPos.x - e1.cHitbox.width / 2;
     const rightOfBox = e1.cPos.x + e1.cHitbox.width / 2;
 
+    //generate points along box
     let index = 0;
     for (let i = 0; i < pointsPerHorzSide; i++) { //topleft to topright points EXCLUDING topright corner
       collisionPointsX[index] = leftOfBox + i * spaceBetweenHorz;
@@ -416,13 +423,12 @@ let h2;
 
     if (debugMode) {
       canvasCtx.strokeStyle = "#3984c6";
-
       for (let i = 0; i < collisionPointsX.length; i++) {
         canvasCtx.strokeRect(collisionPointsX[i], collisionPointsY[i], 7, 7);
       }
     }
 
-
+    //check for circle collision with every point
     for (let i = 0; i < collisionPointsX.length; i++) {
       if (this.circlePointOverlap(e2, collisionPointsX[i], collisionPointsY[i])) {
         return true;
@@ -432,20 +438,21 @@ let h2;
     return false;
   }
 
-  update() { //cycle through all pairs of collidable components,
+  update() { //cycle through all pairs of collidable components (nlogn in big 'O' notation i think)
     for (let i = 0; i < this.relevantEntities.length; i++) {
       for (let j = i + 1; j < this.relevantEntities.length; j++) {
         if (this.systemExecution(this.relevantEntities[i], this.relevantEntities[j])) { //check overlap
-          this.onCollisionEvent(this.relevantEntities[i], this.relevantEntities[j]); //propogate event
+          this.onCollisionEvent(this.relevantEntities[i], this.relevantEntities[j]); //do somthing after overlap
         }
       }
     }
-    //cycle through all relevant entities
   }
 
 }
-
-class sCollisionResolution extends System { //subsystem which doesn't have independant tick or relevant entities but is triggered by overlap system
+//subsystem which doesn't have independant tick or relevant entities but is triggered by overlap system
+//deals with seperating two physics bodies and applying appropriate linear/angular velocity changes
+//to behave in a way one might hopefully consider realistic (or inspired by physics bodies in the outside world)
+class sCollisionResolution extends System {
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
     this.requiredComponents = ['cPos', 'cPhysics'];
@@ -632,7 +639,7 @@ class sOutOfBoundsHandler extends System { //determines what to do when embedVid
   }
 }
 
-class sVideoSpawner extends System { //determines what to do when embedVideo is out of bounds (open it or delete it)
+class sVideoSpawner extends System { //responsible for spawning new videos
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
     this.requiredBlueprints = ['embedVideo'];
@@ -644,7 +651,7 @@ class sVideoSpawner extends System { //determines what to do when embedVideo is 
     const r = ran();
     if (dynamicSpawnRate > r) {
       createEntitiesFromBlueprint('embedVideo');
-      console.log('SPAWWWWWWWWWWNED');
+      if (debugMode) console.log('new Entity SPAWNED from sVideoSpawner');
 
     }
   }

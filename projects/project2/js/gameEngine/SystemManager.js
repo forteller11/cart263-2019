@@ -27,8 +27,6 @@ class SystemManager {
 
     this.sImageTransform = new sImageTransform();
     this.systems.push(this.sImageTransform);
-
-    console.log(this.systems);
   }
 
   update() {

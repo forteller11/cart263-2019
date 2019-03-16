@@ -1,5 +1,5 @@
 'use strict';
-
+//list of urls from main page of youtube (no cookies/user preferences)
 const videoIds = [
 'P82xPoaZlU',
 'VeAK7Bv4F1o',

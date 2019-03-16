@@ -1,7 +1,7 @@
 /*
-project 2: youtube tinder
+project 2: YouTube Tinder
 Charly Yan Miller
-in which random (random from a pre-determined array of id's) containing youtube videos
+In which random (random from a pre-determined array of id's) containing youtube videos
 fall from the sky and the user can swipe left or right to respectively close or open the video.
 
 In terms of programmatic skill demonstrated the physics system (including collision resolutions)
@@ -17,9 +17,18 @@ of systems and data in theory helps scalability. This being said I for an ECS sy
 to really make sense from a performance standpoint you need hashtables but they are
 definitely beyond me at this point (also obviously im in above my head).
 
+References (no code copied from these sources):
+Programming Balls #1 Circle vs Circle Collisions c++
+https://www.youtube.com/watch?v=LPzyNOHY3A4
+(got me thinking to how I could use dot product to create a reasonable collision response)
 
+Overwatch Gameplay Architecture and Netcode
+https://www.youtube.com/watch?v=W3aieHjyNvw&t=1075s
+(got me interested/aware of ECS game engine paradigm in the first place)
 
-
+Entity Component System #1,2,3
+https://www.youtube.com/watch?v=5KugyHKsXLQ&t=10s
+More concrete a slower explanation and rational for Entity component systems
 */
 
 'use strict';
@@ -31,7 +40,7 @@ let firstEntity;
 let globalEntityIdCounter = 0; //everytime an entity is created it is given a unique identifier
 let canvas;
 let canvasCtx;
-let debugMode = true;
+let debugMode = false;
 let debugOpacity = 0.2;
 
 function main() {
