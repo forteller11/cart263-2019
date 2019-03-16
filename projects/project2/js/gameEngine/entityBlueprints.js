@@ -74,8 +74,26 @@ function addComponentsBasedOnBlueprint(newEntity, blueprintName) {
       newEntity.addComponent(new cHtmlDisplay('image', 'assets/youtubeLogo.png', radius * 2));
       break;
 }
+
+case 'instructions' :{
+  let radius = window.innerWidth/24;
+  const initVel = 0;
+  const initRot = 0;
+  newEntity.addComponent(new cPos(0, window.innerWidth/2, radius*2));
+  newEntity.addComponent(new cHtmlDisplay('image', 'assets/swipeRight.png',radius*2,radius*2));
+  newEntity.addComponent(new cHitbox('circle', radius));
+  newEntity.addComponent(new cPhysics(10, 0, 0, 0, false)); //static = true
+  break;
+}
     default:
       console.log('Not valid blueprint name!')
       break;
+  }
+}
+
+function fadeOpacity(self,other){
+  self.cHtmlDisplay.span.style.opacity -= .1;
+  if (self.cHtmlDisplay.span.style.opacity < 0){
+    systemManager.removeEntity(self);
   }
 }

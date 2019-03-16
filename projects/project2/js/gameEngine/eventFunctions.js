@@ -4,10 +4,10 @@ function onCollisionEvent(e1,e2){
 
     //if entities have doOnOverlap functions execute them and pass other entity as argument
     if (!(e1.cHitbox.doOnOverlap===null)){
-      e1.cHitbox.doOnOverlap(e2);
+      e1.cHitbox.doOnOverlap(e1,e2);
     }
     if (!(e2.cHitbox.doOnOverlap===null)){
-      e2.cHitbox.doOnOverlap(e1);
+      e2.cHitbox.doOnOverlap(e2,e1);
     }
 
 

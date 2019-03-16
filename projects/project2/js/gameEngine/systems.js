@@ -169,8 +169,9 @@ class sOverlap extends System { //transforms image to entity position
 
   systemExecution(e1, e2) {
     //collision between circle:circle
-    if ((e1.cPhysics.inert) && (e2.cPhysics.inert)) return false; //dont check/resolve collision of two static objects
-
+    if (e1.cPhysics && e2.cPhysics){
+      if ((e1.cPhysics.inert) && (e2.cPhysics.inert)) return false; //dont check/resolve collision of two static objects
+  }
     if ((e1.cHitbox.type === 'circle') && (e2.cHitbox.type === 'circle')) {
       if (this.circleCircleOverlap(e1, e2)) {
         return true

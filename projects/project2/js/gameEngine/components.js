@@ -74,15 +74,11 @@ class cPhysics extends Component {
 
 
 class cHtmlDisplay extends Component{
-  constructor(type,...args){
+  constructor(type, link,...args){
     super();
     this.name = 'cHtmlDisplay';
     this.type = type;
-    this.link = null;
-    if (args.length > 0){
-      this.link = args[0]
-    } else {console.log('need a link paramter in cHtmlDisplay!')}
-
+    this.link = link;
     this.args = args; //array of arguments
 
 
@@ -90,17 +86,17 @@ class cHtmlDisplay extends Component{
     this.height; //used to detmine height of display element
 
     switch(args.length){
-      case 1: //default values for width/height
-        this.width = 264;
-        this.height = 264;
+      case 0: //default values for width/height
+        this.width = 'auto';
+        this.height = 'auto';
         break;
-      case 2: //width === height
-        this.width = args[1];
+      case 1: //width === height
+        this.width = args[0];
+        this.height = args[0];
+        break;
+      case 2: //width and height have unique arguments
+        this.width = args[0];
         this.height = args[1];
-        break;
-      case 3: //width and height have unique arguments
-        this.width = args[1];
-        this.height = args[2];
         break;
       default:
         console.log(`wrong number of arguments (${args.length}) in cHtmlDisplay constructor!`)
@@ -118,6 +114,10 @@ class cHtmlDisplay extends Component{
     document.body.appendChild(this.span);
 
     switch(this.type){
+      case 'text':
+      this.span.innerHtml = this.link;
+      break;
+
       case 'image': //default values for width/height
       this.image = document.createElement('IMG');
       this.image.src = this.link;
@@ -183,6 +183,14 @@ class cHtmlDisplay extends Component{
         this.iframe.remove();
         this.clickCover.remove();
         this.span.remove();
+        break;
+
+        case 'text':
+        this.span.remove();
+        break;
+
+        default:
+        console.log('give remove html method in cDisplayImage a removal method');
         break;
 
     }

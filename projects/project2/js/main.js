@@ -33,6 +33,14 @@ function main() {
 
   createEntitiesFromBlueprint('embedVideo', 4);
 
+  let swipeRightInstructions = createEntitiesFromBlueprint('instructions');
+  swipeRightInstructions.cHtmlDisplay.image.src = "assets/swipeRight.png";
+  swipeRightInstructions.cPos.x = window.innerWidth-swipeRightInstructions.cHitbox.radius;
+
+  let swipeLeftInstructions = createEntitiesFromBlueprint('instructions');
+  swipeLeftInstructions.cHtmlDisplay.image.src = "assets/swipeLeft.png";
+  swipeLeftInstructions.cPos.x = swipeLeftInstructions.cHitbox.radius;
+
   let spacing = window.innerWidth/12;
   let sinIndex = 0;
   for (let i = 1; i * spacing < window.innerWidth; i++){
@@ -45,6 +53,7 @@ function main() {
       floor.cPos.y = yyOrigin+curve;
   }
 
+console.log(systemManager);
 
   setInterval(update, 16.7);
 
