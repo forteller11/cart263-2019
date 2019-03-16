@@ -30,16 +30,17 @@ function main(){
   console.log(globalObj);
   systemManager = new SystemManager();
 
-  createEntitiesFromBlueprint('embedVideo',1);
+  createEntitiesFromBlueprint('embedVideo',4);
 
 
   let swipeLeftChecker = createEntitiesFromBlueprint('playfield');
   swipeLeftChecker.cPos.x = 0;
+  swipeLeftChecker.cPos.y = window.innerHeight/2;
   swipeLeftChecker.cHitbox.doOnOverlap = removeEntity;
-console.log(swipeLeftChecker);
 
 let swipeRightChecker = createEntitiesFromBlueprint('playfield');
   swipeRightChecker.cPos.x = window.innerWidth;
+  swipeRightChecker.cPos.y = window.innerHeight/2;
   swipeRightChecker.cHitbox.doOnOverlap = openVideo
   // createEntitiesFromBlueprint('playfield').cHitbox.doOnOverlap = someFunction;
 
@@ -62,8 +63,13 @@ let swipeRightChecker = createEntitiesFromBlueprint('playfield');
 function openVideo(other){
   if (other.blueprintName === 'embedVideo'){
     console.log('OPEN VIDEO');
-    console.log(systemManager.systems)
-    // window.open(`https://www.youtube.com/watch?v=${other.cHtmlDisplay.link}`);
+    console.log(systemManager.systems);
+    const xx = ran(window.innerWidth);
+    const yy = ran(window.innerHeight);
+    const rr = other.cHitbox.radius*3;
+    // const r
+    window.open(`https://www.youtube.com/watch?v=${other.cHtmlDisplay.link}`,'_blank', `toolbar=no,scrollbars=no,resizable=no,top=${yy},left=${xx},width=${rr},height=${rr}`);
+    // window.focus();
     systemManager.removeEntity(other);
   }
 
