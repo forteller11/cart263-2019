@@ -170,7 +170,6 @@ class sOverlap extends System { //transforms image to entity position
     //collision between circle:circle
     if ((e1.cHitbox.type === 'circle') && (e2.cHitbox.type === 'circle')) {
       if (this.circleCircleOverlap(e1, e2)) {
-        this.onOverlapDo(e1,e2);
         return true
       };
     }
@@ -178,36 +177,23 @@ class sOverlap extends System { //transforms image to entity position
     //collision between box:box
     if ((e1.cHitbox.type === 'rect') && (e2.cHitbox.type === 'rect')) {
       if (this.boundingBoxBoundingBoxOverlap(e1, e2)) {
-        this.onOverlapDo(e1,e2);
         return true
       };
     }
 
     if ((e1.cHitbox.type === 'rect') && (e2.cHitbox.type === 'circle')) {
       if (this.boxCircleOverlap(e1, e2)) {
-        this.onOverlapDo(e1,e2);
         return true
       };
     }
 
     if ((e1.cHitbox.type === 'circle') && (e2.cHitbox.type === 'rect')) {
       if (this.boxCircleOverlap(e2, e1)) {
-        this.onOverlapDo(e1,e2);
         return true
       };
     }
 
   }
-
-onOverlapDo(e1,e2){
-  //if entities have doOnOverlap functions execute them and pass other entity as argument
-  if (!(e1.cHitbox.doOnOverlap===null)){
-    e1.cHitbox.doOnOverlap(e2);
-  }
-  if (!(e2.cHitbox.doOnOverlap===null)){
-    e2.cHitbox.doOnOverlap(e1);
-  }
-}
 
   boundingBoxBoundingBoxOverlap(e1, e2) {
     //takes two entities, places a bounding box around them, and checks for collision
