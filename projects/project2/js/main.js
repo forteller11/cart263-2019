@@ -12,6 +12,8 @@ let debugMode = true;
 let debugOpacity = 0.2;
 function main(){
   if (debugMode){
+        console.log('main');
+    console.log('main');
     canvas = document.createElement('canvas');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -23,15 +25,14 @@ function main(){
     console.log(canvasCtx);
   }
 
-  console.log('main');
   body = document.getElementById('body');
   globalObj = new Globals();
   console.log(globalObj);
   systemManager = new SystemManager();
 
   createEntitiesFromBlueprint('embedVideo',1);
-  createEntitiesFromBlueprint('playfield',1);
-
+  let swipeRightChecker = createEntitiesFromBlueprint('playfield').cHitbox.doOnOverlap = openVideo;
+  let swipeLeftChecker = createEntitiesFromBlueprint('playfield').cHitbox.doOnOverlap = deleteEntity;
   // createEntitiesFromBlueprint('playfield').cHitbox.doOnOverlap = someFunction;
 
   // createEntitiesFromBlueprint(headBlueprint,3);
@@ -50,6 +51,17 @@ function main(){
 
 }
 
-function someFunction(){
-  console.log('do this on overlap (open window/splice)');
+function openVideo(other){
+  if (other.blueprintName === 'embedVideo'){
+    window.open(`https://www.youtube.com/watch?v=${other.cHtmlDisplay.link}`);
+    deleteEntity(other);
+  }
+
+}
+
+function deleteEntity(other){
+  if (other.blueprintName === 'embedVideo'){
+    systemanager.deleteEntity(other);
+if (debugMode) console.log('entity deleted!');
+  }
 }

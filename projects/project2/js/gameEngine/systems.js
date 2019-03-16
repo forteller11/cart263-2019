@@ -176,7 +176,7 @@ class sOverlap extends System { //transforms image to entity position
 
     //collision between box:box
     if ((e1.cHitbox.type === 'rect') && (e2.cHitbox.type === 'rect')) {
-      if (this.boundingBoxBoundingBox(e1, e2)) {
+      if (this.boundingBoxBoundingBoxOverlap(e1, e2)) {
         return true
       };
     }

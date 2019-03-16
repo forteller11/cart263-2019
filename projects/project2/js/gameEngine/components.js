@@ -26,7 +26,7 @@ class cHitbox extends Component{ //circle hitbox
     this.name = 'cHitbox';
     this.type = type; //type of hitbox, circle, square, rect, line.
     this.doOnOverlap = null; //a execution to perform on overlap with other entity
-    
+
     switch(this.type){
       case 'circle':
       this.radius = args[0];
@@ -101,8 +101,9 @@ class cHtmlDisplay extends Component{
       case 3: //width and height have unique arguments
         this.width = args[1];
         this.height = args[2];
+        break;
       default:
-        console.log('wrong number of arguments in cHtmlDisplay constructor!')
+        console.log(`wrong number of arguments (${args.length}) in cHtmlDisplay constructor!`)
     }
 
 //this span will act as the standard point of contact to any systems who need to care about

@@ -23,7 +23,7 @@ function createEntitiesFromBlueprint(...args) {
     console.log('wrong number of arguments');
     break;
   }
-  if (args.length === 1){ //return entities if only to create one
+  if (numberToCreate === 1){ //return entities if only to create one
     return createEntity(blueprintName);
   } else {
     for (let i = 0; i < numberToCreate; i++) { //else dont return entities
