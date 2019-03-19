@@ -105,7 +105,7 @@ placeRequest.onload = () => {
 
 
 function changeText(text){
-  text.innerHTML = `${condiment} ${verb} is what would happen if a ${article} ${characterArchetype} met a ${mood} ${celebrity} at the ${place}`;
+  text.innerHTML = `${condiment} ${verb} is what would happen if ${article} ${characterArchetype} met a ${mood} ${celebrity} at the ${place}`;
   console.log(`${condiment} ${verb} is what would happen if a ${article} ${characterArchetype} met a ${mood} ${celebrity} at the ${place}`);
 }
 
