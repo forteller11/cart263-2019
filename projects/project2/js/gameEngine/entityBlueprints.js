@@ -47,7 +47,7 @@ function addComponentsBasedOnBlueprint(newEntity, blueprintName) {
       const initRot = .1;
       let mass = 4 / 3 * radius * radius * radius * Math.PI;
       let randomIndex = ranIndexOfArray(videoIds);
-      newEntity.addComponent(new cPos(ran(Math.PI), ran(window.innerWidth*.33,window.innerWidth *.66), ran(-window.innerHeight*3)));
+      newEntity.addComponent(new cPos(ran(Math.PI), ran(window.innerWidth*.33,window.innerWidth *.66), ran(-window.innerHeight)));
       newEntity.addComponent(new cHitbox('circle', radius));
       newEntity.addComponent(new cPhysics(mass, ran(-initVel, initVel), ran(-initVel, initVel), ran(-initRot, initRot), false));
       newEntity.addComponent(new cHtmlDisplay('embedVideo', videoIds[randomIndex], radius * 2));
