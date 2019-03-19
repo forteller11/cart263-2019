@@ -12,6 +12,16 @@ let place = null;
   let vowels = ['a','o','u','e','i'];
 
 function main(){
+
+  let text = document.createElement('DIV');
+  // text.style.position = 'fixed';
+  text.width = 'auto';
+  text.height = 'auto';
+  // text.style.left = window.innerWidth/2 +'px';
+  // text.style.top = window.innerHeight/2 +'px';
+  text.innerHTML = 'CLICK TO BEGIN';
+  document.body.appendChild(text);
+
   document.addEventListener("mousedown",()=>location.reload(false) );
   let condimentUrl = 'https://raw.githubusercontent.com/pippinbarr/cart263-2019/master/activities/data/condiments/data/data.json';
   let characterArchetypeUrl = 'https://raw.githubusercontent.com/dariusk/corpora/master/data/archetypes/character.json';
@@ -55,7 +65,7 @@ function main(){
     }
 
     }
-    changeText();
+    changeText(text);
 
 
   characterArchetypeRequest.onload = () => {
@@ -67,26 +77,26 @@ function main(){
         article = 'an';
       }
     }
-  changeText();
+  changeText(text);
   }
 
 
 moodsRequest.onload = () => {;
   console.log(moodsRequest.response);
   mood = ranElementOfArr(moodsRequest.response.moods);
-  changeText();
+  changeText(text);
 }
 
 celebsRequest.onload = () => {
   console.log(celebsRequest.response)
   celebrity = ranElementOfArr(celebsRequest.response.celebrities);
-  changeText();
+  changeText(text);
 }
 
 placeRequest.onload = () => {
   console.log(placeRequest.response)
   place = ranElementOfArr(placeRequest.response.agencies);
-  changeText();
+  changeText(text);
 }
 
 
@@ -94,7 +104,8 @@ placeRequest.onload = () => {
 }
 
 
-function changeText(){
+function changeText(text){
+  text.innerHTML = `${condiment} ${verb} is what would happen if a ${article} ${characterArchetype} met a ${mood} ${celebrity} at the ${place}`;
   console.log(`${condiment} ${verb} is what would happen if a ${article} ${characterArchetype} met a ${mood} ${celebrity} at the ${place}`);
 }
 
