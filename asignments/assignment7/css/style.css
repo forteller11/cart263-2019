@@ -7,7 +7,7 @@ so the canvas is flush with the top left corner.
 **********************************************/
 
 * {
-  padding: 24px;
+  padding: 0px;
   margin: 0;
   box-sizing: border-box;
 }
@@ -15,7 +15,11 @@ body{
   width:600px;
 }
 div{
+  position:fixed;
   font-size:32px;
   color: black;
   /* background-color: red; */
+}
+canvas{
+  position:fixed;
 }
