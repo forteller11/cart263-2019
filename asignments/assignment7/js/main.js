@@ -15,13 +15,6 @@
 //can only create sounds on beat, every beat has multiple sounds,
 //can create sounds with mouse, pitch with mouseY, volume with mouseX
 window.onload = main;
-let frequencies =
- [21.83,
-  27.50,
-  30.87,
-  32.70,
-  20.60,
-  43.65];
 
 let mouseX = 0;
 let mouseY = 0;
@@ -36,6 +29,10 @@ let beatLength = 300/4;
 let beatNumber = 2*4 * 4;
 let beats = []; //4*4 beats
 let mouseDown = false;
+let oneDown = false;
+let twoDown = false;
+let threeDown = false;
+
 let canvas;
 let canvasCtx;
 for (let i = 0; i < beatNumber; i ++){ //create 2D array
@@ -65,6 +62,36 @@ console.log(beats)
   document.addEventListener('mousemove',(e)=>{
     mouseX = e.clientX;
     mouseY = e.clientY;
+  });
+
+  document.addEventListener('keydown',(e)=>{
+    console.log(e)
+    switch(e.key){
+      case "1":
+      oneDown = true;
+      break;
+      case "1":
+      twoDown = true;
+      break;
+      case "1":
+      threeDown = true;
+      break;
+    }
+  });
+
+  document.addEventListener('keydown',(e)=>{
+    console.log(e)
+    switch(e.key){
+      case "1":
+      oneDown = false;
+      break;
+      case "1":
+      twoDown = false;
+      break;
+      case "1":
+      threeDown = false;
+      break;
+    }
   });
 
   document.addEventListener('mousedown',(e)=>{
