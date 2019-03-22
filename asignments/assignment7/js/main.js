@@ -24,7 +24,7 @@ let hihats = []; //arr of highhats
 let kicks  = []; //arr of kicks
 let snares = []; //arr of snares
 let synths = []; //are of synths
-
+let graphics = [];
 let beatIndex = 0;
 let beatLength = 300 / 4;
 let beatNumber = 2 * 4 * 4;
@@ -143,36 +143,47 @@ function main() {
       }
       for (let i = 0; i < maxSoundTypeOverlap; i++) {
         synths[i].pause();
-        kicks[i].pause();
+        kicks [i].pause();
         snares[i].pause();
         synths[i].pause();
       }
 
       // console.log(`previousBeat:${previousBeat} currentBeat:${beatIndex}`);
       for (let i = 0; i < beats[beatIndex].length; i++) {
-        switch (beats[beatIndex].type) {
+        let frequency = window.innerHeight - beats[beatIndex][i].y + 80;
+        let vol = 1-beats[beatIndex][i].y/window.innerHeight;
+        console.log('VOL:'+vol);
+        console.log(beats[beatIndex][i]);
+        graphics.push(
+          new Graphic(beats[beatIndex][i].type,
+            beats[beatIndex][i].x,
+            beats[beatIndex][i].y));
+            console.log(graphics);
+
+        switch (beats[beatIndex][i].type) {
           case 'synth':
-            synths[i].frequency = (window.innerHeight - mouseY) + 80;
+            synths[i].frequency = frequency;
+            synths[i].volume = 0.09;
             synths[i].play()
+            // console.log(synths[i]);
             break;
           case 'kick':
-            kick[i].frequency = (window.innerHeight - mouseY) + 80;
-            kick[i].play()
+            kicks[i].volume = vol;
+            kicks[i].play()
             break;
           case 'snare':
-            snare[i].frequency = (window.innerHeight - mouseY) + 80;
-            snare[i].play()
+            snares[i].volume = vol;
+            snares[i].play()
             break;
           case 'hihat':
-            hihat[i].frequency = (window.innerHeight - mouseY) + 80;
-            hihat[i].play()
+            hihats[i].volume = vol;
+            hihats[i].play()
             break;
+
         }
 
         console.log(beats[beatIndex][i]);
         let size = beats[beatIndex][i].x * .05;//size
-        canvasCtx.fillStyle = `rgb(${ran(255)},${ran(255)},${ran(255)})`;
-        canvasCtx.fillRect(beats[beatIndex][i].x - size / 2, beats[beatIndex][i].y - size / 2, size, size);
         // beats[beatIndex][i].pause();
       }
       // console.log
@@ -182,6 +193,14 @@ function main() {
       }; //reset beat
       document.getElementById('beatCounter').innerHTML = `beat:${beatIndex}`; setTimeout(playSoundsOfBeat, beatLength);
 
+for (let i = 0; i < graphics.length; i ++){
+  console.log(graphics[i]);
+  graphics[i].update();
+  if (graphics[i].life > graphics[i].lifeSpan){
+    graphics.splice(i,1);
+    console.log('SPLICED')
+  }
+}
     }
 
     function createSoundBlob(type, x = mouseX, y = mouseY) {
