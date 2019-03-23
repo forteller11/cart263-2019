@@ -98,3 +98,10 @@ function mean(...args){ //finds the mean between a set of numbers
   }
   return sum/args.length;
 }
+
+//log if on debug mode
+function dLog(strToLog){
+  if (debugMode){
+    console.log(strToLog);
+  }
+}
