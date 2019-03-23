@@ -19,7 +19,13 @@ let meshes = [
 //vtData base units of info are
 //three vectors, vertex normal, color of that triangle
 //[x,y,z]*3;     [x,y,z];       rgba
-let vtData = [
+
+//xyz
+let verts = [
+]
+//v1,v2,v3;vertexNormal(xyz);rgba
+let faces = [
+
 ]
 
 function main() {
@@ -37,8 +43,30 @@ dLog('main');
 //parses obj and converts to file format
 function convertObjToVtData(obj){
   console.log(obj);
+  let vArr = []; //vertices
+  let vnArr = []; //vertexNormals
+let currentData = 'unknown';
   for (let i = 0; i < obj.length; i ++){
-    
+    if (obj[i] === 'v'){
+      if (obj[i+1] === 'n'){currentData = 'vertexNormal'}
+      else {currentData = 'vertex'}
+    }
+    else if (obj[i] === 'f'){ currentData = 'face'}
+    //if
+    else if (!(currentData === 'unknown')){
+
+      switch(currentData){
+        case 'vertex':
+        break;
+
+        case 'vertexNormal':
+        break;
+
+        case 'vertexFace':
+        break;
+      }
+    }
+
   }
 
 }
