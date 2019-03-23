@@ -49,7 +49,6 @@ class Graphic {
         {
           let quality = 6;
           canvasCtx.beginPath();
-          console.log(this.life);
           for (let i = 0; i < quality; i++) {
             let index = i / quality * Math.PI * 2;
             let xx = this.x + Math.cos(index + this.life / 5) * w;
