@@ -1,15 +1,27 @@
+/*
+resources;
+https://thebookofshaders.com
+https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API
+https://www.youtube.com/watch?v=W3gAzLwfIP0&list=PLlrATfBNZ98foTJPJ_Ev03o2oq3-GGOS2
+https://www.youtube.com/watch?v=kB0ZVUrI4Aw&t=997s
+*/
+
 'use strict';
 
 let vertexShaderText = [
   'precision mediump float;',
   '',
-  'attribute vec2 vertPosition;',
+  'attribute vec3 vertPosition;',
   'attribute vec3 vertColor;',
   'varying vec3 fragColor;',
+  'uniform mat4 mWorld;',
+  'uniform mat4 mView;',
+  'uniform mat4 mProj;',
+  '',
   'void main()',
   '{',
   'fragColor = vertColor;',
-  'gl_Position = vec4(vertPosition,0.0, 1.0);',
+  'gl_Position = mProj * mView * mWorld * vec4(vertPosition, 1.0);',
   '}'
 ].join('\n');
 
@@ -66,10 +78,10 @@ function main() {
 
 //array on cpu
   let triangleVertices =
-  [//x      y         R G B
-    0.0,  0.5,  1.0, 1.0, 1.0,
-   -0.5, -0.5,  1.0, 0.0, 1.0,
-    0.5, -0.5,  1.0, 0.0, 0.0,
+  [//x      y   z      R G B
+    0.0,  0.5,  1.0,   0.0, 0.0, 1.0,
+   -0.5, -0.5,  0.0,   1.0,  0.0, 1.0,
+    0.5, -0.5,  0.0,   0.0, 1.0, 0.0,
   ];
   //transfer array to gpu
   let triangleVertexBufferObject = gl.createBuffer();
@@ -80,7 +92,7 @@ function main() {
   let colorAttribLocation    = gl.getAttribLocation(program, 'vertColor');
   gl.vertexAttribPointer(
       positionAttribLocation, //attribute location
-      2, //number of elements per attribute
+      3, //number of elements per attribute
       gl.FLOAT, //type of elements
       gl.FALSE,
       5*Float32Array.BYTES_PER_ELEMENT,//size of an individual vertex
@@ -94,12 +106,30 @@ function main() {
       gl.FLOAT, //type of elements
       gl.FALSE,
       5*Float32Array.BYTES_PER_ELEMENT,//size of an individual vertex
-      2*Float32Array.BYTES_PER_ELEMENT //offset from the beginning of a single vertex to this attribute
+      3*Float32Array.BYTES_PER_ELEMENT //offset from the beginning of a single vertex to this attribute
 
   );
 
   gl.enableVertexAttribArray(positionAttribLocation);
   gl.enableVertexAttribArray(colorAttribLocation);
+
+  gl.useProgram(program);
+
+  var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
+  var matWorldUniformLocation = gl.getUniformLocation(program, 'mView');
+  var matWorldUniformLocation = gl.getUniformLocation(program, 'mProj');
+
+  let worldMatrix = new Float32Array(16);
+  let viewMatrix = new Float32Array(16);
+  let projMatrix = new Float32Array(16);
+
+  glMatrix.mat4.identity(worldMatrix);
+  glMatrix.mat4.identity(viewMatrix);
+  glMatrix.mat4.identity(projMatrix);
+
+  gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
+  gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, viewMatrix);
+  gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, projMatrix);
 
   gl.useProgram(program);
   //DRAW WHAT, how many verts to skip, how many verts to draw
