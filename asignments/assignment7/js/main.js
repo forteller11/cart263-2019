@@ -1,15 +1,11 @@
-// 'use strict';
-//
-//
-// window.onload = main;
-// function main(){
-//   let innerArr = ['tinybreak','tinydeath','tinylov']
-//   let outerArr = ['break','death','lov',innerArr];
-//   console.log(outerArr);
-//   let arr = outerArr[3][2];
-//   console.log(arr);
-// }
-//
+/*______________________________________________
+"1" for kick
+"2" for hihat
+"3" for snare
+"mousedown" for synth
+
+
+_______________________________________________*/
 "use strict";
 
 //can only create sounds on beat, every beat has multiple sounds,
@@ -41,6 +37,16 @@ for (let i = 0; i < beatNumber; i++) { //create 2D array
 }
 
 function main() {
+  console.log(`
+||_-_-_-_-_-_-_-_-_-_-_-_||
+
+    INSTRUCTIONS >>>>>>>>
+  > "1" for kick
+  > "2" for hihat
+  > "3" for snare
+  > "mousedown" for synth
+
+||_-_-_-_-_-_-_-_-_-_-_-_||`);
   //create instruments
   for (let i = 0; i < maxSoundTypeOverlap; i++) {
     synths.push(new Pizzicato.Sound({
@@ -56,14 +62,13 @@ function main() {
         }
 
         //create canvas
-        console.log('main');
         canvas = document.createElement('canvas');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
          document.body.appendChild(canvas);
          canvasCtx = canvas.getContext('2d');
         // canvasCtx.style.zIndex = 100;
-        console.log(canvasCtx);
+
 
 
 
@@ -73,7 +78,6 @@ function main() {
         });
 
         document.addEventListener('keydown', (e) => {
-          console.log('KEYDOWN')
           switch (e.key) {
             case "1":
               oneDown = true;
@@ -85,11 +89,9 @@ function main() {
               threeDown = true;
               break;
           }
-          console.log(`${oneDown}${twoDown}${threeDown}`);
         });
 
         document.addEventListener('keyup', (e) => {
-          console.log('KEYUP')
           switch (e.key) {
             case "1":
               oneDown = false;
@@ -101,7 +103,6 @@ function main() {
               threeDown = false;
               break;
           }
-          console.log(`${oneDown}${twoDown}${threeDown}`);
         });
 
         document.addEventListener('mousedown', (e) => {
@@ -110,7 +111,7 @@ function main() {
           mouseDown = false;
         });
 
-        setTimeout((playSoundsOfBeat), beatLength); console.log('main');
+        setTimeout((playSoundsOfBeat), beatLength);
 
 
       }
@@ -137,35 +138,36 @@ function main() {
         beats[beatIndex].push(createSoundBlob('synth'));
       }
 
+      if (beats[beatIndex].length >= synths.length){
+        beats[beatIndex].splice(0,1);
+      }
       let previousBeatIndex = beatIndex - 1;
       if (beatIndex === 0) {
         previousBeatIndex = beats.length - 1
       }
       for (let i = 0; i < maxSoundTypeOverlap; i++) {
-        synths[i].pause();
-        kicks [i].pause();
-        snares[i].pause();
-        synths[i].pause();
+        synths[i].stop();
+        kicks [i].stop();
+        snares[i].stop();
+        synths[i].stop();
       }
 
       // console.log(`previousBeat:${previousBeat} currentBeat:${beatIndex}`);
       for (let i = 0; i < beats[beatIndex].length; i++) {
         let frequency = window.innerHeight - beats[beatIndex][i].y + 80;
         let vol = 1-beats[beatIndex][i].y/window.innerHeight;
-        console.log('VOL:'+vol);
-        console.log(beats[beatIndex][i]);
+
+
         graphics.push(
           new Graphic(beats[beatIndex][i].type,
             beats[beatIndex][i].x,
             beats[beatIndex][i].y));
-            console.log(graphics);
 
         switch (beats[beatIndex][i].type) {
           case 'synth':
             synths[i].frequency = frequency;
             synths[i].volume = 0.09;
             synths[i].play()
-            // console.log(synths[i]);
             break;
           case 'kick':
             kicks[i].volume = vol;
@@ -182,7 +184,6 @@ function main() {
 
         }
 
-        console.log(beats[beatIndex][i]);
         let size = beats[beatIndex][i].x * .05;//size
         // beats[beatIndex][i].pause();
       }
@@ -194,11 +195,11 @@ function main() {
       document.getElementById('beatCounter').innerHTML = `beat:${beatIndex}`; setTimeout(playSoundsOfBeat, beatLength);
 
 for (let i = 0; i < graphics.length; i ++){
-  console.log(graphics[i]);
+  // console.log(graphics[i]);
   graphics[i].update();
   if (graphics[i].life > graphics[i].lifeSpan){
     graphics.splice(i,1);
-    console.log('SPLICED')
+    // console.log('SPLICED')
   }
 }
     }
