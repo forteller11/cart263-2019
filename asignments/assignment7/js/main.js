@@ -47,6 +47,17 @@ function main() {
   > "mousedown" for synth
 
 ||_-_-_-_-_-_-_-_-_-_-_-_||`);
+
+//create canvas
+canvas = document.createElement('canvas');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+ document.body.appendChild(canvas);
+ canvasCtx = canvas.getContext('2d');
+
+ canvasCtx.fillStyle = `rgb(${ran(255)},${ran(255)},${ran(255)})`;
+ canvasCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
   //create instruments
   for (let i = 0; i < maxSoundTypeOverlap; i++) {
     synths.push(new Pizzicato.Sound({
@@ -61,13 +72,7 @@ function main() {
             hihats.push(new Pizzicato.Sound('assets/hihat.wav'));
         }
 
-        //create canvas
-        canvas = document.createElement('canvas');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-         document.body.appendChild(canvas);
-         canvasCtx = canvas.getContext('2d');
-        // canvasCtx.style.zIndex = 100;
+
 
 
 
@@ -192,7 +197,7 @@ function main() {
       if (beatIndex >= beatNumber) {
         beatIndex = 0
       }; //reset beat
-      document.getElementById('beatCounter').innerHTML = `beat:${beatIndex}`; setTimeout(playSoundsOfBeat, beatLength);
+setTimeout(playSoundsOfBeat, beatLength);
 
 for (let i = 0; i < graphics.length; i ++){
   // console.log(graphics[i]);
