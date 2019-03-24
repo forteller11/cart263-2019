@@ -17,8 +17,8 @@ function distBetween(x1, y1, x2, y2) {
   }
 }
 
-function distFromDelta(xComponent,yComponent){ //pythag theroum
-  return Math.sqrt((xComponent*xComponent)+(yComponent*yComponent))
+function distFromDelta(xComponent, yComponent) { //pythag theroum
+  return Math.sqrt((xComponent * xComponent) + (yComponent * yComponent))
 }
 
 function trackMouseMovement(e) { //store position of mouse in global variables
@@ -53,55 +53,72 @@ function ran(value1, value2) { //acts like p5's random function
   }
 }
 
-function min(){ //returns smallest argument
+function min() { //returns smallest argument
   let currentMin = Infinity;
-  for (let i = 0; i < arguments.length; i++){
-    if (arguments[i] < currentMin){
+  for (let i = 0; i < arguments.length; i++) {
+    if (arguments[i] < currentMin) {
       currentMin = arguments[i];
     }
   }
   return currentMin;
 }
 
-function linearInterpolate(lerpAmount, value1, value2){
+function linearInterpolate(lerpAmount, value1, value2) {
   const valueDelta = value2 - value1; //find difference between values
   const lerpAdd = lerpAmount * valueDelta; //find percentage of delta which user wants to lerp by
   const lerpResult = lerpAdd + value1; //add constant
   return lerpResult;
 }
 
-function mapFromRanges(value,range1a,range1b,range2a,range2b){
+function mapFromRanges(value, range1a, range1b, range2a, range2b) {
   //map value 1 between range1 --> range2
-  const range1 = range1b-range1a;
-  const valuesInterpolationBetweenRange1 = (value-range1a)/range1;
-  return linearInterpolate(valuesInterpolationBetweenRange1,range2a,range2b);
+  const range1 = range1b - range1a;
+  const valuesInterpolationBetweenRange1 = (value - range1a) / range1;
+  return linearInterpolate(valuesInterpolationBetweenRange1, range2a, range2b);
 
 
-  if (!(arguments.length === 5)){
+  if (!(arguments.length === 5)) {
     console.log("ERROR: invalid num of arguments in map function!");
   }
 }
 
-function dotProduct(v1,v2){ //returns dot product of two vectors
-  return (v1.x*v2.x)+(v1.y*v2.y);
+function dotProduct(v1, v2) { //returns dot product of two vectors
+  return (v1.x * v2.x) + (v1.y * v2.y);
 }
 
-function ranIndexOfArray(arr){
-  const ranNumberBelowArrLength = ran(arr.length-Number.MIN_VALUE); //- min value so this number can never === arr.length
+function ranIndexOfArray(arr) {
+  const ranNumberBelowArrLength = ran(arr.length - Number.MIN_VALUE); //- min value so this number can never === arr.length
   return Math.floor(ranNumberBelowArrLength);
 }
 
-function mean(...args){ //finds the mean between a set of numbers
+function mean(...args) { //finds the mean between a set of numbers
   let sum = 0;
-  for (let i = 0; i < args.length; i ++){
+  for (let i = 0; i < args.length; i++) {
     sum += args[i];
   }
-  return sum/args.length;
+  return sum / args.length;
 }
 
 //log if on debug mode
-function dLog(strToLog){
-  if (debugMode){
+function dLog(strToLog) {
+  if (debugMode) {
     console.log(strToLog);
   }
+}
+
+function createCanvas(width, height) {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  document.body.appendChild(canvas);
+  return canvas.getContext('2d');
+}
+
+
+function cssRGB(r,g,b){
+  return `rgb(${r},${g},${b})`;
+}
+
+function cssRGBA(r,g,b,a){
+  return `rgb(${r},${g},${b},${a})`;
 }
