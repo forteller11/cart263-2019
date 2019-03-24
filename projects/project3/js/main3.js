@@ -34,25 +34,26 @@ function main() {
   request.send();
 
   request.onload = () => {
-    convertObjToVtData(request.response);
+    convertObjFileToMeshBlob(request.response);
     // dLog(request.response);
   }
 }
 
 //parses obj and converts to file format
-function convertObjToVtData(obj) {
+function convertObjFileToMeshBlob(obj) {
+  //initialize vars
   let vArr = []; //vertices
   let vnArr = []; //vertexNormals
   let fArr = []; //array of arrays of connected vertex's
-  let faceIndex = 0;
-  fArr[faceIndex] = []; //prep 2D array
+  let faceIndex = 0; //how many faces have currently been parsed
+  fArr[faceIndex] = []; //prep 2D face array
   let currentWord = ''; //string of current num
-  let currentDataType = 'irrelevant';
+  let currentDataType = 'irrelevant'; //what type of data is currently being parsed (vertex, vertexnormal, face, or irrelevant (all other) data)
+
   for (let i = 0; i < obj.length; i++) {
     // console.log(obj[i]);
     if ((obj[i] === ' ') || (obj[i] === '\n') || obj[i] === '/') { //if at end of word, push data to relevant data type if currentDataType is a keyword
       if (!(Number.isNaN(Number(currentWord)))) { //if string is numeric, then push it to approrpaite array depending of currentDataType
-        console.log(currentWord);
         if (currentDataType === 'irrelevant') {}
         if (currentDataType === 'vertex') {
           vArr.push(Number(currentWord))
@@ -63,7 +64,6 @@ function convertObjToVtData(obj) {
         if (currentDataType === 'face') {
           fArr[faceIndex].push(Number(currentWord));
           if (obj[i] === '\n') {
-            console.log('LINEBREAK')
             faceIndex++;
             fArr[faceIndex] = []
           }
@@ -91,8 +91,7 @@ function convertObjToVtData(obj) {
   }
 
   //remove unnecessary values from face, leaving only the connected verts
-
-  fArr.splice(fArr.length-1,1);
+  fArr.splice(fArr.length-1,1); //also clip final empty face array (artifact of algorithim)
   for (let i = 0; i < fArr.length; i++) {
       let reducedFArr = [];
     for (let j = 0; j < fArr[i].length; j += 3) {
@@ -102,8 +101,12 @@ function convertObjToVtData(obj) {
       reducedFArr = [];
   }
 
+  const meshBlob = {
+    verts: vArr,
+    vertNorms: vnArr,
+    faces: fArr
+  }
+    dLog(meshBlob);
 
-  dLog(vArr);
-  dLog(vnArr);
-  dLog(fArr);
+  return meshBlob;
 }
