@@ -41,6 +41,7 @@ function main() {
 
 //parses obj and converts to file format
 function convertObjToVtData(obj) {
+  console.log(Number('v'));
   console.log(obj);
   let vArr = []; //vertices
   let vnArr = []; //vertexNormals
@@ -50,9 +51,9 @@ function convertObjToVtData(obj) {
   for (let i = 0; i < obj.length; i++) {
     // console.log(obj[i]);
     if ((obj[i] === ' ') || (obj[i] === '\n')) { //if at end of word, push data to relevant data type if currentDataType is a keyword
-      if (!(Number(currentWord) === undefined)){ //if string is numeric, then push it to approrpaite array depending of currentDataType
+      if ((!(Number.isNaN(Number(currentWord))))&&(!(currentWord === ''))){ //if string is numeric, then push it to approrpaite array depending of currentDataType
         if (currentDataType === 'irrelevant')  {}
-        if (currentDataType === 'vertex')      {vArr.push(Number(currentWord))}
+        if (currentDataType === 'vertex')      {vArr.push(Number(currentWord)); console.log(currentWord)}
         if (currentDataType === 'vertexNormal'){vnArr.push(Number(currentWord))}
         if (currentDataType === 'vertexFace')  {fArr.push(Number(currentWord))}
     } else { //if string is not numeric, then it is irrelvant until proven otherwise
@@ -60,10 +61,10 @@ function convertObjToVtData(obj) {
     }
     /*//if at end of word and not current parsing a relevant datatype (v,vn,f)
      then see if word indicates that this is a relevant datatype, otherwise it remains irrelevant*/
-    if (currentWord === 'v'){currentDataType = 'vertex'; console.log('VERTEX')}
+    if (currentWord === 'v'){currentDataType = 'vertex'}
     if (currentWord === 'vn'){currentDataType = 'vertexNormal'}
     if (currentWord === 'f'){currentDataType = 'face'}
-
+    // console.log(currentWord);
     currentWord = ''; //reset current word
 
   } else { //if not a space
