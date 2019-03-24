@@ -50,12 +50,12 @@ function convertObjToVtData(obj) {
   let currentDataType = 'irrelevant';
   for (let i = 0; i < obj.length; i++) {
     // console.log(obj[i]);
-    if ((obj[i] === ' ') || (obj[i] === '\n')) { //if at end of word, push data to relevant data type if currentDataType is a keyword
-      if ((!(Number.isNaN(Number(currentWord))))&&(!(currentWord === ''))){ //if string is numeric, then push it to approrpaite array depending of currentDataType
+    if ((obj[i] === ' ') || (obj[i] === '\n') || obj[i] === '/') { //if at end of word, push data to relevant data type if currentDataType is a keyword
+      if (!(Number.isNaN(Number(currentWord)))){ //if string is numeric, then push it to approrpaite array depending of currentDataType
         if (currentDataType === 'irrelevant')  {}
         if (currentDataType === 'vertex')      {vArr.push(Number(currentWord)); console.log(currentWord)}
         if (currentDataType === 'vertexNormal'){vnArr.push(Number(currentWord))}
-        if (currentDataType === 'vertexFace')  {fArr.push(Number(currentWord))}
+        if (currentDataType === 'face')  {fArr.push(Number(currentWord))}
     } else { //if string is not numeric, then it is irrelvant until proven otherwise
       currentDataType = 'irrelevant';
     }
@@ -72,4 +72,6 @@ function convertObjToVtData(obj) {
   }
 }
 dLog(vArr);
+dLog(vnArr);
+dLog(fArr);
 }
