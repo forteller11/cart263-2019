@@ -45,28 +45,52 @@ function convertObjToVtData(obj){
   console.log(obj);
   let vArr = []; //vertices
   let vnArr = []; //vertexNormals
+  let currentWord = ''; //string of current num
 let currentData = 'unknown';
   for (let i = 0; i < obj.length; i ++){
-    if (obj[i] === 'v'){
-      if (obj[i+1] === 'n'){currentData = 'vertexNormal'}
-      else {currentData = 'vertex'}
+    // console.log(i);
+    if (Number(obj[i]) === undefined){currentData = 'unknown';} //if not a number then set unknown until find out its vertex,vertnormal or face
+    if ((obj[i] === 'v')&&(obj[i+1]===' ')) {
+      currentData = 'vertex';
+      console.log('VERTEX')
+      i+=2;
     }
-    else if (obj[i] === 'f'){ currentData = 'face'}
-    //if
-    else if (!(currentData === 'unknown')){
-
-      switch(currentData){
-        case 'vertex':
-        break;
-
-        case 'vertexNormal':
-        break;
-
-        case 'vertexFace':
-        break;
-      }
+    if ((obj[i] === 'v')&&(obj[i+1]==='n')){
+      currentData = 'vertexNormal';
+      i+=3;
     }
-
+    if ((obj[i] === 'f')&&(obj[i+1]===' ')) {
+      currentData = 'face';
+      i+=2;
   }
 
+    //if
+
+
+      switch(currentData){
+        case 'unknown':
+        //move on
+        break;
+
+        case 'vertex':
+          if (obj[i] === ' '){ //if at end of vertex, push current word, empty it
+            console.log(currentWord);
+            vArr.push(Number(currentWord));
+            currentWord = '';
+            break;
+          }
+            currentWord+=obj[i]; //  add number (in string form, to current wrod)
+
+
+
+          break;
+
+        case 'vertexNormal':
+          break;
+
+        case 'vertexFace':
+          break;
+      }
+  }
+  dLog(vArr);
 }
