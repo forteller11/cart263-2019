@@ -30,7 +30,7 @@ let faces = [
 function main() {
   dLog('main');
   let request = new XMLHttpRequest();
-  request.open('GET', 'assets/cube3.obj'); //open/setup request
+  request.open('GET', 'assets/triangle.obj'); //open/setup request
   request.send();
 
   request.onload = () => {
@@ -48,6 +48,7 @@ function convertObjToVtData(obj) {
   let currentWord = ''; //string of current num
   let currentDataType = 'irrelevant';
   for (let i = 0; i < obj.length; i++) {
+    // console.log(obj[i]);
     currentWord += obj[i];
     if (obj[i] === ' ') { //if at end of word, push data to relevant data type if currentDataType is a keyword
       console.log(currentWord);
@@ -82,9 +83,8 @@ function convertObjToVtData(obj) {
         default:
           currentDataType = 'irrelevant';
           break;
-      currentWord = ''; //reset current word to nothing
     }
-
+currentWord = ''; //reset current word if there is space
   }
 }
 dLog(vArr);
