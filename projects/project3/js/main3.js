@@ -41,8 +41,6 @@ function main() {
 
 //parses obj and converts to file format
 function convertObjToVtData(obj) {
-  console.log(Number('v'));
-  console.log(obj);
   let vArr = []; //vertices
   let vnArr = []; //vertexNormals
   let fArr = []; //face
@@ -71,6 +69,14 @@ function convertObjToVtData(obj) {
     currentWord += obj[i]; //add current parsed character to currentWord
   }
 }
+
+//remove unnecessary values from face, leaving only the connected verts
+let reducedFArr = []
+for (let i = 0; i < fArr.length; i += 3){
+  reducedFArr.push(fArr[i])
+}
+fArr = reducedFArr;
+
 dLog(vArr);
 dLog(vnArr);
 dLog(fArr);
