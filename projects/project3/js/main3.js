@@ -49,42 +49,25 @@ function convertObjToVtData(obj) {
   let currentDataType = 'irrelevant';
   for (let i = 0; i < obj.length; i++) {
     // console.log(obj[i]);
-    currentWord += obj[i];
-    if (obj[i] === ' ') { //if at end of word, push data to relevant data type if currentDataType is a keyword
-      console.log(currentWord);
-      switch (currentDataType) { //push data to appropriate array (or not)
-        case 'irrelevant':
-          break;
-        case 'vertex':
-          vArr.push(Number(currentWord));
-          break;
-        case 'vertexNormal':
-          vnArr.push(Number(currentWord));
-          break;
-        case 'vertexFace':
-          fArr.push(Number(currentWord));
-          break;
-        default:
-          dLog('invlaid currentDataType'+currentDataType);
-          break;
-      }
-    /*//if at end of word and not current parsing a relevant datatype (v,vn,f)
-     then see if word indicates that this is a relevant datatype, otherwise it's irrelevant*/
-      switch (currentWord) {
-        case 'v':
-          currentDataType = 'vertex';
-          break;
-        case 'vn':
-          currentDataType = 'vertexNormal';
-          break;
-        case 'f':
-        currentDataType = 'face';
-          break;
-        default:
-          currentDataType = 'irrelevant';
-          break;
+    if ((obj[i] === ' ') || (obj[i] === '\n')) { //if at end of word, push data to relevant data type if currentDataType is a keyword
+      if (!(Number(currentWord) === undefined)){ //if string is numeric, then push it to approrpaite array depending of currentDataType
+        if (currentDataType === 'irrelevant')  {}
+        if (currentDataType === 'vertex')      {vArr.push(Number(currentWord))}
+        if (currentDataType === 'vertexNormal'){vnArr.push(Number(currentWord))}
+        if (currentDataType === 'vertexFace')  {fArr.push(Number(currentWord))}
+    } else { //if string is not numeric, then it is irrelvant until proven otherwise
+      currentDataType = 'irrelevant';
     }
-currentWord = ''; //reset current word if there is space
+    /*//if at end of word and not current parsing a relevant datatype (v,vn,f)
+     then see if word indicates that this is a relevant datatype, otherwise it remains irrelevant*/
+    if (currentWord === 'v'){currentDataType = 'vertex'; console.log('VERTEX')}
+    if (currentWord === 'vn'){currentDataType = 'vertexNormal'}
+    if (currentWord === 'f'){currentDataType = 'face'}
+
+    currentWord = ''; //reset current word
+
+  } else { //if not a space
+    currentWord += obj[i]; //add current parsed character to currentWord
   }
 }
 dLog(vArr);
