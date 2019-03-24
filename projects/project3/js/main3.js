@@ -21,76 +21,71 @@ let meshes = [
 //[x,y,z]*3;     [x,y,z];       rgba
 
 //xyz
-let verts = [
-]
+let verts = []
 //v1,v2,v3;vertexNormal(xyz);rgba
 let faces = [
 
 ]
 
 function main() {
-dLog('main');
+  dLog('main');
   let request = new XMLHttpRequest();
-  request.open('GET','assets/cube3.obj'); //open/setup request
+  request.open('GET', 'assets/cube3.obj'); //open/setup request
   request.send();
 
   request.onload = () => {
     convertObjToVtData(request.response);
-  // dLog(request.response);
-}
+    // dLog(request.response);
+  }
 }
 
 //parses obj and converts to file format
-function convertObjToVtData(obj){
+function convertObjToVtData(obj) {
   console.log(obj);
   let vArr = []; //vertices
   let vnArr = []; //vertexNormals
+  let fArr = []; //face
   let currentWord = ''; //string of current num
-let currentData = 'unknown';
-  for (let i = 0; i < obj.length; i ++){
-    // console.log(i);
-    if (Number(obj[i]) === undefined){currentData = 'unknown';} //if not a number then set unknown until find out its vertex,vertnormal or face
-    if ((obj[i] === 'v')&&(obj[i+1]===' ')) {
-      currentData = 'vertex';
-      console.log('VERTEX')
-      i+=2;
-    }
-    if ((obj[i] === 'v')&&(obj[i+1]==='n')){
-      currentData = 'vertexNormal';
-      i+=3;
-    }
-    if ((obj[i] === 'f')&&(obj[i+1]===' ')) {
-      currentData = 'face';
-      i+=2;
-  }
-
-    //if
-
-
-      switch(currentData){
-        case 'unknown':
-        //move on
-        break;
-
+  let currentDataType = 'irrelevant';
+  for (let i = 0; i < obj.length; i++) {
+    currentWord += obj[i];
+    if (obj[i] === ' ') { //if at end of word, push data to relevant data type if currentDataType is a keyword
+      console.log(currentWord);
+      switch (currentDataType) { //push data to appropriate array (or not)
+        case 'irrelevant':
+          break;
         case 'vertex':
-          if (obj[i] === ' '){ //if at end of vertex, push current word, empty it
-            console.log(currentWord);
-            vArr.push(Number(currentWord));
-            currentWord = '';
-            break;
-          }
-            currentWord+=obj[i]; //  add number (in string form, to current wrod)
-
-
-
+          vArr.push(Number(currentWord));
           break;
-
         case 'vertexNormal':
+          vnArr.push(Number(currentWord));
           break;
-
         case 'vertexFace':
+          fArr.push(Number(currentWord));
+          break;
+        default:
+          dLog('invlaid currentDataType'+currentDataType);
           break;
       }
+    /*//if at end of word and not current parsing a relevant datatype (v,vn,f)
+     then see if word indicates that this is a relevant datatype, otherwise it's irrelevant*/
+      switch (currentWord) {
+        case 'v':
+          currentDataType = 'vertex';
+          break;
+        case 'vn':
+          currentDataType = 'vertexNormal';
+          break;
+        case 'f':
+        currentDataType = 'face';
+          break;
+        default:
+          currentDataType = 'irrelevant';
+          break;
+      currentWord = ''; //reset current word to nothing
+    }
+
   }
-  dLog(vArr);
+}
+dLog(vArr);
 }
