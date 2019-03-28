@@ -1,11 +1,10 @@
 function update(){
 // systemManager.update();
-console.log('update');
-console.log(mesh)
-mesh.rotate(1,1,0);
-console.log(mesh)
+
 ctx.fillStyle = cssRGB(ran(255),ran(255),ran(255));
 ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+mesh.rotateZ(.1);
+console.log(vector);
 
 for (let i = 0; i < mesh.faces.length; i ++){
   // console.log('FACE '+i);

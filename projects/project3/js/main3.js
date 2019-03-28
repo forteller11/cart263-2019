@@ -15,7 +15,10 @@ let debugMode = true;
 
 let ctx;
 let mesh;
+let vector;
+
 function main() {
+
   //create canvas
 ctx = createCanvas(window.innerWidth,window.innerHeight);
 ctx.fillStyle = cssRGB(ran(255),ran(255),ran(255));
@@ -31,11 +34,10 @@ ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
     let dog = new Mesh(convertObjFileToMeshBlob(request.response));
     console.log (dog);
     mesh = new Mesh(convertObjFileToMeshBlob(request.response));
-    
+
     setInterval(update,100);
 
 
   }
-
 
 }
