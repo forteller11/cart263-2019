@@ -20,6 +20,13 @@ function distBetween(x1, y1, x2, y2) {
 function distFromDelta(xComponent, yComponent) { //pythag theroum
   return Math.sqrt((xComponent * xComponent) + (yComponent * yComponent))
 }
+function pythag(...args){ //pythag theorum (distance from delta) in n dimensions
+  let sum = 0;
+  for (let i = 0; i < args.length; i++){
+    sum += Math.pow(args[i],2);
+  }
+  return Math.pow(sum,1/2);
+}
 
 function trackMouseMovement(e) { //store position of mouse in global variables
   mouseX = e.clientX; //"client" means get pos of mouse relative to window pos (and not monitor pos)
