@@ -1,8 +1,8 @@
 class Mesh {
 constructor(objBlob){
     this.verts = objBlob.verts; //array of vertexes
-    this.vertNorms = objBlob.vnArr; //arr of vertex normals
-    this.faces = objBlob.fArr; //arr of arr of connected vectors which make up a single face (3 verts per side)
+    this.vertNorms = objBlob.vertNorms; //arr of vertex normals
+    this.faces = objBlob.faces; //arr of arr of connected vectors which make up a single face (3 verts per side)
   }
 
   rotate(zAxis, yAxis, xAxis){
