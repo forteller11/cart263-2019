@@ -3,7 +3,6 @@
 function convertObjFileToMeshBlob(obj) {
   //initialize vars
   let vArr = []; //vertices
-  let vertexIndex = 0;
   let vnArr = []; //vertexNormals
   let fArr = []; //array of arrays of connected vertex's
   let faceIndex = 0; //how many faces have currently been parsed
@@ -17,17 +16,7 @@ function convertObjFileToMeshBlob(obj) {
       if (!(Number.isNaN(Number(currentWord)))) { //if string is numeric, then push it to approrpaite array depending of currentDataType
         if (currentDataType === 'irrelevant') {}
         if (currentDataType === 'vertex') {
-          if (componentIndex === 0){ //if first component of vertex, begin storing vertex as vector
-            vArr.push(new Vector (Number(currentWord),0,0));
-          }
-          else (componentIndex === 1){
-            vArr[vArr.length-1].y = Number(currentWord);
-          }
-          if (componentIndex === 2){ //if at component 3 of vec, reset
-            vArr[vArr.length-1].z = Number(currentWord);
-            componentIndex = 0;
-          }
-          componentIndex++;
+          vArr.push(Number(currentWord))
         }
         if (currentDataType === 'vertexNormal') {
           vnArr.push(Number(currentWord))

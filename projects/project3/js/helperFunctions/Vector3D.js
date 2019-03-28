@@ -1,19 +1,16 @@
 //barebones 2D vector class
 "use strict";
-class Vector {
+class Vector3D {
   constructor(a1 = 1, a2 = 1, a3 = 1) {
-    //if create mode===cartesian then a1 = x component and a2 = y component
-    if (createMode === 'cartesian') {
       this.x = a1; //x component of vector
       this.y = a2; //y component of vector
       this.z = a3;
-    }
-    this.mag = distFromDelta(this.x, this.y, this.z);
+    this.mag = pythag(this.x, this.y, this.z);
   }
 
   mag() { //find the magnitude of this vetor
       console.log('undefined');
-      const newMag = distFromDelta(this.x, this.y, this.z);
+      const newMag = pythag(this.x, this.y, this.z);
       this.mag = newMag;
       return newMag;
   }
@@ -32,14 +29,14 @@ class Vector {
     this.x -= v.x;
     this.y -= v.y;
     this.z -= v.z;
-    this.mag = distFromDelta(this.x, this.y, this.z);
+    this.mag = pythag(this.x, this.y, this.z);
   }
 
   add(v){ //add a vector from this vector
     this.x += v.x;
     this.y += v.y;
     this.z += v.z;
-    this.mag = distFromDelta(this.x, this.y, this.z);
+    this.mag = pythag(this.x, this.y, this.z);
   }
 
   div(divValue) { //divide vector by some magnitude
@@ -57,7 +54,7 @@ class Vector {
   }
 
   constrainMag(max) { //make sure magnitude of vec isn't greator than "max"
-    this.mag = distFromDelta(this.x, this.y, this.z);
+    this.mag = pythag(this.x, this.y, this.z);
 
     if (this.mag > max) { //if vector is larger than max
       toConstrainRatio = this.mag/max;
@@ -73,22 +70,22 @@ class Vector {
     return Math.atan2(this.y, this.x); //save angle of vector
   }
 
-  rotateZ(zAxis, yAxis, zAxis) { //rotate vector by __ radians
-    this.mag = distFromDelta(this.x, this.y, this.z);
+  rotateZ(rotateAmount) { //rotate vector by __ radians
+    this.mag = pythag(this.x, this.y, this.z);
     const thetaStore = Math.atan2(this.y, this.x); //save angle of vector
     this.x = Math.cos(thetaStore + rotateAmount) * this.mag;
     this.y = Math.sin(thetaStore + rotateAmount) * this.mag;
   }
 
   rotateY(rotateAmount){
-    this.mag = distFromDelta(this.x, this.y, this.z);
+    this.mag = pythag(this.x, this.y, this.z);
     const thetaStore = Math.atan2(this.z, this.x); //save angle of vector
     this.x = Math.cos(thetaStore + rotateAmount) * this.mag;
     this.z = Math.sin(thetaStore + rotateAmount) * this.mag;
   }
 
   rotateX(rotateAmount){
-    this.mag = distFromDelta(this.x, this.y, this.z);
+    this.mag = pythag(this.x, this.y, this.z);
     const thetaStore = Math.atan2(this.z, this.y); //save angle of vector
     this.y = Math.cos(thetaStore + rotateAmount) * this.mag;
     this.z = Math.sin(thetaStore + rotateAmount) * this.mag;

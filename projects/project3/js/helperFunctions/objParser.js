@@ -3,6 +3,7 @@
 function convertObjFileToMeshBlob(obj) {
   //initialize vars
   let vArr = []; //vertices
+  let componentIndex = 0; //what component of vertex is currently being parsed?
   let vnArr = []; //vertexNormals
   let fArr = []; //array of arrays of connected vertex's
   let faceIndex = 0; //how many faces have currently been parsed
@@ -16,7 +17,18 @@ function convertObjFileToMeshBlob(obj) {
       if (!(Number.isNaN(Number(currentWord)))) { //if string is numeric, then push it to approrpaite array depending of currentDataType
         if (currentDataType === 'irrelevant') {}
         if (currentDataType === 'vertex') {
-          vArr.push(Number(currentWord))
+          if (componentIndex === 0) { //if first component of vertex, begin storing vertex as vector
+            vArr.push(new Vector3D(Number(currentWord), 0, 0)); //set x component of vec
+          }
+          if (componentIndex === 1) {
+            vArr[vArr.length - 1].y = Number(currentWord); //set y comopnent
+          }
+          if (componentIndex === 2) { //if at component 3 of vec, reset
+            vArr[vArr.length - 1].z = Number(currentWord); //z component
+            componentIndex = 0;
+          } else { //if not reset, itterate
+            componentIndex++;
+          }
         }
         if (currentDataType === 'vertexNormal') {
           vnArr.push(Number(currentWord))
@@ -51,14 +63,14 @@ function convertObjFileToMeshBlob(obj) {
   }
 
   //remove unnecessary values from face, leaving only the connected verts
-  fArr.splice(fArr.length-1,1); //also clip final empty face array (artifact of algorithim)
+  fArr.splice(fArr.length - 1, 1); //also clip final empty face array (artifact of algorithim)
   for (let i = 0; i < fArr.length; i++) {
-      let reducedFArr = [];
+    let reducedFArr = [];
     for (let j = 0; j < fArr[i].length; j += 3) {
-      reducedFArr.push(fArr[i][j]-1); //make it start at 0
+      reducedFArr.push(fArr[i][j] - 1); //make it start at 0
     }
-      fArr[i] = reducedFArr;
-      reducedFArr = [];
+    fArr[i] = reducedFArr;
+    reducedFArr = [];
   }
 
   const meshBlob = {
@@ -66,7 +78,7 @@ function convertObjFileToMeshBlob(obj) {
     vertNorms: vnArr,
     faces: fArr
   }
-    dLog(meshBlob);
+  dLog(meshBlob);
 
   return meshBlob;
 }
