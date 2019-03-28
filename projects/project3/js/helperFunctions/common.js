@@ -114,6 +114,12 @@ function createCanvas(width, height) {
   return canvas.getContext('2d');
 }
 
+function isEven(numb){ //return true if number is even
+  if ((numb%2) === 0){ //if there is no remainder
+    return true;
+  }
+  return false;
+}
 
 function cssRGB(r,g,b){
   return `rgb(${r},${g},${b})`;
