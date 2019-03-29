@@ -18,7 +18,7 @@ let mesh;
 let cameraOrigin;
 
 function main() {
-cameraOrigin = new Vector3D(0,0,-10);
+cameraOrigin = new Vector3D(0,0,-1);
   //create canvas
 ctx = createCanvas(window.innerWidth,window.innerHeight);
 ctx.fillStyle = cssRGB(ran(255),ran(255),ran(255));
