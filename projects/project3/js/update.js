@@ -1,9 +1,10 @@
 function update(){
 // systemManager.update();
 
-ctx.fillStyle = cssRGB(ran(255),ran(255),ran(255));
+ctx.fillStyle = cssRGB(255,255,0);
 ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-mesh.rotateZ(.1);
+// mesh.rotateZ(-.1);
+mesh.rotateX(.1);
 console.log(vector);
 
 for (let i = 0; i < mesh.faces.length; i ++){
@@ -16,10 +17,13 @@ for (let i = 0; i < mesh.faces.length; i ++){
   //   console.log(`
   // vertIndex: ${mesh.faces[i][j]}
   // Components:${vert.x},${vert.y},${vert.z}`)
-      ctx.lineTo((vert.x)*window.innerWidth/2, (vert.y)*window.innerHeight/2); //x,y of vec Index
+  const size = window.innerHeight/20;
+  const xx = vert.x * size + window.innerWidth/2;
+  const yy = vert.y * size + window.innerHeight/2;
+      ctx.lineTo(xx, yy); //x,y of vec Index
   }
   // console.log('fill');
-  ctx.fillStyle = cssRGB(255,0,0);
+  ctx.fillStyle = cssRGB(ran(255),0,ran(255));
   ctx.fill();
 }
 
