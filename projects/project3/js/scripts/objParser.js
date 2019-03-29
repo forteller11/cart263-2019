@@ -74,14 +74,17 @@ function convertObjFileToMeshBlob(obj) {
   }
 
   let fObjArr = [];
-  for (let i = 0; i < fArr.length; i +=3){
-    fObjArr[i] = new Triangle(fArr[i+0],fArr[i+1],fArr[i+2]); //converts array of faces into Triangle object containing vertex indexes and avg position of vertexes
+  for (let i = 0; i < fArr.length; i ++){
+    const index1 = fArr[i][0];
+    const index2 = fArr[i][1];
+    const index3 = fArr[i][2];
+    fObjArr[i] = new Triangle(vArr[index1],vArr[index2],vArr[index3]); //converts array of faces into Triangle object containing vertex indexes and avg position of vertexes
   }
 
   const meshBlob = {
     verts: vArr,
     vertNorms: vnArr,
-    faces: fArr
+    faces: fObjArr
   }
   dLog(meshBlob);
 

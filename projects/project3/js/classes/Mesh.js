@@ -2,9 +2,8 @@ class Mesh {
   constructor(objBlob) {
     this.verts = objBlob.verts; //array of vertexes
     this.vertNorms = objBlob.vertNorms; //arr of vertex normals
-    this.faces = objBlob.faces; //arr of arr of connected vectors which make up a single face (3 verts per side)
-  }
-
+    this.faces = objBlob.faces; //arr of objects with 3 vertexes that make them up and avg pos
+}
   rotate(zAxis, yAxis, xAxis) {
     //basis vectors
     // let iHat = new Vector(1,0,0);
