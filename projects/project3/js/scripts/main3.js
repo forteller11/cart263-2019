@@ -15,10 +15,10 @@ let debugMode = true;
 
 let ctx;
 let mesh;
-let vector;
+let cameraOrigin;
 
 function main() {
-
+cameraOrigin = new Vector3D(0,0,-10);
   //create canvas
 ctx = createCanvas(window.innerWidth,window.innerHeight);
 ctx.fillStyle = cssRGB(ran(255),ran(255),ran(255));

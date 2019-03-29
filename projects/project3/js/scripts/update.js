@@ -1,4 +1,7 @@
 function update(){
+  //if position changes
+
+  mesh.sortFacesByDistanceToPoint(cameraOrigin);
 // systemManager.update();
 
 ctx.fillStyle = cssRGB(255,255,0);
