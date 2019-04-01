@@ -7,6 +7,9 @@ https://www.youtube.com/watch?v=kB0ZVUrI4Aw&t=997s
 
 texture mapping
 https://observablehq.com/@shaunlebron/texture-drawing-for-html-canvas
+
+linear algebra help
+https://www.youtube.com/watch?v=27vT-NWuw0M (Introduction to projections - khan academy)
 */
 
 'use strict';
