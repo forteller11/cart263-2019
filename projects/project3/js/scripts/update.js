@@ -42,11 +42,11 @@ for (let i = 0; i < mesh.faces.length; i ++){
   let colorByDistR = mapFromRanges (d,0,2,255,0);
   let colorByDistG = mapFromRanges (d,0,2,0,255);
   ctx.fillStyle = cssRGB(colorByDistR,colorByDistG,ran(255));
-console.log(`FACE${i}`)
-console.log(`${Math.round(v1[0])}, ${Math.round(v1[1])}, ${Math.round(v1[2])}`);
-console.log(`${Math.round(v2[0])}, ${Math.round(v2[1])}, ${Math.round(v2[2])}`)
-console.log(`${Math.round(v3[0])}, ${Math.round(v3[1])}, ${Math.round(v3[2])}`)
-console.log(`================================================================`)
+// console.log(`FACE${i}`)
+// console.log(`${Math.round(v1[0])}, ${Math.round(v1[1])}, ${Math.round(v1[2])}`);
+// console.log(`${Math.round(v2[0])}, ${Math.round(v2[1])}, ${Math.round(v2[2])}`)
+// console.log(`${Math.round(v3[0])}, ${Math.round(v3[1])}, ${Math.round(v3[2])}`)
+// console.log(`================================================================`)
   ctx.beginPath(v1[0]+xOff, v1[1]+yOff);
   ctx.lineTo   (v2[0]+xOff, v2[1]+yOff);
   ctx.lineTo   (v3[0]+xOff, v3[1]+yOff);

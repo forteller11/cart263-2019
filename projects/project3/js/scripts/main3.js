@@ -13,32 +13,29 @@ https://www.youtube.com/watch?v=27vT-NWuw0M (Introduction to projections - khan 
 'use strict';
 window.onload = main;
 let debugMode = true;
+let fps = 1000;
 
 let ctx;
 let mesh;
 let cameraOrigin;
 
 function main() {
+    dLog('main');
   cameraOrigin = [0, 0, 0];
   //create canvas
   ctx = createCanvas(window.innerWidth, window.innerHeight);
   ctx.fillStyle = cssRGB(ran(255), ran(255), ran(255));
   ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-  dLog('main');
   let request = new XMLHttpRequest();
   request.open('GET', 'assets/triangle.obj'); //open/setup request
   request.send();
 
   request.onload = () => {
-    console.log(convertObjFileToMeshBlob(request.response));
-    let dog = new Mesh(convertObjFileToMeshBlob(request.response));
-    console.log(dog);
     mesh = new Mesh(convertObjFileToMeshBlob(request.response));
 
-    // setInterval(update, 200);
-
-
+    update();
+    setInterval(update, fps);
   }
 
 }

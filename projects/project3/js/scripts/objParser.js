@@ -17,7 +17,7 @@ function convertObjFileToMeshBlob(obj) {
           vArr.push(Number(currentWord));
         }
         if (currentDataType === 'vertexNormal') {
-          vnArr.push(Number(currentWord))
+          vnArr.push(Number(currentWord)); //-1 so index starts at 0 and not 1
         }
         if (currentDataType === 'face') {
           fArr.push(Number(currentWord));
@@ -47,7 +47,7 @@ function convertObjFileToMeshBlob(obj) {
   //remove unnecessary values from face (all but first letter of face format of a/b/c), leaving only the connected verts (a)
   let reducedFArr = [];
   for (let i = 0; i < fArr.length; i+=3) {
-    reducedFArr.push(fArr[i]); //make it start at 0
+    reducedFArr.push(fArr[i]-1); //make it start at 0
   }
 
   const meshBlob = {
@@ -55,7 +55,7 @@ function convertObjFileToMeshBlob(obj) {
     vertNorms: vnArr,
     faces: reducedFArr
   }
-  dLog(meshBlob);
 
+  dLog(meshBlob);
   return meshBlob;
 }
