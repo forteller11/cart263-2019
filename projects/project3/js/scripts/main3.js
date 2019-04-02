@@ -38,7 +38,7 @@ ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
     console.log (dog);
     mesh = new Mesh(convertObjFileToMeshBlob(request.response));
 
-    setInterval(update,100);
+    setInterval(update,200);
 
 
   }
