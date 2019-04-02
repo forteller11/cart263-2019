@@ -36,7 +36,7 @@ function main() {
     console.log(dog);
     mesh = new Mesh(convertObjFileToMeshBlob(request.response));
 
-    setInterval(update, 200);
+    // setInterval(update, 200);
 
 
   }

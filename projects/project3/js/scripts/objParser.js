@@ -5,8 +5,6 @@ function convertObjFileToMeshBlob(obj) {
   let vArr = []; //vertices
   let vnArr = []; //vertexNormals
   let fArr = []; //array of arrays of connected vertex's
-  let faceIndex = 0; //how many faces have currently been parsed
-  fArr[faceIndex] = []; //prep 2D face array
   let currentWord = ''; //string of current num
   let currentDataType = 'irrelevant'; //what type of data is currently being parsed (vertex, vertexnormal, face, or irrelevant (all other) data)
 
@@ -22,7 +20,7 @@ function convertObjFileToMeshBlob(obj) {
           vnArr.push(Number(currentWord))
         }
         if (currentDataType === 'face') {
-          fArr[faceIndex].push(Number(currentWord));
+          fArr.push(Number(currentWord));
         }
       } else { //if string is not numeric, then it is irrelvant until proven otherwise
         currentDataType = 'irrelevant';
@@ -46,12 +44,11 @@ function convertObjFileToMeshBlob(obj) {
     }
   }
 
-  //remove unnecessary values from face (all but first letter of face format of a/b/c), leaving only the connected verts
+  //remove unnecessary values from face (all but first letter of face format of a/b/c), leaving only the connected verts (a)
   let reducedFArr = [];
   for (let i = 0; i < fArr.length; i+=3) {
     reducedFArr.push(fArr[i]); //make it start at 0
   }
-
 
   const meshBlob = {
     verts: vArr,
