@@ -21,13 +21,15 @@ let debugMode = true;
 function main() {
   console.log('main');
 let mat = [
-  [1,32],
-  [47,12]
+  [1,0,0],
+  [0,1,0],
+  [0,0,1]
 ];
 
 let mat2 = [
-  [1,21],
-  [3,11]
+  [1,0,0],
+  [3,11,0],
+  [0,0,1]
 ];
 
 
@@ -35,7 +37,9 @@ let mat2 = [
  let vec2 = [1,1]
   console.log(matVecMult(mat,vec));
 
-  matMatMult(mat2,mat);
+  console.log(mat);
+  console.log(mat2);
+  console.log(matMatMult(mat,mat2));
 
 
 }

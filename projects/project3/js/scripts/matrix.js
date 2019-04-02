@@ -27,15 +27,16 @@ first matrix rows are vec, 2nd collums are vec, dot v*v in and the result is the
 basically tra
 `
 function matMatMult(mat1,mat2){
+
+  //initialise output matrix as 2D array
   let transformedMat = [];
-  for (let i = 0; i < mat1.length; i ++){ //initialise vector output to have components === rows of matrix
-    for (let j = 0; j < mat1[i].length; j ++){ //initialise vector output to have components === rows of matrix
+  for (let i = 0; i < mat1.length; i ++){
+    for (let j = 0; j < mat1[i].length; j ++){ 
       transformedMat[i] = [];
     }
   }
 
-  //turn all rows of m1 into vectors
-  //invert matrix so that cols are parent matrix (matrix [j][i])
+  //invert rows/cols of matrix arr[j][i]) instead of arr[i][j]
   let mat2Invert = [];
   for (let j = 0; j < mat2[0].length; j ++){ //get
       mat2Invert[j] = [];
@@ -44,23 +45,12 @@ function matMatMult(mat1,mat2){
       }
   }
 
+//treat i of matrices/arrays as vectors, itterate through mats and dot product their vects together
 for (let i = 0; i < mat1.length; i ++){
   for (let j = 0; j < mat1[i].length; j ++){
-    // console.log(dot(mat1Invert[i],mat2[j]));
-    console.log(`${mat1[i]}
-${mat2Invert[j]}
-=== ${dot(mat1[i],mat2Invert[j])}`)
     transformedMat[i][j] = dot(mat1[i],mat2Invert[j]);
   }
 }
-
-console.log(mat1);
-console.log(mat2);
-console.log(transformedMat);
-console.log(`${mat1}
-${mat2}
-===============================
-${transformedMat}`);
 return transformedMat;
 }
 

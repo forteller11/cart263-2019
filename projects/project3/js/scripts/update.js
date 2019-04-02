@@ -19,33 +19,37 @@ let cameraMatrix = [
   [0*scale,0*scale,1*scale]
 ]
 for (let i = 0; i < mesh.faces.length; i ++){
+
+  let d = mesh.faces[i].distToCamera;
   let v1Raw = [mesh.faces[i].v1.x,mesh.faces[i].v1.y,mesh.faces[i].v1.z];
   let v2Raw = [mesh.faces[i].v2.x,mesh.faces[i].v2.y,mesh.faces[i].v2.z];
   let v3Raw = [mesh.faces[i].v3.x,mesh.faces[i].v3.y,mesh.faces[i].v3.z];
 
-  let v1 = matVecMult(cameraMatrix,v1Raw);
-  let v2 = matVecMult(cameraMatrix,v2Raw);
-  let v3 = matVecMult(cameraMatrix,v3Raw);
-  // console.log('FACE '+i);
-  console.log(mesh.faces[i].distTo(cameraOrigin));
-  let distTo = mesh.faces[i].distTo(cameraOrigin);
-  let colorByDistR = mapFromRanges (distTo,0,2,255,0);
-    let colorByDistG = mapFromRanges (distTo,0,2,0,255);
+  let projectionMatrix = [
+    [1,0,0],
+    [0,1,0],
+    [0,0,-1/d]
+  ]
+  let scaleMatrix = [
+    [scale,0,0],
+    [0,scale,0],
+    [0,0,scale]
+  ]
+
+  let finalMatrix = matMatMult(projectionMatrix,scaleMatrix);
+
+  let v1 = matVecMult(finalMatrix,v1Raw);
+  let v2 = matVecMult(finalMatrix,v2Raw);
+  let v3 = matVecMult(finalMatrix,v3Raw);
+
+  let colorByDistR = mapFromRanges (d,0,2,255,0);
+  let colorByDistG = mapFromRanges (d,0,2,0,255);
   ctx.fillStyle = cssRGB(colorByDistR,colorByDistG,ran(255));
 
-  // const v1XCam = mesh.faces[i].v1.x-cameraOrigin.x;
-  let v1XProj = (((mesh.faces[i].v1.x/mesh.faces[i].v1.z)/distTo  )*scale)+xOff;
-  let v1YProj = (((mesh.faces[i].v1.y/mesh.faces[i].v1.z)/distTo  )*scale)+yOff;
-  let v3XProj = (((mesh.faces[i].v2.x/mesh.faces[i].v2.z)/distTo )*scale)+xOff;
-  let v3YProj = (((mesh.faces[i].v2.y/mesh.faces[i].v2.z)/distTo  )*scale)+yOff;
-  let v2XProj = (((mesh.faces[i].v3.x/mesh.faces[i].v3.z)/distTo  )*scale)+xOff;
-  let v2YProj = (((mesh.faces[i].v3.y/mesh.faces[i].v3.z)/distTo  )*scale)+yOff;
-
-
-  ctx.beginPath(v1[0], v1[1]);
-  ctx.lineTo   (v2[0], v2[1]);
-  ctx.lineTo   (v3[0], v3[1]);
-  ctx.lineTo   (v1[0], v1[1]);
+  ctx.beginPath(v1[0]+xOff, v1[1]+yOff);
+  ctx.lineTo   (v2[0]+xOff, v2[1]+yOff);
+  ctx.lineTo   (v3[0]+xOff, v3[1]+yOff);
+  ctx.lineTo   (v1[0]+xOff, v1[1]+yOff);
   ctx.fill();
 }
 

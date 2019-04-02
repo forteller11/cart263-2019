@@ -8,6 +8,7 @@ class Triangle{
     this.x = undefined;
     this.y = undefined;
     this.z = undefined;
+    this.distToCamera = undefined;
     this.calcCenterPosition(); //sets x y to avg position of vertexes
   }
   calcCenterPosition(){
@@ -17,6 +18,7 @@ class Triangle{
   }
 
   distTo(v){
-    return pythag(v.x-this.x, v.y-this.y, v.z-this.z);
+    this.distToCamera = pythag(v.x-this.x, v.y-this.y, v.z-this.z);
+    return this.distToCamera;
   }
 }
