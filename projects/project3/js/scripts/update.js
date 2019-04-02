@@ -19,13 +19,13 @@ let scaleMatrix = [
   [0,scale,0],
   [0,0,scale]
 ]
-for (let i = 0; i < mesh.faces.length; i ++){
+for (let i = 0; i < mesh.faces.length/3; i ++){
   let ii = i*3*3;
 
   let d = mesh.facesDistToCamera[i];
-  let v1Raw = [mesh.verts[mesh.faces[ii+0+0]], mesh.verts[mesh.faces[ii+1+0]],mesh.verts[mesh.faces[ii+2+0]]-zOff];
-  let v2Raw = [mesh.verts[mesh.faces[ii+0+2]], mesh.verts[mesh.faces[ii+1+2]],mesh.verts[mesh.faces[ii*2+2]]-zOff];
-  let v3Raw = [mesh.verts[mesh.faces[ii+0+3]], mesh.verts[mesh.faces[ii+1+3]],mesh.verts[mesh.faces[ii*2+3]]-zOff];
+  let v1Raw = [mesh.vertData(i,0,'x'), mesh.vertData(i,0,'y'), mesh.vertData(i,0,'z')-zOff];
+  let v2Raw = [mesh.vertData(i,1,'x'), mesh.vertData(i,1,'y'), mesh.vertData(i,1,'z')-zOff];
+  let v3Raw = [mesh.vertData(i,2,'x'), mesh.vertData(i,2,'y'), mesh.vertData(i,2,'z')-zOff];
 
   let projectionMatrix = [
     [1/d,0,0],

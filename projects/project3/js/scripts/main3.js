@@ -33,7 +33,7 @@ function main() {
 
   request.onload = () => {
     mesh = new Mesh(convertObjFileToMeshBlob(request.response));
-
+    // mesh.vertComponent(3,3,'z');
     update();
     setInterval(update, fps);
   }
