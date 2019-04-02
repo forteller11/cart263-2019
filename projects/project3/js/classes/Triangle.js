@@ -1,11 +1,12 @@
 'use strict';
 
 class Triangle{
-  constructor(vertIndex01,vertIndex02,vertIndex03){
-    this.v1 = vertIndex01;
-    this.v2 = vertIndex02;
-    this.v3 = vertIndex03;
-    this.x = undefined;
+  constructor(vecObj1,vecObj2,vecObj3){
+    this.v1 = vecObj1;
+    this.v2 = vecObj3;
+    this.v3 = vecObj3;
+
+    this.x = undefined; //avg x,y,z of vectors 1-3
     this.y = undefined;
     this.z = undefined;
     this.distToCamera = undefined;
@@ -18,7 +19,11 @@ class Triangle{
   }
 
   distTo(v){
+    this.calcCenterPosition();
     this.distToCamera = pythag(v.x-this.x, v.y-this.y, v.z-this.z);
+    if (this.distToCamera === undefined){
+      console.log('UNDEFINEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
+    }
     return this.distToCamera;
   }
 }

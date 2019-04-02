@@ -10,7 +10,7 @@ ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 mesh.rotateX(.1);
 
 console.log(mesh);
-const scale = 500;
+const scale = 100;
 const xOff = window.innerWidth/2;
 const yOff = window.innerHeight/2;
 let cameraMatrix = [

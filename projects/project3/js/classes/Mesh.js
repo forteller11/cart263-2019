@@ -41,8 +41,10 @@ class Mesh {
 
   sortFacesByDistanceToPoint(camO){
     //itterate through array, calc dist to point, save it in other array,
+    let f = this.faces;
+    f[0].distTo(camO);
+    
     for (let i = 1; i < this.faces.length; i ++){ //sorts from largest to smallest
-      let f = this.faces;
       let j = i;
       while ((j > 0) && (f[i].distTo(camO) > f[j].distTo(camO))){
         j--;
@@ -55,15 +57,5 @@ class Mesh {
     }
   }
 
-//figure out how vec is linear transformation of basis,
-
-//rotate basis,
-
-//mult vec by that value
-
-
-//transformed basis vecs
-
-//result in change
 
 }
