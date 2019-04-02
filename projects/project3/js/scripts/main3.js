@@ -4,10 +4,8 @@ https://thebookofshaders.com
 https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API
 https://www.youtube.com/watch?v=W3gAzLwfIP0&list=PLlrATfBNZ98foTJPJ_Ev03o2oq3-GGOS2
 https://www.youtube.com/watch?v=kB0ZVUrI4Aw&t=997s
-
 texture mapping
 https://observablehq.com/@shaunlebron/texture-drawing-for-html-canvas
-
 linear algebra help
 https://www.youtube.com/watch?v=27vT-NWuw0M (Introduction to projections - khan academy)
 */
@@ -21,11 +19,11 @@ let mesh;
 let cameraOrigin;
 
 function main() {
-cameraOrigin = new Vector3D(0,0,-1);
+  cameraOrigin = [0, 0, 0];
   //create canvas
-ctx = createCanvas(window.innerWidth,window.innerHeight);
-ctx.fillStyle = cssRGB(ran(255),ran(255),ran(255));
-ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+  ctx = createCanvas(window.innerWidth, window.innerHeight);
+  ctx.fillStyle = cssRGB(ran(255), ran(255), ran(255));
+  ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
   dLog('main');
   let request = new XMLHttpRequest();
@@ -35,10 +33,10 @@ ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
   request.onload = () => {
     console.log(convertObjFileToMeshBlob(request.response));
     let dog = new Mesh(convertObjFileToMeshBlob(request.response));
-    console.log (dog);
+    console.log(dog);
     mesh = new Mesh(convertObjFileToMeshBlob(request.response));
 
-    setInterval(update,200);
+    setInterval(update, 200);
 
 
   }

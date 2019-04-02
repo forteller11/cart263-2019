@@ -7,27 +7,29 @@ function update(){
 ctx.fillStyle = cssRGB(255,255,0);
 ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 // mesh.rotateZ(-.1);
-mesh.rotateX(.1);
+// mesh.rotateX(.1);
 
 // console.log(mesh);
 const scale = 100;
 const xOff = window.innerWidth/2;
 const yOff = window.innerHeight/2;
+const zOff = -4;
 let scaleMatrix = [
   [scale,0,0],
   [0,scale,0],
   [0,0,scale]
 ]
 for (let i = 0; i < mesh.faces.length; i ++){
+  let ii = i*3*3;
 
-  let d = mesh.faces[i].distToCamera;
-  let v1Raw = [mesh.faces[i].v1.x,mesh.faces[i].v1.y,mesh.faces[i].v1.z];
-  let v2Raw = [mesh.faces[i].v2.x,mesh.faces[i].v2.y,mesh.faces[i].v2.z];
-  let v3Raw = [mesh.faces[i].v3.x,mesh.faces[i].v3.y,mesh.faces[i].v3.z];
+  let d = mesh.facesDistToCamera[i];
+  let v1Raw = [mesh.verts[mesh.faces[ii+0+0]], mesh.verts[mesh.faces[ii+1+0]],mesh.verts[mesh.faces[ii+2+0]]-zOff];
+  let v2Raw = [mesh.verts[mesh.faces[ii+0+2]], mesh.verts[mesh.faces[ii+1+2]],mesh.verts[mesh.faces[ii*2+2]]-zOff];
+  let v3Raw = [mesh.verts[mesh.faces[ii+0+3]], mesh.verts[mesh.faces[ii+1+3]],mesh.verts[mesh.faces[ii*2+3]]-zOff];
 
   let projectionMatrix = [
-    [1,0,0],
-    [0,1,0],
+    [1/d,0,0],
+    [0,1/d,0],
     [0,0,-1/d]
   ]
 
