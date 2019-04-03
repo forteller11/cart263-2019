@@ -20,13 +20,6 @@ let mesh;
 let cameraOrigin;
 
 function main() {
-  let rotationMatX = rotationMat(.1, 'x');
-  let rotationMatY = rotationMat(1, 'y');
-  let rotationMatZ = rotationMat(10, 'z');
-  let rotationMatXY  =   matMatMult(rotationMatX, rotationMatY);
-  let rotationMatXYZ =   matMatMult(rotationMatXY,rotationMatZ);
-  console.log(matMatComposition(rotationMat(.1, 'x'), rotationMat(1, 'y'), rotationMat(10, 'z')));
-  console.log(rotationMatXYZ)
     dLog('main');
   cameraOrigin = [0, 0, -1];
 

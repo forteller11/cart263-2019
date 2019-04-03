@@ -1,6 +1,6 @@
 function update(){
   //if position changes
-  console.log(mesh)
+  // console.log(mesh)
 ctx.fillStyle = cssRGB(255,255,0);
 ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
@@ -13,15 +13,15 @@ const yOff = window.innerHeight/2;
 const zOff = 0;
 mesh.xAngle += .001;
 mesh.yAngle -= .0001;
-mesh.zAngle -= .0001;
+// mesh.zAngle -= .01;
 
 let scaleMat = [
   [scale,0,0],
   [0,scale,0],
   [0,0,scale]
 ]
-
-let rotationMatXYZ =   matMatComposition(rotationMat(mesh.xAngle, 'x'), rotationMat(mesh.yAngle, 'y'), rotationMat(mesh.zAngle, 'z'));
+let rSpd = 20;
+let rotationMatXYZ = matMatComposition(rotationMat(Math.sin(mesh.xAngle)/rSpd, 'x'), rotationMat(Math.sin(mesh.yAngle)/rSpd, 'y'), rotationMat(Math.sin(mesh.zAngle)/rSpd, 'z'));
 
 for (let i = 0; i < mesh.verts.length/3; i++){ //rotate all verts by rotation matrix
   let ii = i*3;
@@ -48,29 +48,6 @@ for (let i = 0; i < mesh.faces.length/3; i ++){
   let d3 = mesh.vertDistData(i,2);
 
 
-  // console.log(v1Raw);
-  // console.log(v2Raw);
-  // console.log(v3Raw);
-  // console.log('===================')
-
-  let projMat1 = [
-    [1/d1,0,0],
-    [0,1/d1,0],
-    [0,0,1/d1]
-  ]
-
-  let projMat2 = [
-    [1/d2,0,0],
-    [0,1/d2,0],
-    [0,0,1/d2]
-  ]
-
-  let projMat3 = [
-    [1/d3,0,0],
-    [0,1/d3,0],
-    [0,0,1/d3]
-  ]
-
   //transform world matrix
   //world rotation/cmarea matrix
   let m1 = matMatComposition(diagonalMat(3,1/d1), scaleMat);
@@ -93,6 +70,7 @@ for (let i = 0; i < mesh.faces.length/3; i ++){
   ctx.lineTo   (v3[0]+xOff, v3[1]+yOff);
   ctx.lineTo   (v1[0]+xOff, v1[1]+yOff);
   ctx.fill();
+  ctx.stroke();
 }
 
 }

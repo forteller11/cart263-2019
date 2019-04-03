@@ -31,34 +31,6 @@ first matrix rows are vec, 2nd collums are vec, dot v*v in and the result is the
 basically tra
 `
 
-function matMatMult(mat1, mat2) {
-
-  //initialise output matrix as 2D array
-  let transformedMat = [];
-  for (let i = 0; i < mat1.length; i++) {
-    for (let j = 0; j < mat1[i].length; j++) {
-      transformedMat[i] = [];
-    }
-  }
-
-  //invert rows/cols of matrix arr[j][i]) instead of arr[i][j]
-  let mat2Invert = [];
-  for (let j = 0; j < mat2[0].length; j++) { //get
-    mat2Invert[j] = [];
-    for (let i = 0; i < mat2.length; i++) {
-      mat2Invert[j][i] = mat2[i][j] //rows = cols, cols = rows (rotated 90?)
-    }
-  }
-
-  //treat i of matrices/arrays as vectors, itterate through mats and dot product their vects together
-  for (let i = 0; i < mat1.length; i++) {
-    for (let j = 0; j < mat1[i].length; j++) {
-      transformedMat[i][j] = dot(mat1[i], mat2Invert[j]);
-    }
-  }
-  return transformedMat;
-}
-
 function dot(v1, v2) { //dot product
   //each vec is 1D array
   if (!(v1.length === v2.length)) {
