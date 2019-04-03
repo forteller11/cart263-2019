@@ -11,9 +11,9 @@ const scale = 300;
 const xOff = window.innerWidth/2;
 const yOff = window.innerHeight/2;
 const zOff = 0;
-// mesh.xAngle += .01;
-// mesh.yAngle += .01;
-mesh.zAngle -= .001;
+mesh.xAngle += .001;
+mesh.yAngle -= .0001;
+mesh.zAngle -= .0001;
 
 let scaleMat = [
   [scale,0,0],
@@ -21,11 +21,7 @@ let scaleMat = [
   [0,0,scale]
 ]
 
-let rotationMatX = rotationMat(mesh.xAngle, 'z');
-let rotationMatY = rotationMat(mesh.yAngle, 'y');
-let rotationMatZ = rotationMat(mesh.zAngle, 'z');
-let rotationMatXY  =   matMatMult(rotationMatX, rotationMatY);
-let rotationMatXYZ =   matMatMult(rotationMatXY,rotationMatZ);
+let rotationMatXYZ =   matMatComposition(rotationMat(mesh.xAngle, 'x'), rotationMat(mesh.yAngle, 'y'), rotationMat(mesh.zAngle, 'z'));
 
 for (let i = 0; i < mesh.verts.length/3; i++){ //rotate all verts by rotation matrix
   let ii = i*3;
@@ -42,9 +38,6 @@ mesh.sortFacesByDistanceToPoint(cameraOrigin);
 
 
 for (let i = 0; i < mesh.faces.length/3; i ++){
-  console.log(mesh.vertDistData(i,0));
-
-
   // console.log(mesh.vertsDistToCamera);
   let v1Raw = [mesh.vertData(i,0,'x'), mesh.vertData(i,0,'y'), mesh.vertData(i,0,'z')-zOff];
   let v2Raw = [mesh.vertData(i,1,'x'), mesh.vertData(i,1,'y'), mesh.vertData(i,1,'z')-zOff];
@@ -80,10 +73,9 @@ for (let i = 0; i < mesh.faces.length/3; i ++){
 
   //transform world matrix
   //world rotation/cmarea matrix
-
-  let m1 = matMatMult(scaleMat,projMat1);
-  let m2 = matMatMult(scaleMat,projMat2);
-  let m3 = matMatMult(scaleMat,projMat3);
+  let m1 = matMatComposition(diagonalMat(3,1/d1), scaleMat);
+  let m2 = matMatComposition(diagonalMat(3,1/d2), scaleMat);
+  let m3 = matMatComposition(diagonalMat(3,1/d3), scaleMat);
 
   let v1 = matVecMult(m1,v1Raw);
   let v2 = matVecMult(m2,v2Raw);

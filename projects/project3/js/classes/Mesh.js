@@ -27,13 +27,10 @@ class Mesh {
     for (let i = 0; i < this.verts.length/3; i++){ //calc vertDistoCamera for every vertice
       let ii = i*3;
       this.vertsDistToCamera[i] = pythag(point[0]-this.verts[ii+0], point[1]-this.verts[ii+1], point[2]-this.verts[ii+2]);
-      console.log(this.verts[ii+0]);
     }
     for (let i = 0; i < this.faces.length/3; i ++){ //find avg dist of every face from camera by avging it's avg vertDistToCamera
       this.facesDistToCamera[i] = mean(this.vertDistData(i,0), this.vertDistData(i,1), this.vertDistData(i,2));
     }
-        console.log(this.vertsDistToCamera);
-      // console.log(this.facesDistToCamera);
   }
 
   sortFacesByDistanceToPoint(point){
@@ -42,10 +39,11 @@ class Mesh {
 
     for (let i = 1; i < this.facesDistToCamera.length; i ++){ //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
       let ii = i*3; //face index of i as each face in faces arr corresponds to 3 elements
-      let j = i;
+      let j = i-1;
       while ((j > 0) && (this.facesDistToCamera[i] < this.facesDistToCamera[j])){ //itterate backwards through array until find an element which is smaller then index
         j--;
       }
+      console.log('swap')
       //swap elements on faces and facesDistToCamera arrays
       let jj = j*3; //face index of j as each face in faces arr corresponds to 3 elements
       let fDistStore = this.facesDistToCamera[i];

@@ -108,10 +108,88 @@ function rotationMat(rad, axis) {
   }
 }
 
-function identityMat() {
-  return [
-    [1, 0, 0],
-    [0, 1, 0],
-    [0, 0, 1]
-  ];
+function diagonalMat(...args) {  //returns diagonal matrix of n size
+  //args[0] === size of square matrix
+  //args[1] === what to put on diagonals of matrix
+  //if no args[1] is specefied functions returns an identity matrix of size args[0]
+
+  let n = args[0];
+  let a;
+  if (args.length === 2){ a = args[1]}
+  else { a = 1}
+
+  let rows = [];
+  let identityIndex = 0; //where to place 1
+  for (let i = 0; i < n; i ++){
+    rows[i] = []; //cols
+    for (let j = 0; j < n; j++){
+      if (j === identityIndex){ //if diagonal
+        rows[i][j] = a;
+      } else {
+        rows[i][j] = 0;
+      }
+    }
+    identityIndex++;
+  }
+  return rows;
+}
+
+
+function matMatComposition(...args) { //composed n matrices together into a single transformation matrix
+  //composiiton matrix treats the earliest elements as if they were transformed first args[0],args[1],args[2]...
+
+  let mat1;
+  let mat2;
+  let composedMat = [];
+
+  //each index of argument will be a 2D array representing a matrix
+
+  //initialise output matrix as 2D array
+  for (let k = 0; k < args.length-1; k++){
+    //determine inputs
+    if (k === 0){ //if index first time, first mat is simply first argument, otherwise it's composed mat
+      mat1 = args[0];
+    } else {
+      mat1 = [...composedMat]; //copies composed matrix to mat1 (as opposed to just storing a reference/poitner to it)
+    }
+    mat2 = args[k+1];
+
+    //empty composedMat
+    for (let i = 0; i < args[k].length; i++) {
+      for (let j = 0; j < args[k][i].length; j++) {
+        composedMat[i] = [];
+      }
+    }
+
+  //invert rows/cols of matrix arr[j][i]) instead of arr[i][j]
+  let mat2Invert = [];
+  for (let j = 0; j < mat2[0].length; j++) { //get
+    mat2Invert[j] = [];
+    for (let i = 0; i < mat2.length; i++) {
+      mat2Invert[j][i] = mat2[i][j] //rows = cols, cols = rows (rotated 90?)
+    }
+  }
+
+  //treat i of matrices/arrays as vectors, itterate through mats and dot product their vects together
+  for (let i = 0; i < mat1.length; i++) {
+    for (let j = 0; j < mat1[i].length; j++) {
+      composedMat[i][j] = dot(mat1[i], mat2Invert[j]);
+    }
+  }
+}
+  return composedMat;
+}
+
+function dot(v1, v2) { //dot product
+  //each vec is 1D array
+  if (!(v1.length === v2.length)) {
+    console.log(`ERROR AT FUNCTION "DOT":
+  vectors dimensions aren't equal!`)
+  }
+
+  let dotSum = 0;
+  for (let i = 0; i < v1.length; i++) {
+    dotSum += v1[i] * v2[i];
+  }
+  return dotSum;
 }

@@ -13,15 +13,23 @@ https://www.youtube.com/watch?v=27vT-NWuw0M (Introduction to projections - khan 
 'use strict';
 window.onload = main;
 let debugMode = true;
-let fps = 100;
+let fps = 16;
 
 let ctx;
 let mesh;
 let cameraOrigin;
 
 function main() {
+  let rotationMatX = rotationMat(.1, 'x');
+  let rotationMatY = rotationMat(1, 'y');
+  let rotationMatZ = rotationMat(10, 'z');
+  let rotationMatXY  =   matMatMult(rotationMatX, rotationMatY);
+  let rotationMatXYZ =   matMatMult(rotationMatXY,rotationMatZ);
+  console.log(matMatComposition(rotationMat(.1, 'x'), rotationMat(1, 'y'), rotationMat(10, 'z')));
+  console.log(rotationMatXYZ)
     dLog('main');
-  cameraOrigin = [0, 0, 0];
+  cameraOrigin = [0, 0, -1];
+
   //create canvas
   ctx = createCanvas(window.innerWidth, window.innerHeight);
   ctx.fillStyle = cssRGB(ran(255), ran(255), ran(255));
@@ -33,7 +41,7 @@ function main() {
 
   request.onload = () => {
     mesh = new Mesh(convertObjFileToMeshBlob(request.response));
-    // mesh.vertComponent(3,3,'z');
+
     update();
     setInterval(update, fps);
   }
