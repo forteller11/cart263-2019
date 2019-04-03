@@ -53,25 +53,28 @@ function rotationMat(rad, axis) {
     case 'x':
       {
         return [
-          [1, 0, 0],
-          [0, Math.cos(rad), Math.sin(rad)],
-          [0,-Math.sin(rad), Math.cos(rad)]
+          [1, 0, 0, 0],
+          [0, Math.cos(rad), Math.sin(rad), 0],
+          [0,-Math.sin(rad), Math.cos(rad), 0],
+          [0, 0, 0, 1]
         ]
       }
     case 'y':
       {
         return [
-          [Math.cos(rad), 0, -Math.sin(rad)],
-          [0, 1, 0],
-          [Math.sin(rad), 0,  Math.cos(rad)]
+          [Math.cos(rad), 0, -Math.sin(rad), 0],
+          [0, 1, 0, 0],
+          [Math.sin(rad), 0,  Math.cos(rad), 0],
+          [0, 0, 0, 1]
         ]
       }
     case 'z':
       {
         return [
-          [ Math.cos(rad), Math.sin(rad), 0],
-          [-Math.sin(rad), Math.cos(rad), 0],
-          [0, 0, 1]
+          [ Math.cos(rad), Math.sin(rad), 0, 0],
+          [-Math.sin(rad), Math.cos(rad), 0, 0],
+          [0, 0, 1, 0],
+          [0, 0, 0, 1]
         ]
       }
     default:
@@ -84,11 +87,14 @@ function diagonalMat(...args) {  //returns diagonal matrix of n size
   //args[0] === size of square matrix
   //args[1] === what to put on diagonals of matrix
   //if no args[1] is specefied functions returns an identity matrix of size args[0]
-
+  //if no args[2] is specefied last cols (homogneous coord) is identity (1)
   let n = args[0];
   let a;
+  let b;
   if (args.length === 2){ a = args[1]}
   else { a = 1}
+  if (args.length === 3){ b = args[2]}
+  else { b = 1}
 
   let rows = [];
   let identityIndex = 0; //where to place 1
@@ -100,6 +106,9 @@ function diagonalMat(...args) {  //returns diagonal matrix of n size
       } else {
         rows[i][j] = 0;
       }
+      if (j === n-1){
+        rows[i][j] = b; //always make homogenous coord 1 unless otherwise specefied
+      }
     }
     identityIndex++;
   }
@@ -108,7 +117,7 @@ function diagonalMat(...args) {  //returns diagonal matrix of n size
 
 
 function matMatComposition(...args) { //composed n matrices together into a single transformation matrix
-  //composiiton matrix treats the earliest elements as if they were transformed first args[0],args[1],args[2]...
+  //composiiton matrix treats the latest elements as if they were transformed first args[length-1],args[length-2],args[length-3]...
 
   let mat1;
   let mat2;
