@@ -82,14 +82,14 @@ function rotationMat(rad, axis) {
       {
         return [
           [1, 0, 0],
-          [0, Math.cos(rad), -Math.sin(rad)],
-          [0, Math.sin(rad),  Math.cos(rad)]
+          [0, Math.cos(rad), Math.sin(rad)],
+          [0,-Math.sin(rad), Math.cos(rad)]
         ]
       }
     case 'y':
       {
         return [
-          [Math.cos(rad), 0, Math.sin(rad)],
+          [Math.cos(rad), 0, -Math.sin(rad)],
           [0, 1, 0],
           [Math.sin(rad), 0,  Math.cos(rad)]
         ]

@@ -1,23 +1,19 @@
 function update(){
   //if position changes
   console.log(mesh)
-  mesh.sortFacesByDistanceToPoint(cameraOrigin);
-  console.log(mesh.faces);
-// systemManager.update();
-
 ctx.fillStyle = cssRGB(255,255,0);
 ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-// mesh.rotateZ(-.1);
-// mesh.rotateX(.1);
+
+
 
 // console.log(mesh);
 const scale = 300;
 const xOff = window.innerWidth/2;
 const yOff = window.innerHeight/2;
 const zOff = 0;
-mesh.xAngle += .001;
-mesh.yAngle += .01;
-mesh.zAngle += .1;
+// mesh.xAngle += .01;
+// mesh.yAngle += .01;
+mesh.zAngle -= .001;
 
 let scaleMat = [
   [scale,0,0],
@@ -31,18 +27,34 @@ let rotationMatZ = rotationMat(mesh.zAngle, 'z');
 let rotationMatXY  =   matMatMult(rotationMatX, rotationMatY);
 let rotationMatXYZ =   matMatMult(rotationMatXY,rotationMatZ);
 
-console.log(rotationMatXYZ);
+for (let i = 0; i < mesh.verts.length/3; i++){ //rotate all verts by rotation matrix
+  let ii = i*3;
+  let vert = [ mesh.verts[ii+0],  mesh.verts[ii+1],  mesh.verts[ii+2] ]; //encapsulate verts ntuples intoa  single array
+
+  let rotatedVec = matVecMult(rotationMatXYZ,vert); //multiply vertex by rotation matrix
+
+  //store rotated vertex
+  mesh.verts[ii+0] = rotatedVec[0];
+  mesh.verts[ii+1] = rotatedVec[1];
+  mesh.verts[ii+2] = rotatedVec[2];
+}
+mesh.sortFacesByDistanceToPoint(cameraOrigin);
+
 
 for (let i = 0; i < mesh.faces.length/3; i ++){
   console.log(mesh.vertDistData(i,0));
-  let d1 = mesh.vertDistData(i,0);
-  let d2 = mesh.vertDistData(i,1);
-  let d3 = mesh.vertDistData(i,2);
+
 
   // console.log(mesh.vertsDistToCamera);
   let v1Raw = [mesh.vertData(i,0,'x'), mesh.vertData(i,0,'y'), mesh.vertData(i,0,'z')-zOff];
   let v2Raw = [mesh.vertData(i,1,'x'), mesh.vertData(i,1,'y'), mesh.vertData(i,1,'z')-zOff];
   let v3Raw = [mesh.vertData(i,2,'x'), mesh.vertData(i,2,'y'), mesh.vertData(i,2,'z')-zOff];
+
+  let d1 = mesh.vertDistData(i,0);
+  let d2 = mesh.vertDistData(i,1);
+  let d3 = mesh.vertDistData(i,2);
+
+
   // console.log(v1Raw);
   // console.log(v2Raw);
   // console.log(v3Raw);
@@ -66,11 +78,12 @@ for (let i = 0; i < mesh.faces.length/3; i ++){
     [0,0,1/d3]
   ]
 
-  let rotScaleMat = matMatMult(rotationMatXYZ,scaleMat);
+  //transform world matrix
+  //world rotation/cmarea matrix
 
-  let m1 = matMatMult(rotScaleMat,projMat1);
-  let m2 = matMatMult(rotScaleMat,projMat2);
-  let m3 = matMatMult(rotScaleMat,projMat3);
+  let m1 = matMatMult(scaleMat,projMat1);
+  let m2 = matMatMult(scaleMat,projMat2);
+  let m3 = matMatMult(scaleMat,projMat3);
 
   let v1 = matVecMult(m1,v1Raw);
   let v2 = matVecMult(m2,v2Raw);
