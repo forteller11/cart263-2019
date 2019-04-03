@@ -31,22 +31,39 @@ class Mesh {
     for (let i = 0; i < this.faces.length/3; i ++){ //find avg dist of every face from camera by avging it's avg vertDistToCamera
       this.facesDistToCamera[i] = mean(this.vertDistData(i,0), this.vertDistData(i,1), this.vertDistData(i,2));
     }
+        console.log(this.vertsDistToCamera);
+      // console.log(this.facesDistToCamera);
   }
 
   sortFacesByDistanceToPoint(point){
 
     this.distBetweenFacesAndPoint(point); //calc facesDistToCamera
 
-    for (let i = 1; i < this.faces.length; i ++){ //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
+    for (let i = 1; i < this.facesDistToCamera.length; i ++){ //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
+      let ii = i*3; //face index of i as each face in faces arr corresponds to 3 elements
       let j = i;
-      while ((j > 0) && (this.facesDistToCamera[i] > this.facesDistToCamera[j])){ //itterate backwards through array until find an element which is smaller then index
+      while ((j > 0) && (this.facesDistToCamera[i] < this.facesDistToCamera[j])){ //itterate backwards through array until find an element which is smaller then index
         j--;
       }
-      //swap
-      let fStore = this.faces[i];
-      this.faces[i] = this.faces[j];
-      this.faces[j] = fStore;
+      //swap elements on faces and facesDistToCamera arrays
+      let jj = j*3; //face index of j as each face in faces arr corresponds to 3 elements
+      let fDistStore = this.facesDistToCamera[i];
+      this.facesDistToCamera[i] = this.facesDistToCamera[j];
+      this.facesDistToCamera[j] = fDistStore;
+
+      let fStore1 = this.faces[ii+0];
+      let fStore2 = this.faces[ii+1];
+      let fStore3 = this.faces[ii+2];
+
+      this.faces[ii+0] = this.faces[jj+0];
+      this.faces[ii+1] = this.faces[jj+1];
+      this.faces[ii+2] = this.faces[jj+2];
+
+      this.faces[jj+0] = fStore1;
+      this.faces[jj+1] = fStore2;
+      this.faces[jj+2] = fStore3;
     }
+
   }
 
   vertData(face,vert,component){
