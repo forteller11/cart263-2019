@@ -18,7 +18,7 @@ mesh.xAngle += .001;
 mesh.yAngle += .01;
 mesh.zAngle += .1;
 
-let scaleMatrix = [
+let scaleMat = [
   [scale,0,0],
   [0,scale,0],
   [0,0,scale]
@@ -34,8 +34,11 @@ console.log(rotationMatXYZ);
 
 for (let i = 0; i < mesh.faces.length/3; i ++){
 
+  let d1 = mesh.vertDistData(i,0);
+  let d2 = mesh.vertDistData(i,1);
+  let d3 = mesh.vertDistData(i,2);
 
-  let d = mesh.facesDistToCamera[i];
+  // console.log(mesh.vertsDistToCamera);
   let v1Raw = [mesh.vertData(i,0,'x'), mesh.vertData(i,0,'y'), mesh.vertData(i,0,'z')-zOff];
   let v2Raw = [mesh.vertData(i,1,'x'), mesh.vertData(i,1,'y'), mesh.vertData(i,1,'z')-zOff];
   let v3Raw = [mesh.vertData(i,2,'x'), mesh.vertData(i,2,'y'), mesh.vertData(i,2,'z')-zOff];
@@ -43,25 +46,41 @@ for (let i = 0; i < mesh.faces.length/3; i ++){
   console.log(v2Raw);
   console.log(v3Raw);
   console.log('===================')
-  let projectionMatrix = [
-    [1,0,0],
-    [0,1,0],
-    [0,0,1]
+
+  let projMat1 = [
+    [1/d1,0,0],
+    [0,1/d1,0],
+    [0,0,1/d1]
   ]
-  let m1 = matMatMult(rotationMatXYZ,projectionMatrix);
-  let m2 = matMatMult(m1,scaleMatrix);
 
+  let projMat2 = [
+    [1/d2,0,0],
+    [0,1/d2,0],
+    [0,0,1/d2]
+  ]
 
-  let v1 = matVecMult(m2,v1Raw);
+  let projMat3 = [
+    [1/d3,0,0],
+    [0,1/d3,0],
+    [0,0,1/d3]
+  ]
+
+  let rotScaleMat = matMatMult(rotationMatXYZ,scaleMat);
+
+  let m1 = matMatMult(rotScaleMat,projMat1);
+  let m2 = matMatMult(rotScaleMat,projMat2);
+  let m3 = matMatMult(rotScaleMat,projMat3);
+
+  let v1 = matVecMult(m1,v1Raw);
   let v2 = matVecMult(m2,v2Raw);
-  let v3 = matVecMult(m2,v3Raw);
+  let v3 = matVecMult(m3,v3Raw);
+
   console.log(v1);
   console.log(v2);
   console.log(v3);
   console.log('===================')
-  let colorByDistR = mapFromRanges (d,0,2,255,0);
-  let colorByDistG = mapFromRanges (d,0,2,0,255);
-  ctx.fillStyle = cssRGB(colorByDistR,colorByDistG,ran(255));
+
+  ctx.fillStyle = cssRGB(mesh.facesR[i],mesh.facesG[i],mesh.facesB[i]);
 // console.log(`FACE${i}`)
 // console.log(`${Math.round(v1[0])}, ${Math.round(v1[1])}, ${Math.round(v1[2])}`);
 // console.log(`${Math.round(v2[0])}, ${Math.round(v2[1])}, ${Math.round(v2[2])}`)

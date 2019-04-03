@@ -1,9 +1,20 @@
 class Mesh {
   constructor(objBlob) {
     this.verts = objBlob.verts; //array of vertexes in format x,y,z,x,y,z....
+    this.vertsDistToCamera = []; //array of how far the vert is away from the camera [distForxyz,distForv2,v3,v4...]
+
     this.vertNorms = objBlob.vertNorms; //arr of vertex normals
+
     this.faces = objBlob.faces; //arr with indexes of vertices which make up a face, each face has 3 vertices, a,b,c (mult by 3 to get exact index in vert array)
     this.facesDistToCamera = [] //dist of face1, distOfFace2
+    this.facesR = [];
+    this.facesG = [];
+    this.facesB = [];
+    for (let i = 0; i < this.faces.length; i++){
+      this.facesR[i] = ran(255);
+      this.facesG[i] = ran(255);
+      this.facesB[i] = ran(255);
+    }
 
     this.xAngle = 0; //used to keep track of rotation 'bout the x axis
     this.yAngle = 0; //used to keep track of rotation 'bout the y axis
@@ -12,22 +23,19 @@ class Mesh {
 
   distBetweenFacesAndPoint(point){ //calculate distances between faces and an arbitrary pos/point in 3D space
     //point = [x,y,z]
-    console.log('faceslength=='+this.faces.length);
-    for (let i = 0; i < this.faces.length/3; i ++){ //first find position of face by averaging the position of the vertices which make it up
 
-      const avgX = mean(this.vertData(i,0,'x'), this.vertData(i,1,'x'), this.vertData(i,2,'x')); //avg x of vecs which make up face
-      const avgY = mean(this.vertData(i,0,'y'), this.vertData(i,1,'y'), this.vertData(i,2,'y')); //avg y of vecs which make up face
-      const avgZ = mean(this.vertData(i,0,'z'), this.vertData(i,1,'z'), this.vertData(i,2,'z')); //avg z of vecs which make up face
-
-      this.facesDistToCamera[i] = pythag(point[0]-avgX, point[1]-avgY, point[2]-avgZ);
+    for (let i = 0; i < this.verts.length/3; i++){ //calc vertDistoCamera for every vertice
+      let ii = i*3;
+      this.vertsDistToCamera[i] = pythag(point[0]-this.verts[ii+0], point[1]-this.verts[ii+1], point[2]-this.verts[ii+2]);
+    }
+    for (let i = 0; i < this.faces.length/3; i ++){ //find avg dist of every face from camera by avging it's avg vertDistToCamera
+      this.facesDistToCamera[i] = mean(this.vertDistData(i,0), this.vertDistData(i,1), this.vertDistData(i,2));
     }
   }
+
   sortFacesByDistanceToPoint(point){
 
     this.distBetweenFacesAndPoint(point); //calc facesDistToCamera
-
-    let f = this.faces;
-    let fDist = this.facesDistToCamera;
 
     for (let i = 1; i < this.faces.length; i ++){ //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
       let j = i;
@@ -64,6 +72,16 @@ class Mesh {
 //     console.log(`vertIndexData: ${this.faces[faceIndex + vertIndex]*3}
 // vertData: ${this.verts[this.faces[faceIndex + vertIndex]*3 + componentIndex]}`);
     return this.verts[this.faces[faceIndex + vertIndex]*3 + componentIndex];
+  }
+
+  vertDistData(face,vert){
+    //finds the element in vertDistToCamera array which corresponds to
+    //a givens face's vert's dist between vert-camera
+
+    const faceIndex = (face)*3;
+    const vertIndex = (vert);
+
+    return this.vertsDistToCamera[this.faces[faceIndex + vertIndex]];
   }
 
 }
