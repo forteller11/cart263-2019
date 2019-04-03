@@ -4,41 +4,12 @@ class Mesh {
     this.vertNorms = objBlob.vertNorms; //arr of vertex normals
     this.faces = objBlob.faces; //arr with indexes of vertices which make up a face, each face has 3 vertices, a,b,c (mult by 3 to get exact index in vert array)
     this.facesDistToCamera = [] //dist of face1, distOfFace2
+
+    this.xAngle = 0; //used to keep track of rotation 'bout the x axis
+    this.yAngle = 0; //used to keep track of rotation 'bout the y axis
+    this.zAngle = 0; //used to keep track of rotation 'bout the z axis
 }
-  rotate(zAxis, yAxis, xAxis) {
-    //basis vectors
-    // let iHat = new Vector(1,0,0);
-    // let jHat = new Vector(0,1,0);
-    // let kHat = new Vector(0,0,1);
-    //
-    // iHat.rotate(xx);
-    // jHat.rotate(yy);
-    // jHat.rotate(yy);
-    //
-    for (let i = 0; i < this.verts; i++) {
-      //represent vector as linear transformation of basis
-      this.verts[i].rotateZ(zAxis);
-      this.verts[i].rotateY(yAxis);
-      this.verts[i].rotateX(xAxis);
-    }
-  }
 
-  rotateX(rotateAmount) {
-    for (let vec of this.verts) {
-      vec.rotateX(rotateAmount);
-    }
-  }
-
-  rotateY(rotateAmount) {
-    for (let vec of this.verts) {
-      vec.rotateY(rotateAmount);
-    }
-  }
-  rotateZ(rotateAmount) {
-    for (let vec of this.verts) {
-      vec.rotateZ(rotateAmount);
-    }
-  }
   distBetweenFacesAndPoint(point){ //calculate distances between faces and an arbitrary pos/point in 3D space
     //point = [x,y,z]
     console.log('faceslength=='+this.faces.length);
@@ -47,7 +18,7 @@ class Mesh {
       const avgX = mean(this.vertData(i,0,'x'), this.vertData(i,1,'x'), this.vertData(i,2,'x')); //avg x of vecs which make up face
       const avgY = mean(this.vertData(i,0,'y'), this.vertData(i,1,'y'), this.vertData(i,2,'y')); //avg y of vecs which make up face
       const avgZ = mean(this.vertData(i,0,'z'), this.vertData(i,1,'z'), this.vertData(i,2,'z')); //avg z of vecs which make up face
-      
+
       this.facesDistToCamera[i] = pythag(point[0]-avgX, point[1]-avgY, point[2]-avgZ);
     }
   }

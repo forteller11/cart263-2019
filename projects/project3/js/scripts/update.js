@@ -13,32 +13,45 @@ ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 const scale = 100;
 const xOff = window.innerWidth/2;
 const yOff = window.innerHeight/2;
-const zOff = -4;
+const zOff = 0;
+mesh.zAngle += .1;
+
 let scaleMatrix = [
   [scale,0,0],
   [0,scale,0],
   [0,0,scale]
 ]
+
+let rotationMatrix = rotationMat(mesh.zAngle, 'z');
+console.log(rotationMatrix);
+
 for (let i = 0; i < mesh.faces.length/3; i ++){
-  let ii = i*3*3;
+
 
   let d = mesh.facesDistToCamera[i];
   let v1Raw = [mesh.vertData(i,0,'x'), mesh.vertData(i,0,'y'), mesh.vertData(i,0,'z')-zOff];
   let v2Raw = [mesh.vertData(i,1,'x'), mesh.vertData(i,1,'y'), mesh.vertData(i,1,'z')-zOff];
   let v3Raw = [mesh.vertData(i,2,'x'), mesh.vertData(i,2,'y'), mesh.vertData(i,2,'z')-zOff];
-
+  console.log(v1Raw);
+  console.log(v2Raw);
+  console.log(v3Raw);
+  console.log('===================')
   let projectionMatrix = [
     [1/d,0,0],
     [0,1/d,0],
     [0,0,-1/d]
   ]
+  let m1 = matMatMult(rotationMatrix,projectionMatrix);
+  let m2 = matMatMult(m1,scaleMatrix);
 
-  let finalMatrix = matMatMult(projectionMatrix,scaleMatrix);
 
-  let v1 = matVecMult(finalMatrix,v1Raw);
-  let v2 = matVecMult(finalMatrix,v2Raw);
-  let v3 = matVecMult(finalMatrix,v3Raw);
-
+  let v1 = matVecMult(m2,v1Raw);
+  let v2 = matVecMult(m2,v2Raw);
+  let v3 = matVecMult(m2,v3Raw);
+  console.log(v1);
+  console.log(v2);
+  console.log(v3);
+  console.log('===================')
   let colorByDistR = mapFromRanges (d,0,2,255,0);
   let colorByDistG = mapFromRanges (d,0,2,0,255);
   ctx.fillStyle = cssRGB(colorByDistR,colorByDistG,ran(255));

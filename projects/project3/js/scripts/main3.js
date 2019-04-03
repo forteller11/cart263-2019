@@ -13,7 +13,7 @@ https://www.youtube.com/watch?v=27vT-NWuw0M (Introduction to projections - khan 
 'use strict';
 window.onload = main;
 let debugMode = true;
-let fps = 1000;
+let fps = 100;
 
 let ctx;
 let mesh;
