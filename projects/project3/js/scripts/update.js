@@ -12,8 +12,8 @@ const xOff = window.innerWidth/2;
 const yOff = window.innerHeight/2;
 const zOff = 0;
 mesh.xAngle += .001;
-mesh.yAngle -= .0001;
-// mesh.zAngle -= .01;
+mesh.yAngle -= .001;
+mesh.zAngle -= .00001;
 
 let scaleMat = [
   [scale,0,0],
@@ -50,9 +50,9 @@ for (let i = 0; i < mesh.faces.length/3; i ++){
 
   //transform world matrix
   //world rotation/cmarea matrix
-  let m1 = matMatComposition(diagonalMat(3,1/d1), scaleMat);
-  let m2 = matMatComposition(diagonalMat(3,1/d2), scaleMat);
-  let m3 = matMatComposition(diagonalMat(3,1/d3), scaleMat);
+  let m1 = matMatComposition(scaleMat, diagonalMat(3,1/d1));
+  let m2 = matMatComposition(scaleMat, diagonalMat(3,1/d2));
+  let m3 = matMatComposition(scaleMat, diagonalMat(3,1/d3));
 
   let v1 = matVecMult(m1,v1Raw);
   let v2 = matVecMult(m2,v2Raw);

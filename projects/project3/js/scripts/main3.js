@@ -29,7 +29,7 @@ function main() {
   ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
   let request = new XMLHttpRequest();
-  request.open('GET', 'assets/triangle.obj'); //open/setup request
+  request.open('GET', 'assets/triangle02.obj'); //open/setup request
   request.send();
 
   request.onload = () => {

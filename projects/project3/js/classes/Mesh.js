@@ -40,10 +40,9 @@ class Mesh {
     for (let i = 1; i < this.facesDistToCamera.length; i++) { //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
       let ii = i * 3; //face index of i as each face in faces arr corresponds to 3 elements
       let j = i - 1;
-      while (j > 0) { //itterate backwards through array until find an element which is smaller then index
-
-
-        if (this.facesDistToCamera[i] < this.facesDistToCamera[j]) {
+      while (j >= 0) { //itterate backwards through array until find an element which is smaller then index
+        // console.log(`${this.facesDistToCamera[i]} < ${this.facesDistToCamera[j]}`)
+        if (this.facesDistToCamera[i] > this.facesDistToCamera[j]) {
           console.log('swap');
           //swap elements on faces and facesDistToCamera arrays
           let jj = j * 3; //face index of j as each face in faces arr corresponds to 3 elements
@@ -54,7 +53,7 @@ class Mesh {
           this.facesDistToCamera[j] = fDistStore;
 
           //face colors swap
-          const rStore = this.facesG[i];
+          const rStore = this.facesR[i];
           const gStore = this.facesG[i];
           const bStore = this.facesB[i];
 
