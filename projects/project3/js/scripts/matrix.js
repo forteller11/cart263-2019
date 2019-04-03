@@ -15,7 +15,7 @@ function matVecMult(mat, vec) { //matrix-Vector multiply
   */
   for (let i = 0; i < mat.length; i++) { //rows of matrix
     for (let j = 0; j < mat[i].length; j++) { //collums of matrix
-      transformedVec[j] += mat[i][j] * vec[j]; //vec matrix mult
+      transformedVec[i] += mat[i][j] * vec[j]; //vec matrix mult
     }
   }
 
@@ -89,7 +89,7 @@ function rotationMat(rad, axis) {
     case 'y':
       {
         return [
-          [Math.cos(rad), 0, -Math.sin(rad)],
+          [Math.cos(rad), 0, Math.sin(rad)],
           [0, 1, 0],
           [Math.sin(rad), 0,  Math.cos(rad)]
         ]

@@ -14,6 +14,8 @@ const scale = 100;
 const xOff = window.innerWidth/2;
 const yOff = window.innerHeight/2;
 const zOff = 0;
+mesh.xAngle += .001;
+mesh.yAngle += .01;
 mesh.zAngle += .1;
 
 let scaleMatrix = [
@@ -22,8 +24,13 @@ let scaleMatrix = [
   [0,0,scale]
 ]
 
-let rotationMatrix = rotationMat(mesh.zAngle, 'z');
-console.log(rotationMatrix);
+let rotationMatX = rotationMat(mesh.xAngle, 'z');
+let rotationMatY = rotationMat(mesh.yAngle, 'y');
+let rotationMatZ = rotationMat(mesh.zAngle, 'z');
+let rotationMatXY  =   matMatMult(rotationMatX, rotationMatY);
+let rotationMatXYZ =   matMatMult(rotationMatXY,rotationMatZ);
+
+console.log(rotationMatXYZ);
 
 for (let i = 0; i < mesh.faces.length/3; i ++){
 
@@ -37,11 +44,11 @@ for (let i = 0; i < mesh.faces.length/3; i ++){
   console.log(v3Raw);
   console.log('===================')
   let projectionMatrix = [
-    [1/d,0,0],
-    [0,1/d,0],
-    [0,0,-1/d]
+    [1,0,0],
+    [0,1,0],
+    [0,0,1]
   ]
-  let m1 = matMatMult(rotationMatrix,projectionMatrix);
+  let m1 = matMatMult(rotationMatXYZ,projectionMatrix);
   let m2 = matMatMult(m1,scaleMatrix);
 
 

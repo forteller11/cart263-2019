@@ -31,13 +31,13 @@ class Mesh {
 
     for (let i = 1; i < this.faces.length; i ++){ //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
       let j = i;
-      while ((j > 0) && (fDist[i] > fDist[j])){ //itterate backwards through array until find an element which is smaller then index
+      while ((j > 0) && (this.facesDistToCamera[i] > this.facesDistToCamera[j])){ //itterate backwards through array until find an element which is smaller then index
         j--;
       }
       //swap
-      let fStore = f[i];
-      f[i] = f[j];
-      f[j] = fStore;
+      let fStore = this.faces[i];
+      this.faces[i] = this.faces[j];
+      this.faces[j] = fStore;
     }
   }
 
