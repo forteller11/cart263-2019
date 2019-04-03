@@ -27,6 +27,7 @@ class Mesh {
     for (let i = 0; i < this.verts.length/3; i++){ //calc vertDistoCamera for every vertice
       let ii = i*3;
       this.vertsDistToCamera[i] = pythag(point[0]-this.verts[ii+0], point[1]-this.verts[ii+1], point[2]-this.verts[ii+2]);
+      console.log(this.verts[ii+0]);
     }
     for (let i = 0; i < this.faces.length/3; i ++){ //find avg dist of every face from camera by avging it's avg vertDistToCamera
       this.facesDistToCamera[i] = mean(this.vertDistData(i,0), this.vertDistData(i,1), this.vertDistData(i,2));
