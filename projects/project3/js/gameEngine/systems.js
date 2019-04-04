@@ -68,7 +68,15 @@ class sMove extends System { //moves player entity given keyboard input and tran
   }
 
   systemExecution(entity) { //move player according to inputs, translate camera to player pos
-    //use global movespeed
+    //mouse input for player movement
+
+      const deltaMouseX = g.mouse.histX[g.mouse.histX.length-1] - g.mouse.histX[g.mouse.histX.length-2];
+      const deltaMouseY = g.mouse.histY[g.mouse.histY.length-1] - g.mouse.histY[g.mouse.histY.length-2];
+
+      entity.cPos.angleX += deltaMouseX * g.mouse.sensitivity;
+      entity.cPos.angleY += deltaMouseY * g.mouse.sensitivity;
+
+    //keyboard input for player movement
     for (let i = 0; i < g.input.keysDown.length; i++){ //for every key pressed this frame...
       switch (g.input.keysDown[i]) {
         case 65: //a key

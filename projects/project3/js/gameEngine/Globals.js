@@ -33,11 +33,17 @@ class gPhysicsConstants { //stores physics constants
     constructor(){
       this.click = false; //on initial click === true, then equals false
       this.down = false;
-      this.x = null;
-      this.x = null;
-      this.histX = [];
-      this.histY = [];
+      this.x = 0;
+      this.x = 0;
       this.histMaxLength = 6;
+      this.histX = []; //latest elements are newest
+      this.histY = [];
+      for (let i = 0; i < this.histMaxLength; i ++){ //fill mouse history with positions
+        this.histX[i] = this.x;
+        this.histY[i] = this.y
+      }
+      this.sensitivity = (Math.PI*2)/window.innerWidth; //how much does movement of mouse in pixels correspond to angle change in radians?
+
     }
   }
 
