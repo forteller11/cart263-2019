@@ -63,7 +63,7 @@ class cHitbox extends Component{ //circle hitbox
 class cMesh extends Component { //stores verts,faces,distances,colors of a mesh...
   constructor(objBlob){
     super();
-    this.name = 'mesh';
+    this.name = 'cMesh';
     this.verts = objBlob.verts; //array of vertexes in format x,y,z,x,y,z....
     this.vertsDistToCamera = []; //array of how far the vert is away from the camera [distForxyz,distForv2,v3,v4...]
 
@@ -87,7 +87,7 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
 class cPlayer extends Component { //input moves any entities with cPlayer, and transforms camera to their pos
   constructor(camera = false){
     super();
-    this.name = 'player';
+    this.name = 'cPlayer';
   }
 }
 

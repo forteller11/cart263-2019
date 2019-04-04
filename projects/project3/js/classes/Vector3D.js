@@ -46,9 +46,9 @@ class Vector3D {
     this.z   /= divValue;
   }
 
-  mult(multValue) { //divide vector by some magnitude
+  mult(multValue) { //mult vector by some magnitude
     this.mag *= multValue;
-    this.x   *= multvalue;
+    this.x   *= multValue;
     this.y   *= multValue;
     this.z   *= multValue;
   }

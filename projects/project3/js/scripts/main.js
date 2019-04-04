@@ -29,6 +29,7 @@ let globalEntityIdCounter = 0; //everytime an entity is created it is given a un
 let ctx;
 let debugMode = true;
 let debugOpacity = 0.2;
+let fps = 16.7
 
 function main() {
   g = new Globals(); //instatiates object which encaspulates globals in game (encapuslates 'singleton' components)
@@ -40,7 +41,8 @@ function main() {
   ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
   createEntitiesFromBlueprint('player');
-  createEntitiesFromBlueprint('mesh',3);
+  let ent = createEntitiesFromBlueprint('mesh');
 
+  setInterval(update, fps);
 
 }

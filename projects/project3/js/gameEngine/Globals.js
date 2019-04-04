@@ -6,7 +6,7 @@ class Globals{
     this.mouse = new gMouseEvents();
     this.drag = new gDragData();
     this.spawn = new gSpawnRate();
-    this.cam = new gCamera();
+    this.camera = new gCamera();
     this.input = new gInput();
   }
   update(){
@@ -49,8 +49,12 @@ class gPhysicsConstants { //stores physics constants
       this.angleY = 0;
       this.angleZ = 0;
       this.scaleAmount = window.innerHeight/6;
+
       //rotation of camera
-      this.rotationMatrix = rotMat(-this.angleX, -this.angleY, -this.angleZ);
+      this.rotationMatrix = matMatComp(rotMat(-this.angleX, 'x'),
+                                       rotMat(-this.angleY, 'y'),
+                                       rotMat(-this.angleZ, 'z'));
+
       //what to offset meshes by BEFORE scaling
       this.translationMatrix = transMat(-this.x, -this.y, -this.z); //rotation
       //use at end to center in screen coords
