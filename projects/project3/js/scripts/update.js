@@ -3,7 +3,7 @@ function update(){
   ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
   systemManager.update();
-  console.log(systemManager);
+  // console.log(systemManager);
 }
 
 // function update(){

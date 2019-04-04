@@ -30,7 +30,7 @@ let globalEntityIdCounter = 0; //everytime an entity is created it is given a un
 let ctx;
 let debugMode = true;
 let debugOpacity = 0.2;
-let fps = 16.7
+let fps = 16.7;
 let bgColor;
 
 function main() {

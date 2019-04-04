@@ -69,8 +69,8 @@ class sMove extends System { //moves player entity given keyboard input and tran
 
   systemExecution(entity) { //move player according to inputs, translate camera to player pos
     //use global movespeed
-    if (g.input.pressedThisFrame) { //if a button was pressed this frame
-      switch (g.input.lastKeyPressed) {
+    for (let i = 0; i < g.input.keysDown.length; i++){ //for every key pressed this frame...
+      switch (g.input.keysDown[i]) {
         case 65: //a key
           entity.cPos.x -= g.input.moveSpeed;
           break;
@@ -90,6 +90,7 @@ class sMove extends System { //moves player entity given keyboard input and tran
           entity.cPos.y += g.input.moveSpeed;
           break;
       }
+
     }
     //move camera to player position and angle
     g.camera.x = entity.cPos.x;
@@ -115,15 +116,12 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
   }
 
   systemExecution(entity) { //for every mesh, then translate based and around cam
-console.log('SRENDER')
-console.log(entity.cMesh.verts);
+
     //create rotation matrix based on entities angular velocity
     let rotationMatXYZ = matMatComp(
       rotMat(entity.cPhysics.angularVel.x, 'x'),
       rotMat(entity.cPhysics.angularVel.y, 'y'),
       rotMat(entity.cPhysics.angularVel.z, 'z'));
-      console.log(entity.cPhysics);
-      console.log(rotationMatXYZ);
 
     //rotate verts based on rotation matrix
     for (let i = 0; i < entity.cMesh.verts.length / 3; i++) { //rotate all verts by rotation matrix
@@ -137,12 +135,10 @@ console.log(entity.cMesh.verts);
       entity.cMesh.verts[ii + 1] = rotatedVec[1];
       entity.cMesh.verts[ii + 2] = rotatedVec[2];
     }
-    console.log('POST ROTATION')
-    console.log(entity.cMesh.verts);
+
     //calc distances to camera
     this.sortFacesByDistanceToPoint(entity.cMesh);
-    console.log('POST SORT')
-    console.log(entity.cMesh.verts);
+
     for (let i = 0; i < entity.cMesh.faces.length / 3; i++) {
 
       // compartmentalize verts in 1x4 arrays [x,y,z,1]
@@ -176,14 +172,14 @@ console.log(entity.cMesh.verts);
       let v1 = matVecMult(m1, v1Raw);
       let v2 = matVecMult(m2, v2Raw);
       let v3 = matVecMult(m3, v3Raw);
-      console.log('=======COMPOSED__MATRICES==========')
-      console.log(m1);
-      console.log(m2);
-      console.log(m3);
-      console.log('=======VECTORS___TRANSFORMED==========');
-console.log(v1);
-console.log(v2);
-console.log(v3);
+//       console.log('=======COMPOSED__MATRICES==========')
+//       console.log(m1);
+//       console.log(m2);
+//       console.log(m3);
+//       console.log('=======VECTORS___TRANSFORMED==========');
+// console.log(v1);
+// console.log(v2);
+// console.log(v3);
       //draw resulting vectors on the screen using the appropriate color of the face
       ctx.fillStyle = cssRGBA([entity.cMesh.facesR[i], entity.cMesh.facesG[i], entity.cMesh.facesB[i]]);
 
@@ -218,7 +214,7 @@ console.log(v3);
       while (j >= 0) { //itterate backwards through array until find an element which is smaller then index
         // console.log(`${this.facesDistToCamera[i]} < ${this.facesDistToCamera[j]}`)
         if (mesh.facesDistToCamera[i] > mesh.facesDistToCamera[j]) {
-          console.log('swap');
+
           //swap elements on faces and facesDistToCamera arrays
           let jj = j * 3; //face index of j as each face in faces arr corresponds to 3 elements
 
@@ -334,12 +330,30 @@ class sInput extends System { //handles dragging behavior and transforming the e
     super(arrayOfRelevantEntities);
 
     document.addEventListener('keydown', (e) => { //n mouse click
-      g.input.lastKeyPressed = e.keyCode;
-      g.input.pressedThisFrame = true;
+      let redundant = false; //is key already in keyPressed
+      for (let i = 0; i < g.input.keysDown.length; i ++){
+        if (e.keyCode === g.input.keysDown[i]){
+          redundant = true;
+          break;
+        }
+      }
+
+      if (redundant === false) { //if key is not currently in keysDown array push it
+        g.input.keysDown.push(e.keyCode);
+      }
+    });
+
+    document.addEventListener('keyup', (e) => { //n mouse click
+      for (let i = 0; i < g.input.keysDown.length; i ++){
+        if (e.keyCode === g.input.keysDown[i]){
+          g.input.keysDown.splice(i,1)
+          break;
+        }
+      }
     });
   }
   update() {
-    g.input.pressedThisFrame = false;
+    // console.log(g.input.keysDown);
   }
 }
 

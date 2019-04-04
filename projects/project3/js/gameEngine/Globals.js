@@ -67,8 +67,7 @@ class gPhysicsConstants { //stores physics constants
 
   class gInput{ //tracks keyboard input
     constructor(){
-      this.lastKeyPressed = null; //some assci code
-      this.pressedThisFrame = false; //was lastKeyPressed pressed this frame?
+      this.keysDown = [] //array of keyCodes of keys currentdown
       this.moveSpeed = .1;
     }
   }
