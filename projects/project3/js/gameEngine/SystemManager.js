@@ -17,6 +17,9 @@ class SystemManager {
     this.sPhysicsTransform = new sPhysicsTransform();
     this.systems.push(this.sPhysicsTransform);
 
+    this.sMove = new sMove();
+    this.systems.push(this.sMove);
+
     this.sDrag = new sDrag();
     this.systems.push(this.sDrag);
 
@@ -27,6 +30,12 @@ class SystemManager {
 
     this.sImageTransform = new sImageTransform();
     this.systems.push(this.sImageTransform);
+
+    this.sRender = new sRender();
+    this.systems.push(this.sRender);
+
+    this.sInput = new sInput(); //have this last because it's update needs to come after all other systems have executed
+    this.systems.push(this.sInput);
   }
 
   update() {

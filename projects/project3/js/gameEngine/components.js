@@ -16,7 +16,10 @@ class cPos extends Component { //stores position
     this.name = 'cPos';
     this.x = x;
     this.y = y;
-    this.angle = angle;
+    this.z = z;
+    this.angleX = angle;
+    this.angleY = angle;
+    this.angleZ = angle;
   }
 }
 
@@ -57,6 +60,37 @@ class cHitbox extends Component{ //circle hitbox
   }
 }
 
+class cMesh extends Component { //stores verts,faces,distances,colors of a mesh...
+  constructor(objBlob){
+    super();
+    this.name = 'mesh';
+    this.verts = objBlob.verts; //array of vertexes in format x,y,z,x,y,z....
+    this.vertsDistToCamera = []; //array of how far the vert is away from the camera [distForxyz,distForv2,v3,v4...]
+
+    this.vertNorms = objBlob.vertNorms; //arr of vertex normals
+
+    this.faces = objBlob.faces; //arr with indexes of vertices which make up a face, each face composed of 3 vertices/elements, [v1,v2,v3, v1,v2,v3]
+    this.facesDistToCamera = [] //dist of [face1, distOfFace2]
+
+    this.facesR = []; //corresponds to red   component of a face[i] color
+    this.facesG = []; //corresponds to green component of a face[i] color
+    this.facesB = []; //corresponds to blue  component of a face[i] color
+    for (let i = 0; i < this.faces.length; i++) {
+      this.facesR[i] = ran(255);
+      this.facesG[i] = ran(255);
+      this.facesB[i] = ran(255);
+    }
+
+  }
+}
+
+class cPlayer extends Component { //input moves any entities with cPlayer, and transforms camera to their pos
+  constructor(camera = false){
+    super();
+    this.name = 'player';
+  }
+}
+
 class cPhysics extends Component {
   constructor(mass=null,xVel=0,yVel=0,angularVel=0, inert = false){
     super();
@@ -64,13 +98,14 @@ class cPhysics extends Component {
     this.mass = mass;
     this.invMass = 1/mass; //inverse mass
     this.momentOfInertia = 0.0012; //how easily this object is rotated
-    this.vel = new Vector(xVel,yVel);
-    this.angularVel = angularVel;
+    this.vel = new Vector3D(xVel,yVel,0);
+    this.angularVel = new Vector3D(angularVel,angularVel,angularVel);
     this.inert = inert;
     this.restitution = 0.8; //bouncyness or % force transferred in collisions, 1 = bouncy, 0=not
     if (mass===null){console.log('mass not set, define by cCollision as PI r ^2');}
   }
 }
+
 
 
 class cHtmlDisplay extends Component{

@@ -6,11 +6,11 @@ class System { //base functionality for all systems
     this.requiredBlueprints = []; //array of required blueprints the entity must have
   }
 
-  systemExecution(entity) {
+  systemExecution(entity) { //occurs every frame for every entity
     console.log('overide this method for useful system');
   }
 
-  update() {
+  update() { //occurs every frame
     for (let entity of this.relevantEntities) {
       this.systemExecution(entity);
     }
@@ -31,8 +31,8 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
       canvasCtx.strokeRect(entity.cPos.x, entity.cPos.y, 2, 2);
     }
     entity.cPos.angle += entity.cPhysics.angularVel;
-    entity.cPhysics.angularVel *= globalObj.physics.polarDrag;
-    entity.cPhysics.angularVel = constrain(entity.cPhysics.angularVel, -globalObj.physics.maxPolarVel, globalObj.physics.maxPolarVel);
+    entity.cPhysics.angularVel *= g.physics.polarDrag;
+    entity.cPhysics.angularVel = constrain(entity.cPhysics.angularVel, -g.physics.maxPolarVel, g.physics.maxPolarVel);
     if (entity.cPhysics.inert) { //if a inert entity
       entity.cPhysics.x = 0;
       entity.cPhysics.y = 0;
@@ -40,20 +40,252 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
 
     } else {
       //apply wind
-      entity.cPhysics.vel.x += globalObj.physics.windX;
-      entity.cPhysics.vel.y += globalObj.physics.windY;
+      entity.cPhysics.vel.x += g.physics.windX;
+      entity.cPhysics.vel.y += g.physics.windY;
 
       //transform position based on velocties
       entity.cPos.x += entity.cPhysics.vel.x;
       entity.cPos.y += entity.cPhysics.vel.y;
 
       //apply drag and constrain velocties
-      entity.cPhysics.vel.mult(globalObj.physics.cartesianDrag);
+      entity.cPhysics.vel.mult(g.physics.cartesianDrag);
     }
   }
 
 }
 
+class sMove extends System { //moves player entity given keyboard input and translates camera to that position
+  constructor(arrayOfRelevantEntities) {
+    super(arrayOfRelevantEntities);
+    this.requiredComponents = ['cPos', 'cPlayer'];
+    //also uses cCamera
+  }
+
+  systemExecution(entity) { //move player according to inputs, translate camera to player pos
+    //use global movespeed
+    if (g.input.pressedThisFrame) { //if a button was pressed this frame
+      switch (g.input.lastKeyPressed) {
+        case 37: //left arrow key
+          player.x -= g.input.moveSpeed;
+          break;
+        case 39: //right arrow key pressed
+          player.x += g.input.moveSpeed;
+          break;
+        case 39: //up arrow key
+          player.z -= g.input.moveSpeed;
+          break;
+        case 40: //down arrow key
+          player.z += g.input.moveSpeed;
+          break;
+        case 32: //space bar
+          player.y -= g.input.moveSpeed;
+          break;
+        case 17: //left control
+          player.y += g.input.moveSpeed;
+          break;
+      }
+    }
+    //move camera to player position and angle
+    g.camera.x = entity.cPos.x;
+    g.camera.y = entity.cPos.y;
+    g.camera.z = entity.cPos.z;
+    g.camera.angleX = entity.cPos.angleX;
+    g.camera.angleY = entity.cPos.angleY;
+    g.camera.angleZ = entity.cPos.angleZ;
+
+    g.camera.rotationMatrix = rotMat(-g.camera.angleX, -g.camera.angleY, -g.camera.angleZ);
+    g.camera.translationMatrix = transMat(-g.camera.x, -g.camera.y, -g.camera.z);
+  }
+
+}
+
+class sRender extends System { //applys drags and phy constants (gravity if applicable)
+  constructor(arrayOfRelevantEntities) {
+    super(arrayOfRelevantEntities);
+    this.requiredComponents = ['cPos', 'cMesh','cPhysics'];
+    //also uses cCamera
+  }
+
+  systemExecution(entity) { //for every mesh, then translate based and around cam
+
+    //create rotation matrix based on entities angular velocity
+    let rotationMatXYZ = matMatComp(rotMat(Math.sin(entity.cPhysics.angularVel.x), 'x'),
+                                    rotMat(Math.sin(entity.cPhysics.angularVel.y), 'y'),
+                                    rotMat(Math.sin(entity.cPhysics.angularVel.z), 'z'));
+
+    //rotate verts based on rotation matrix
+    for (let i = 0; i < entity.cMesh.verts.length/3; i++){ //rotate all verts by rotation matrix
+      let ii = i*3;
+      let vert = [ entity.cMesh.verts[ii+0],  entity.cMesh.verts[ii+1],  entity.cMesh.verts[ii+2], 1 ]; //encapsulate verts ntuples intoa  single array
+
+      let rotatedVec = matVecMult(rotationMatXYZ,vert); //multiply vertex by rotation matrix
+
+      //store rotated vertex
+      entity.cMesh.verts[ii+0] = rotatedVec[0];
+      entity.cMesh.verts[ii+1] = rotatedVec[1];
+      entity.cMesh.verts[ii+2] = rotatedVec[2];
+    }
+    //calc distances to camera
+    this.sortFacesByDistanceToPoint(entity.cMesh);
+
+    for (let i = 0; i < entity.cMesh.faces.length/3; i ++){
+
+      // compartmentalize verts in 1x4 arrays [x,y,z,1]
+      let v1Raw = thish.vertData(entity.cMesh, i, 0, 'x'),
+                   this.vertData(entity.cMesh, i, 0, 'y'),
+                   this.vertData(entity.cMesh, i, 0, 'z'),
+                   1
+                 ];
+      let v2Raw = [this.vertData(entity.cMesh, i, 1, 'x'),
+                   this.vertData(entity.cMesh, i, 1, 'y'),
+                   this.vertData(entity.cMesh, i, 1, 'z'),
+                   1
+                 ];
+      let v3Raw = [this.vertData(entity.cMesh, i, 2, 'x'),
+                   this.vertData(entity.cMesh, i, 2, 'y'),
+                   this.vertData(entity.cMesh, i, 2, 'z'),
+                   1
+                 ];
+
+      //store distance of vectors in d vars
+      let d1 = this.vertDistData(entity.cMesh, i, 0) ;
+      let d2 = this.vertDistData(entity.cMesh, i, 1) ;
+      let d3 = this.vertDistData(entity.cMesh, i, 2) ;
+
+      //compose giant transformation matrices for each vector in order right to left
+      let m1 = matMatComp(g.camera.centerMatrix, diagMat(1/d1), g.camera.scaleMatrix);
+      let m2 = matMatComp(g.camera.centerMatrix, diagMat(1/d2), g.camera.scaleMatrix);
+      let m3 = matMatComp(g.camera.centerMatrix, diagMat(1/d3), g.camera.scaleMatrix);
+
+      //transform vectors using the appropriate matrices
+      let v1 = matVecMult(m1,v1Raw);
+      let v2 = matVecMult(m2,v2Raw);
+      let v3 = matVecMult(m3,v3Raw);
+
+      //draw resulting vectors on the screen using the appropriate color of the face
+      ctx.fillStyle = cssRGB(entity.cMesh.facesR[i],entity.cMesh.facesG[i],entity.cMesh.facesB[i]);
+
+      ctx.beginPath(v1[0], v1[1]);
+      ctx.lineTo   (v2[0], v2[1]);
+      ctx.lineTo   (v3[0], v3[1]);
+      ctx.lineTo   (v1[0], v1[1]);
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    distBetweenFacesAndPoint(mesh) { //calculate distances between faces and an arbitrary pos/point in 3D space
+      //poimesh [x,y,z]
+
+      for (let i = 0; i < mesh.verts.length / 3; i++) { //calc vertDistoCamera for every vertice
+        let ii = i * 3;
+        mesh.vertsDistToCamera[i] = pythag(g.camera.x - mesh.verts[ii + 0], g.camera.y - mesh.verts[ii + 1], g.camera.z - mesh.verts[ii + 2]);
+      }
+      for (let i = 0; i < mesh.faces.length / 3; i++) { //find avg dist of every face from camera by avging it's avg vertDistToCamera
+        mesh.facesDistToCamera[i] = mean(mesh.vertDistData(i, 0), mesh.vertDistData(i, 1), mesh.vertDistData(i, 2));
+      }
+    }
+
+    sortFacesByDistanceToPoint(mesh) {
+
+      this.distBetweenFacesAndPoint(mesh); //calc facesDistToCamera
+
+      for (let i = 1; i < mesh.facesDistToCamera.length; i++) { //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
+        let ii = i * 3; //face index of i as each face in faces arr corresponds to 3 elements
+        let j = i - 1;
+        while (j >= 0) { //itterate backwards through array until find an element which is smaller then index
+          // console.log(`${this.facesDistToCamera[i]} < ${this.facesDistToCamera[j]}`)
+          if (mesh.facesDistToCamera[i] > mesh.facesDistToCamera[j]) {
+            console.log('swap');
+            //swap elements on faces and facesDistToCamera arrays
+            let jj = j * 3; //face index of j as each face in faces arr corresponds to 3 elements
+
+            //dist to camera swap
+            let fDistStore = mesh.facesDistToCamera[i];
+            mesh.facesDistToCamera[i] = mesh.facesDistToCamera[j];
+            mesh.facesDistToCamera[j] = fDistStore;
+
+            //face colors swap
+            const rStore = mesh.facesR[i];
+            const gStore = mesh.facesG[i];
+            const bStore = mesh.facesB[i];
+
+            mesh.facesR[i] = mesh.facesR[j];
+            mesh.facesG[i] = mesh.facesG[j];
+            mesh.facesB[i] = mesh.facesB[j];
+
+            mesh.facesR[j] = rStore;
+            mesh.facesG[j] = gStore;
+            mesh.facesB[j] = bStore;
+
+            //faces swap
+            let fStore = [
+              mesh.faces[ii + 0],
+              mesh.faces[ii + 1],
+              mesh.faces[ii + 2]
+            ];
+
+            let fStore1 = mesh.faces[ii + 0];
+            let fStore2 = mesh.faces[ii + 1];
+            let fStore3 = mesh.faces[ii + 2];
+
+            mesh.faces[ii + 0] = mesh.faces[jj + 0];
+            mesh.faces[ii + 1] = mesh.faces[jj + 1];
+            mesh.faces[ii + 2] = mesh.faces[jj + 2];
+
+            mesh.faces[jj + 0] = fStore[0];
+            mesh.faces[jj + 1] = fStore[1];
+            mesh.faces[jj + 2] = fStore[2];
+            break;
+          }
+
+          j--;
+        }
+      }
+
+    }
+
+    vertData(mesh, face, vert, component) {
+      //finds the element in verts array which corresponds to a
+      //given component of a vertex of a face
+
+      const faceIndex = (face) * 3;
+      const vertIndex = (vert);
+
+      let componentIndex; //convert string x,y,z to number
+      switch (component) {
+        case 'x':
+          componentIndex = 0;
+          break;
+        case 'y':
+          componentIndex = 1;
+          break;
+        case 'z':
+          componentIndex = 2;
+          break;
+        default:
+          console.log('ERROR: wrong input at method vertComponent');
+          break
+      }
+      if (vert > 2) {
+        console.log('ERROR: inputs too large at vertComponent')
+      };
+
+      //     console.log(`vertIndexData: ${this.faces[faceIndex + vertIndex]*3}
+      // vertData: ${this.verts[this.faces[faceIndex + vertIndex]*3 + componentIndex]}`);
+      return mesh.verts[mesh.faces[faceIndex + vertIndex] * 3 + componentIndex];
+    }
+
+    vertDistData(mesh, face, vert) {
+      //finds the element in vertDistToCamera array which corresponds to
+      //a givens face's vert's dist between vert-camera
+
+      const faceIndex = (face) * 3;
+      const vertIndex = (vert);
+
+      return mesh.vertsDistToCamera[mesh.faces[faceIndex + vertIndex]];
+    }
+
+}
 
 class sImageTransform extends System { //transforms image to entity position
   constructor(arrayOfRelevantEntities) {
@@ -71,6 +303,19 @@ class sImageTransform extends System { //transforms image to entity position
 
 }
 
+class sInput extends System { //handles dragging behavior and transforming the entity being dragged
+  constructor(arrayOfRelevantEntities) {
+    super(arrayOfRelevantEntities);
+
+    document.addEventListener('keydown', (e) => { //n mouse click
+      g.input.lastKeyPressed = e.keyCode;
+      g.input.pressedThisFrame = true;
+    });
+  }
+  update() {
+    g.input.pressedThisFrame = false;
+  }
+}
 
 class sDrag extends System { //handles dragging behavior and transforming the entity being dragged
   constructor(arrayOfRelevantEntities) {
@@ -81,9 +326,9 @@ class sDrag extends System { //handles dragging behavior and transforming the en
       for (let i = 0; i < this.relevantEntities.length; i++) {
         if (this.relevantEntities[i].cDraggable.draggable) {
           if (this.pointCircleOverlap(e.clientX, e.clientY, this.relevantEntities[i])) {
-            globalObj.drag.dragOffsetX = this.relevantEntities[i].cPos.x - e.clientX;
-            globalObj.drag.dragOffsetY = this.relevantEntities[i].cPos.y - e.clientY;
-            globalObj.drag.dragEntityRef = this.relevantEntities[i];
+            g.drag.dragOffsetX = this.relevantEntities[i].cPos.x - e.clientX;
+            g.drag.dragOffsetY = this.relevantEntities[i].cPos.y - e.clientY;
+            g.drag.dragEntityRef = this.relevantEntities[i];
             break;
           }
         }
@@ -91,48 +336,48 @@ class sDrag extends System { //handles dragging behavior and transforming the en
     });
 
     document.addEventListener('mousemove', (e) => { //update mouse pos
-      globalObj.mouse.x = e.clientX;
-      globalObj.mouse.y = e.clientY;
+      g.mouse.x = e.clientX;
+      g.mouse.y = e.clientY;
     });
 
     document.addEventListener('mouseup', (e) => { // on release of mouse
-      if (!(globalObj.drag.dragEntityRef === null)) { //if dragging entity
+      if (!(g.drag.dragEntityRef === null)) { //if dragging entity
         this.setDragEntityReleaseVelocity(); //set vel of entity
       }
-      globalObj.drag.dragEntityRef = null; //stop dragging
+      g.drag.dragEntityRef = null; //stop dragging
     });
 
   } //END OF CONSTRUCTOR
 
   update() {
-    if (globalObj.mouse.histX.length < globalObj.mouse.histMaxLength) { //store mouse positions every frame
-      globalObj.mouse.histX.push(globalObj.mouse.x);
-      globalObj.mouse.histY.push(globalObj.mouse.y);
+    if (g.mouse.histX.length < g.mouse.histMaxLength) { //store mouse positions every frame
+      g.mouse.histX.push(g.mouse.x);
+      g.mouse.histY.push(g.mouse.y);
     } else { //remove oldest, add newest pos
-      globalObj.mouse.histX.splice(0, 1);
-      globalObj.mouse.histY.splice(0, 1);
-      globalObj.mouse.histX.push(globalObj.mouse.x);
-      globalObj.mouse.histY.push(globalObj.mouse.y);
+      g.mouse.histX.splice(0, 1);
+      g.mouse.histY.splice(0, 1);
+      g.mouse.histX.push(g.mouse.x);
+      g.mouse.histY.push(g.mouse.y);
     }
 
-    if (!(globalObj.drag.dragEntityRef === null)) { //if currently dragging an entity
-      if (!(globalObj.drag.dragEntityRef.cDraggable.draggable === true)) { //release if no longer draggable
-        if (systemManager.entityHasComponent('cPhysics', globalObj.drag.dragEntityRef)) { //if has physics
+    if (!(g.drag.dragEntityRef === null)) { //if currently dragging an entity
+      if (!(g.drag.dragEntityRef.cDraggable.draggable === true)) { //release if no longer draggable
+        if (systemManager.entityHasComponent('cPhysics', g.drag.dragEntityRef)) { //if has physics
           this.setDragEntityReleaseVelocity(); //set release velocity
         }
-        globalObj.drag.dragEntityRef = null; //stop dragging
+        g.drag.dragEntityRef = null; //stop dragging
         return;
       }
 
-      if (systemManager.entityHasComponent('cPhysics', globalObj.drag.dragEntityRef)) { //set vel and pos of entity being dragged
-        const velX = globalObj.mouse.histX[globalObj.mouse.histX.length - 1] - globalObj.mouse.histX[globalObj.mouse.histX.length - 2];
-        const velY = globalObj.mouse.histY[globalObj.mouse.histY.length - 1] - globalObj.mouse.histY[globalObj.mouse.histY.length - 2];
-        globalObj.drag.dragEntityRef.cPhysics.vel.x = velX * .75;
-        globalObj.drag.dragEntityRef.cPhysics.vel.y = velY * .75;
+      if (systemManager.entityHasComponent('cPhysics', g.drag.dragEntityRef)) { //set vel and pos of entity being dragged
+        const velX = g.mouse.histX[g.mouse.histX.length - 1] - g.mouse.histX[g.mouse.histX.length - 2];
+        const velY = g.mouse.histY[g.mouse.histY.length - 1] - g.mouse.histY[g.mouse.histY.length - 2];
+        g.drag.dragEntityRef.cPhysics.vel.x = velX * .75;
+        g.drag.dragEntityRef.cPhysics.vel.y = velY * .75;
       }
       //move pos based on mouse pos and offsets
-      globalObj.drag.dragEntityRef.cPos.x = globalObj.mouse.x + globalObj.drag.dragOffsetX;
-      globalObj.drag.dragEntityRef.cPos.y = globalObj.mouse.y + globalObj.drag.dragOffsetY;
+      g.drag.dragEntityRef.cPos.x = g.mouse.x + g.drag.dragOffsetX;
+      g.drag.dragEntityRef.cPos.y = g.mouse.y + g.drag.dragOffsetY;
     }
 
   }
@@ -150,15 +395,15 @@ class sDrag extends System { //handles dragging behavior and transforming the en
     let throwComponentX = 0;
     let throwComponentY = 0;
     //find recent mouse velocity history (delta in position), average it, and set that number as entity's relase vleocity
-    for (let i = 0; i < globalObj.mouse.histX.length - 1; i++) { //find delta between mouseHist
-      throwComponentX += (globalObj.mouse.histX[i + 1] - globalObj.mouse.histX[i]);
-      throwComponentY += (globalObj.mouse.histY[i + 1] - globalObj.mouse.histY[i]);
+    for (let i = 0; i < g.mouse.histX.length - 1; i++) { //find delta between mouseHist
+      throwComponentX += (g.mouse.histX[i + 1] - g.mouse.histX[i]);
+      throwComponentY += (g.mouse.histY[i + 1] - g.mouse.histY[i]);
     }
-    throwComponentX = throwComponentX / (globalObj.mouse.histX.length); //find mean kinda
-    throwComponentY = throwComponentY / (globalObj.mouse.histY.length);
+    throwComponentX = throwComponentX / (g.mouse.histX.length); //find mean kinda
+    throwComponentY = throwComponentY / (g.mouse.histY.length);
     //set velocity
-    globalObj.drag.dragEntityRef.cPhysics.vel.x = throwComponentX;
-    globalObj.drag.dragEntityRef.cPhysics.vel.y = throwComponentY;
+    g.drag.dragEntityRef.cPhysics.vel.x = throwComponentX;
+    g.drag.dragEntityRef.cPhysics.vel.y = throwComponentY;
   }
 }
 
@@ -171,9 +416,9 @@ class sOverlap extends System { //this system is responsble for checking for col
 
   systemExecution(e1, e2) {
     //collision between circle:circle
-    if (e1.cPhysics && e2.cPhysics){
+    if (e1.cPhysics && e2.cPhysics) {
       if ((e1.cPhysics.inert) && (e2.cPhysics.inert)) return false; //dont check/resolve collision of two static objects
-  }
+    }
     if ((e1.cHitbox.type === 'circle') && (e2.cHitbox.type === 'circle')) {
       if (this.circleCircleOverlap(e1, e2)) {
         return true
@@ -201,39 +446,39 @@ class sOverlap extends System { //this system is responsble for checking for col
 
   }
 
-  onCollisionEvent(e1,e2){ //on collision, do ___ depnding on...
+  onCollisionEvent(e1, e2) { //on collision, do ___ depnding on...
 
-     //if entities have doOnOverlap functions execute them and pass other entity as argument
-     if (!(e1.cHitbox.doOnOverlap===null)){
-       e1.cHitbox.doOnOverlap(e1,e2);
-     }
-     if (!(e2.cHitbox.doOnOverlap===null)){
-       e2.cHitbox.doOnOverlap(e2,e1);
-     }
+    //if entities have doOnOverlap functions execute them and pass other entity as argument
+    if (!(e1.cHitbox.doOnOverlap === null)) {
+      e1.cHitbox.doOnOverlap(e1, e2);
+    }
+    if (!(e2.cHitbox.doOnOverlap === null)) {
+      e2.cHitbox.doOnOverlap(e2, e1);
+    }
 
- //if entities have physics and have overlapped,
-   if (systemManager.entityHasComponent('cPhysics',e1) &&
-      (systemManager.entityHasComponent('cPhysics',e2))){
-        systemManager.sCollisionResolution.systemExecution(e1,e2);
+    //if entities have physics and have overlapped,
+    if (systemManager.entityHasComponent('cPhysics', e1) &&
+      (systemManager.entityHasComponent('cPhysics', e2))) {
+      systemManager.sCollisionResolution.systemExecution(e1, e2);
+      return;
+    }
+
+    //change status of draggable
+    if (systemManager.entityHasComponent('cDragArea', e1)) {
+      if (systemManager.entityHasComponent('cDraggable', e2)) {
+        systemManager.sDraggable.systemExecution(e2, e1);
         return;
-   }
+      }
+    }
 
- //change status of draggable
-   if (systemManager.entityHasComponent('cDragArea',e1)){
-     if (systemManager.entityHasComponent('cDraggable',e2)){
-       systemManager.sDraggable.systemExecution(e2,e1);
-       return;
-     }
-   }
+    if (systemManager.entityHasComponent('cDragArea', e2)) {
+      if (systemManager.entityHasComponent('cDraggable', e1)) {
+        systemManager.sDraggable.systemExecution(e1, e2);
+        return;
+      }
+    }
 
-   if (systemManager.entityHasComponent('cDragArea',e2)){
-     if (systemManager.entityHasComponent('cDraggable',e1)){
-       systemManager.sDraggable.systemExecution(e1,e2);
-       return;
-     }
-   }
-
- }
+  }
 
   boundingBoxBoundingBoxOverlap(e1, e2) {
     //takes two entities, places a bounding box around them, and checks for collision
@@ -253,8 +498,8 @@ class sOverlap extends System { //this system is responsble for checking for col
       default:
         console.log('e1 not valid type of hitbox');
     }
-let w2;
-let h2;
+    let w2;
+    let h2;
     switch (e2.cHitbox.type) {
       case 'circle':
         w2 = e2.cHitbox.radius * 2;
@@ -525,11 +770,11 @@ class sCollisionResolution extends System {
     let reverseProjectedMagEntity2 = e2.cPhysics.vel.projectOnTo(collisionVector);
     let combinedReverseProjectedMag = mean(reverseProjectedMagEntity1, reverseProjectedMagEntity2);
 
-    e1.cPhysics.angularVel -= (reverseProjectedMagEntity1) / e1.cHitbox.radius * globalObj.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
-    e2.cPhysics.angularVel += (reverseProjectedMagEntity2) / e2.cHitbox.radius * globalObj.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
+    e1.cPhysics.angularVel -= (reverseProjectedMagEntity1) / e1.cHitbox.radius * g.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
+    e2.cPhysics.angularVel += (reverseProjectedMagEntity2) / e2.cHitbox.radius * g.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
 
-    e1.cPhysics.angularVel += (reverseProjectedMagEntity2) / e1.cHitbox.radius * globalObj.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
-    e2.cPhysics.angularVel -= (reverseProjectedMagEntity1) / e2.cHitbox.radius * globalObj.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
+    e1.cPhysics.angularVel += (reverseProjectedMagEntity2) / e1.cHitbox.radius * g.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
+    e2.cPhysics.angularVel -= (reverseProjectedMagEntity1) / e2.cHitbox.radius * g.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
 
 
     /////////////static resolution\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -624,7 +869,7 @@ class sOutOfBoundsHandler extends System { //determines what to do when embedVid
           window.innerHeight - entity.cHitbox.radius, window.innerHeight + entity.cHitbox.radius, 1, 0, );
         //if completely off edge of screen
         if (entity.cPos.y > window.innerHeight + entity.cHitbox.radius) {
-          if (entity.cPos.y > window.innerWidth/2){
+          if (entity.cPos.y > window.innerWidth / 2) {
             if (!(debugMode)) {
               const rr = entity.cHitbox.radius * 3;
               const xx = (entity.cPos.x);
@@ -647,7 +892,7 @@ class sVideoSpawner extends System { //responsible for spawning new videos
   }
 
   systemExecution() {
-    let dynamicSpawnRate = mapFromRanges(this.relevantEntities.length, 0, 10, globalObj.spawn.rate * 1, globalObj.spawn.rate / 5);
+    let dynamicSpawnRate = mapFromRanges(this.relevantEntities.length, 0, 10, g.spawn.rate * 1, g.spawn.rate / 5);
     const r = ran();
     if (dynamicSpawnRate > r) {
       createEntitiesFromBlueprint('embedVideo');
