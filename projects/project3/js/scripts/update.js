@@ -3,14 +3,11 @@ function update(){
   // console.log(mesh)
 ctx.fillStyle = cssRGB(255,255,0);
 ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-
+ctx.strokeStyle = cssRGB(255,255,0);
 
 
 // console.log(mesh);
 const scale = 100;
-const xScale = scale;
-const yScale = scale;
-const zScale = scale;
 
 const xOff = window.innerWidth/2;
 const yOff = window.innerHeight/2;
@@ -20,34 +17,8 @@ mesh.xAngle += .005;
 mesh.yAngle -= .001;
 mesh.zAngle -= .00001;
 
-let scaleMat = [
-  [xScale,0,0,0],
-  [0,yScale,0,0],
-  [0,0,zScale,0],
-  [0,0,0,1]
-]
-let translationMat = [
-  [1,0,0,xOff],
-  [0,1,0,yOff],
-  [0,0,1,zOff],
-  [0,0,0,1]
-]
-let centerMat = [
-  [1,0,0,window.innerWidth/2],
-  [0,1,0,window.innerHeight/2],
-  [0,0,1,-10],
-  [0,0,0,1]
-]
-let uncenterMat = [
-  [1,0,0,-window.innerWidth/2],
-  [0,1,0,-window.innerHeight/2],
-  [0,0,1,10],
-  [0,0,0,1]
-]
-let positionMat = matMatComposition(scaleMat,translationMat);
-
 let rSpd = 20;
-let rotationMatXYZ = matMatComposition(rotationMat(Math.sin(mesh.xAngle)/rSpd, 'x'), rotationMat(Math.sin(mesh.yAngle)/rSpd, 'y'), rotationMat(Math.sin(mesh.zAngle)/rSpd, 'z'));
+let rotationMatXYZ = matMatComp(rotMat(Math.sin(mesh.xAngle)/rSpd, 'x'), rotMat(Math.sin(mesh.yAngle)/rSpd, 'y'), rotMat(Math.sin(mesh.zAngle)/rSpd, 'z'));
 
 for (let i = 0; i < mesh.verts.length/3; i++){ //rotate all verts by rotation matrix
   let ii = i*3;
@@ -73,9 +44,9 @@ for (let i = 0; i < mesh.faces.length/3; i ++){
   let d2 = mesh.vertDistData(i,1);
   let d3 = mesh.vertDistData(i,2);
 
-  let m1 = matMatComposition(translationMat, diagonalMat(4,1/d1), scaleMat);
-  let m2 = matMatComposition(translationMat, diagonalMat(4,1/d2), scaleMat);
-  let m3 = matMatComposition(translationMat, diagonalMat(4,1/d3), scaleMat);
+  let m1 = matMatComp(transMat(xOff,yOff,zOff), diagMat(1/d1), diagMat(scale));
+  let m2 = matMatComp(transMat(xOff,yOff,zOff), diagMat(1/d2), diagMat(scale));
+  let m3 = matMatComp(transMat(xOff,yOff,zOff), diagMat(1/d3), diagMat(scale));
 
   let v1 = matVecMult(m1,v1Raw);
   let v2 = matVecMult(m2,v2Raw);

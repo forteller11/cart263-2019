@@ -89,7 +89,7 @@ class Mesh {
         j--;
       }
     }
-    console.log(this.facesDistToCamera);
+
   }
 
   vertData(face, vert, component) {
