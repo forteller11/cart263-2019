@@ -72,7 +72,7 @@ class sMove extends System { //moves player entity given keyboard input and tran
 
       const deltaMouseX = g.mouse.histX[g.mouse.histX.length-1] - g.mouse.histX[g.mouse.histX.length-2];
       const deltaMouseY = g.mouse.histY[g.mouse.histY.length-1] - g.mouse.histY[g.mouse.histY.length-2];
-      console.log(deltaMouseY);
+  
       entity.cPos.angleX -= deltaMouseX * g.mouse.sensitivity;
       entity.cPos.angleY -= deltaMouseY * g.mouse.sensitivity;
 
@@ -151,31 +151,31 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     }
 
     //calc distances to camera
-    this.sortFacesByDistanceToPoint(entity.cMesh);
+    this.sortFacesByDistanceToPoint(entity);
 
     for (let i = 0; i < entity.cMesh.faces.length / 3; i++) {
 
       // compartmentalize verts in 1x4 arrays [x,y,z,1]
-      let v1Raw = [this.vertData(entity.cMesh, i, 0, 'x'),
-                   this.vertData(entity.cMesh, i, 0, 'y'),
-                   this.vertData(entity.cMesh, i, 0, 'z'),
+      let v1Raw = [this.vertData(entity, i, 0, 'x'),
+                   this.vertData(entity, i, 0, 'y'),
+                   this.vertData(entity, i, 0, 'z'),
                    1
       ];
-      let v2Raw = [this.vertData(entity.cMesh, i, 1, 'x'),
-                   this.vertData(entity.cMesh, i, 1, 'y'),
-                   this.vertData(entity.cMesh, i, 1, 'z'),
+      let v2Raw = [this.vertData(entity, i, 1, 'x'),
+                   this.vertData(entity, i, 1, 'y'),
+                   this.vertData(entity, i, 1, 'z'),
                    1
       ];
-      let v3Raw = [this.vertData(entity.cMesh, i, 2, 'x'),
-                   this.vertData(entity.cMesh, i, 2, 'y'),
-                   this.vertData(entity.cMesh, i, 2, 'z'),
+      let v3Raw = [this.vertData(entity, i, 2, 'x'),
+                   this.vertData(entity, i, 2, 'y'),
+                   this.vertData(entity, i, 2, 'z'),
                    1
       ];
 
       //store distance of vectors in d vars
-      let d1 = this.vertDistData(entity.cMesh, i, 0);
-      let d2 = this.vertDistData(entity.cMesh, i, 1);
-      let d3 = this.vertDistData(entity.cMesh, i, 2);
+      let d1 = this.vertDistData(entity, i, 0);
+      let d2 = this.vertDistData(entity, i, 1);
+      let d3 = this.vertDistData(entity, i, 2);
 
       //compose giant transformation matrices for each vector in order right to left
       let m1 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d1), g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1);
@@ -206,68 +206,72 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     }
   }
 
-  distBetweenFacesAndPoint(mesh) { //calculate distances between faces and an arbitrary pos/point in 3D space
+  distBetweenFacesAndPoint(entity) { //calculate distances between faces and an arbitrary pos/point in 3D space
     //poimesh [x,y,z]
 
-    for (let i = 0; i < mesh.verts.length / 3; i++) { //calc vertDistoCamera for every vertice
+    for (let i = 0; i < entity.cMesh.verts.length / 3; i++) { //calc vertDistoCamera for every vertice
       let ii = i * 3;
-      mesh.vertsDistToCamera[i] = pythag(g.camera.x - mesh.verts[ii + 0], g.camera.y - mesh.verts[ii + 1], g.camera.z - mesh.verts[ii + 2]);
+      entity.cMesh.vertsDistToCamera[i] = pythag(
+        g.camera.x - entity.cPos.x - entity.cMesh.verts[ii + 0],
+        g.camera.y - entity.cPos.y - entity.cMesh.verts[ii + 1],
+        g.camera.z - entity.cPos.z - entity.cMesh.verts[ii + 2]
+      );
     }
-    for (let i = 0; i < mesh.faces.length / 3; i++) { //find avg dist of every face from camera by avging it's avg vertDistToCamera
-      mesh.facesDistToCamera[i] = mean(this.vertDistData(mesh, i, 0), this.vertDistData(mesh, i, 1), this.vertDistData(mesh, i, 2));
+    for (let i = 0; i < entity.cMesh.faces.length / 3; i++) { //find avg dist of every face from camera by avging it's avg vertDistToCamera
+      entity.cMesh.facesDistToCamera[i] = mean(this.vertDistData(entity, i, 0), this.vertDistData(entity, i, 1), this.vertDistData(entity, i, 2));
     }
   }
 
-  sortFacesByDistanceToPoint(mesh) {
+  sortFacesByDistanceToPoint(entity) {
 
-    this.distBetweenFacesAndPoint(mesh); //calc facesDistToCamera
+    this.distBetweenFacesAndPoint(entity); //calc facesDistToCamera
 
-    for (let i = 1; i < mesh.facesDistToCamera.length; i++) { //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
+    for (let i = 1; i < entity.cMesh.facesDistToCamera.length; i++) { //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
       let ii = i * 3; //face index of i as each face in faces arr corresponds to 3 elements
       let j = i - 1;
       while (j >= 0) { //itterate backwards through array until find an element which is smaller then index
         // console.log(`${this.facesDistToCamera[i]} < ${this.facesDistToCamera[j]}`)
-        if (mesh.facesDistToCamera[i] > mesh.facesDistToCamera[j]) {
+        if (entity.cMesh.facesDistToCamera[i] > entity.cMesh.facesDistToCamera[j]) {
 
           //swap elements on faces and facesDistToCamera arrays
           let jj = j * 3; //face index of j as each face in faces arr corresponds to 3 elements
 
           //dist to camera swap
-          let fDistStore = mesh.facesDistToCamera[i];
-          mesh.facesDistToCamera[i] = mesh.facesDistToCamera[j];
-          mesh.facesDistToCamera[j] = fDistStore;
+          let fDistStore = entity.cMesh.facesDistToCamera[i];
+          entity.cMesh.facesDistToCamera[i] = entity.cMesh.facesDistToCamera[j];
+          entity.cMesh.facesDistToCamera[j] = fDistStore;
 
           //face colors swap
-          const rStore = mesh.facesR[i];
-          const gStore = mesh.facesG[i];
-          const bStore = mesh.facesB[i];
+          const rStore = entity.cMesh.facesR[i];
+          const gStore = entity.cMesh.facesG[i];
+          const bStore = entity.cMesh.facesB[i];
 
-          mesh.facesR[i] = mesh.facesR[j];
-          mesh.facesG[i] = mesh.facesG[j];
-          mesh.facesB[i] = mesh.facesB[j];
+          entity.cMesh.facesR[i] = entity.cMesh.facesR[j];
+          entity.cMesh.facesG[i] = entity.cMesh.facesG[j];
+          entity.cMesh.facesB[i] = entity.cMesh.facesB[j];
 
-          mesh.facesR[j] = rStore;
-          mesh.facesG[j] = gStore;
-          mesh.facesB[j] = bStore;
+          entity.cMesh.facesR[j] = rStore;
+          entity.cMesh.facesG[j] = gStore;
+          entity.cMesh.facesB[j] = bStore;
 
           //faces swap
           let fStore = [
-            mesh.faces[ii + 0],
-            mesh.faces[ii + 1],
-            mesh.faces[ii + 2]
+            entity.cMesh.faces[ii + 0],
+            entity.cMesh.faces[ii + 1],
+            entity.cMesh.faces[ii + 2]
           ];
 
-          let fStore1 = mesh.faces[ii + 0];
-          let fStore2 = mesh.faces[ii + 1];
-          let fStore3 = mesh.faces[ii + 2];
+          let fStore1 = entity.cMesh.faces[ii + 0];
+          let fStore2 = entity.cMesh.faces[ii + 1];
+          let fStore3 = entity.cMesh.faces[ii + 2];
 
-          mesh.faces[ii + 0] = mesh.faces[jj + 0];
-          mesh.faces[ii + 1] = mesh.faces[jj + 1];
-          mesh.faces[ii + 2] = mesh.faces[jj + 2];
+          entity.cMesh.faces[ii + 0] = entity.cMesh.faces[jj + 0];
+          entity.cMesh.faces[ii + 1] = entity.cMesh.faces[jj + 1];
+          entity.cMesh.faces[ii + 2] = entity.cMesh.faces[jj + 2];
 
-          mesh.faces[jj + 0] = fStore[0];
-          mesh.faces[jj + 1] = fStore[1];
-          mesh.faces[jj + 2] = fStore[2];
+          entity.cMesh.faces[jj + 0] = fStore[0];
+          entity.cMesh.faces[jj + 1] = fStore[1];
+          entity.cMesh.faces[jj + 2] = fStore[2];
           break;
         }
 
@@ -277,7 +281,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
   }
 
-  vertData(mesh, face, vert, component) {
+  vertData(entity, face, vert, component) {
     //finds the element in verts array which corresponds to a
     //given component of a vertex of a face
 
@@ -306,10 +310,10 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
     //     console.log(`vertIndexData: ${this.faces[faceIndex + vertIndex]*3}
     // vertData: ${this.verts[this.faces[faceIndex + vertIndex]*3 + componentIndex]}`);
-    return mesh.verts[mesh.faces[faceIndex + vertIndex] * 3 + componentIndex];
+    return entity.cMesh.verts[entity.cMesh.faces[faceIndex + vertIndex] * 3 + componentIndex];
   }
 
-  vertDistData(mesh, face, vert) {
+  vertDistData(entity, face, vert) {
     //finds the element in vertDistToCamera array which corresponds to
     //a givens face's vert's dist between vert-camera
 
@@ -318,7 +322,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
     if (vert === undefined){console.log('ERROR: not enough arguments!')}
 
-    return mesh.vertsDistToCamera[mesh.faces[faceIndex + vertIndex]];
+    return entity.cMesh.vertsDistToCamera[entity.cMesh.faces[faceIndex + vertIndex]];
   }
 
 }
