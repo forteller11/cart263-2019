@@ -24,6 +24,7 @@ class gPhysicsConstants { //stores physics constants
     this.rotationTransferOnCollision = .2;
     this.windX = 0;
     this.windY = .1;
+    this.windZ = 0;
   }
 }
 

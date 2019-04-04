@@ -13,6 +13,7 @@ let meshFileDirectory = 'assets/triangle02.obj';
 let meshFileParsedData; //to be loaded
 
 function preload(){ //loads all files before main funciton
+
   let request = new XMLHttpRequest();
   request.open('GET', meshFileDirectory); //open/setup request
   request.send();
@@ -42,7 +43,9 @@ function main() {
 
   createEntitiesFromBlueprint('player');
   let ent = createEntitiesFromBlueprint('mesh');
-
-  setInterval(update, fps);
+  console.log(ent.cMesh.verts);
+  console.log('UPDATE')
+  update();
+  // setInterval(update, fps);
 
 }

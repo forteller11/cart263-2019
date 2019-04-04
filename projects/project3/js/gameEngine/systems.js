@@ -30,22 +30,28 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
       ctx.strokeStyle = "#5cc639";
       ctx.strokeRect(entity.cPos.x, entity.cPos.y, 2, 2);
     }
-    entity.cPos.angle += entity.cPhysics.angularVel;
-    entity.cPhysics.angularVel *= g.physics.polarDrag;
-    entity.cPhysics.angularVel = constrain(entity.cPhysics.angularVel, -g.physics.maxPolarVel, g.physics.maxPolarVel);
+    entity.cPos.angleX += entity.cPhysics.angularVel.x;
+    entity.cPos.angleY += entity.cPhysics.angularVel.y;
+    entity.cPos.angleZ += entity.cPhysics.angularVel.z;
+
+    entity.cPhysics.angularVel.mult(g.physics.polarDrag);
+
     if (entity.cPhysics.inert) { //if a inert entity
       entity.cPhysics.x = 0;
       entity.cPhysics.y = 0;
+      entity.cPhysics.z = 0;
       // entity.cPhysics.angularVel = 0;
 
     } else {
       //apply wind
       entity.cPhysics.vel.x += g.physics.windX;
       entity.cPhysics.vel.y += g.physics.windY;
+      entity.cPhysics.vel.z += g.physics.windZ;
 
       //transform position based on velocties
       entity.cPos.x += entity.cPhysics.vel.x;
       entity.cPos.y += entity.cPhysics.vel.y;
+      entity.cPos.z += entity.cPhysics.vel.z;
 
       //apply drag and constrain velocties
       entity.cPhysics.vel.mult(g.physics.cartesianDrag);
@@ -109,11 +115,15 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
   }
 
   systemExecution(entity) { //for every mesh, then translate based and around cam
-
+console.log('SRENDER')
+console.log(entity.cMesh.verts);
     //create rotation matrix based on entities angular velocity
-    let rotationMatXYZ = matMatComp(rotMat(Math.sin(entity.cPhysics.angularVel.x), 'x'),
-      rotMat(Math.sin(entity.cPhysics.angularVel.y), 'y'),
-      rotMat(Math.sin(entity.cPhysics.angularVel.z), 'z'));
+    let rotationMatXYZ = matMatComp(
+      rotMat(entity.cPhysics.angularVel.x, 'x'),
+      rotMat(entity.cPhysics.angularVel.y, 'y'),
+      rotMat(entity.cPhysics.angularVel.z, 'z'));
+      console.log(entity.cPhysics);
+      console.log(rotationMatXYZ);
 
     //rotate verts based on rotation matrix
     for (let i = 0; i < entity.cMesh.verts.length / 3; i++) { //rotate all verts by rotation matrix
@@ -127,6 +137,8 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       entity.cMesh.verts[ii + 1] = rotatedVec[1];
       entity.cMesh.verts[ii + 2] = rotatedVec[2];
     }
+    console.log('POSTROTATION')
+    console.log(entity.cMesh.verts);
     //calc distances to camera
     this.sortFacesByDistanceToPoint(entity.cMesh);
 
@@ -776,11 +788,11 @@ class sCollisionResolution extends System {
     let reverseProjectedMagEntity2 = e2.cPhysics.vel.projectOnTo(collisionVector);
     let combinedReverseProjectedMag = mean(reverseProjectedMagEntity1, reverseProjectedMagEntity2);
 
-    e1.cPhysics.angularVel -= (reverseProjectedMagEntity1) / e1.cHitbox.radius * g.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
-    e2.cPhysics.angularVel += (reverseProjectedMagEntity2) / e2.cHitbox.radius * g.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
+    e1.cPhysics.angularVel.z -= (reverseProjectedMagEntity1) / e1.cHitbox.radius * g.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
+    e2.cPhysics.angularVel.z += (reverseProjectedMagEntity2) / e2.cHitbox.radius * g.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
 
-    e1.cPhysics.angularVel += (reverseProjectedMagEntity2) / e1.cHitbox.radius * g.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
-    e2.cPhysics.angularVel -= (reverseProjectedMagEntity1) / e2.cHitbox.radius * g.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
+    e1.cPhysics.angularVel.z += (reverseProjectedMagEntity2) / e1.cHitbox.radius * g.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
+    e2.cPhysics.angularVel.z -= (reverseProjectedMagEntity1) / e2.cHitbox.radius * g.physics.rotationTransferOnCollision; //if at right angle want maxium angle change
 
 
     /////////////static resolution\\\\\\\\\\\\\\\\\\\\\\\\\

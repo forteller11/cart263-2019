@@ -1,6 +1,6 @@
 function update(){
   systemManager.update();
-    console.log(systemManager.sRender.relevantEntities);
+  console.log(systemManager);
 }
 
 // function update(){

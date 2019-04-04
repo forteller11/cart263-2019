@@ -64,12 +64,12 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
   constructor(objBlob){
     super();
     this.name = 'cMesh';
-    this.verts = objBlob.verts; //array of vertexes in format x,y,z,x,y,z....
+    this.verts = objBlob.verts.slice(); //array of vertexes in format x,y,z,x,y,z.... (slice is used to copy array instead of just provide a reference to objBlob)
+
     this.vertsDistToCamera = []; //array of how far the vert is away from the camera [distForxyz,distForv2,v3,v4...]
+    this.vertNorms = objBlob.vertNorms.slice(); //arr of vertex normals
 
-    this.vertNorms = objBlob.vertNorms; //arr of vertex normals
-
-    this.faces = objBlob.faces; //arr with indexes of vertices which make up a face, each face composed of 3 vertices/elements, [v1,v2,v3, v1,v2,v3]
+    this.faces = objBlob.faces.slice(); //arr with indexes of vertices which make up a face, each face composed of 3 vertices/elements, [v1,v2,v3, v1,v2,v3]
     this.facesDistToCamera = [] //dist of [face1, distOfFace2]
 
     this.facesR = []; //corresponds to red   component of a face[i] color
@@ -92,7 +92,7 @@ class cPlayer extends Component { //input moves any entities with cPlayer, and t
 }
 
 class cPhysics extends Component {
-  constructor(mass=null,xVel=0,yVel=0, zVel=0, angularVel=0, inert = false){
+  constructor(mass=null, xVel=0,yVel=0,zVel=0, angularVel=0, inert = false){
     super();
     this.name = 'cPhysics';
     this.mass = mass;
@@ -100,6 +100,8 @@ class cPhysics extends Component {
     this.momentOfInertia = 0.0012; //how easily this object is rotated
     this.vel = new Vector3D(xVel,yVel,zVel);
     this.angularVel = new Vector3D(angularVel,angularVel,angularVel);
+    this.angularVel.mult(g.physics.polarDrag)
+    console.log(this.angularVel);
     this.inert = inert;
     this.restitution = 0.8; //bouncyness or % force transferred in collisions, 1 = bouncy, 0=not
     if (mass===null){console.log('mass not set, define by cCollision as PI r ^2');}
