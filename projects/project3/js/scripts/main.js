@@ -6,7 +6,22 @@ into a world of rotating triangles
 */
 
 'use strict';
-window.onload = main;
+window.onload = preload;
+
+//text files to be loaded
+let meshFileDirectory = 'assets/triangle02.obj';
+let meshFileParsedData; //to be loaded
+
+function preload(){ //loads all files before main funciton
+  let request = new XMLHttpRequest();
+  request.open('GET', meshFileDirectory); //open/setup request
+  request.send();
+
+  request.onload = () => {
+    meshFileParsedData = convertObjFileToMeshBlob(request.response);
+    main();
+  }
+}
 
 let g; //global object
 let systemManager;
@@ -24,14 +39,8 @@ function main() {
   ctx.fillStyle = cssRGB(ran(255), ran(255), ran(255));
   ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-  let request = new XMLHttpRequest();
-  request.open('GET', 'assets/triangle02.obj'); //open/setup request
-  request.send();
+  createEntitiesFromBlueprint('player');
+  createEntitiesFromBlueprint('mesh',3);
 
-  request.onload = () => {
-    mesh = new Mesh(convertObjFileToMeshBlob(request.response));
-    update();
-    setInterval(update, fps);
-  }
 
 }

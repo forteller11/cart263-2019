@@ -102,7 +102,7 @@ class sMove extends System { //moves player entity given keyboard input and tran
 class sRender extends System { //applys drags and phy constants (gravity if applicable)
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
-    this.requiredComponents = ['cPos', 'cMesh','cPhysics'];
+    this.requiredComponents = ['cPos', 'cMesh', 'cPhysics'];
     //also uses cCamera
   }
 
@@ -110,180 +110,181 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
     //create rotation matrix based on entities angular velocity
     let rotationMatXYZ = matMatComp(rotMat(Math.sin(entity.cPhysics.angularVel.x), 'x'),
-                                    rotMat(Math.sin(entity.cPhysics.angularVel.y), 'y'),
-                                    rotMat(Math.sin(entity.cPhysics.angularVel.z), 'z'));
+      rotMat(Math.sin(entity.cPhysics.angularVel.y), 'y'),
+      rotMat(Math.sin(entity.cPhysics.angularVel.z), 'z'));
 
     //rotate verts based on rotation matrix
-    for (let i = 0; i < entity.cMesh.verts.length/3; i++){ //rotate all verts by rotation matrix
-      let ii = i*3;
-      let vert = [ entity.cMesh.verts[ii+0],  entity.cMesh.verts[ii+1],  entity.cMesh.verts[ii+2], 1 ]; //encapsulate verts ntuples intoa  single array
+    for (let i = 0; i < entity.cMesh.verts.length / 3; i++) { //rotate all verts by rotation matrix
+      let ii = i * 3;
+      let vert = [entity.cMesh.verts[ii + 0], entity.cMesh.verts[ii + 1], entity.cMesh.verts[ii + 2], 1]; //encapsulate verts ntuples intoa  single array
 
-      let rotatedVec = matVecMult(rotationMatXYZ,vert); //multiply vertex by rotation matrix
+      let rotatedVec = matVecMult(rotationMatXYZ, vert); //multiply vertex by rotation matrix
 
       //store rotated vertex
-      entity.cMesh.verts[ii+0] = rotatedVec[0];
-      entity.cMesh.verts[ii+1] = rotatedVec[1];
-      entity.cMesh.verts[ii+2] = rotatedVec[2];
+      entity.cMesh.verts[ii + 0] = rotatedVec[0];
+      entity.cMesh.verts[ii + 1] = rotatedVec[1];
+      entity.cMesh.verts[ii + 2] = rotatedVec[2];
     }
     //calc distances to camera
     this.sortFacesByDistanceToPoint(entity.cMesh);
 
-    for (let i = 0; i < entity.cMesh.faces.length/3; i ++){
+    for (let i = 0; i < entity.cMesh.faces.length / 3; i++) {
 
       // compartmentalize verts in 1x4 arrays [x,y,z,1]
-      let v1Raw = thish.vertData(entity.cMesh, i, 0, 'x'),
+      let v1Raw = [this.vertData(entity.cMesh, i, 0, 'x'),
                    this.vertData(entity.cMesh, i, 0, 'y'),
                    this.vertData(entity.cMesh, i, 0, 'z'),
                    1
-                 ];
+      ];
       let v2Raw = [this.vertData(entity.cMesh, i, 1, 'x'),
                    this.vertData(entity.cMesh, i, 1, 'y'),
                    this.vertData(entity.cMesh, i, 1, 'z'),
                    1
-                 ];
+      ];
       let v3Raw = [this.vertData(entity.cMesh, i, 2, 'x'),
                    this.vertData(entity.cMesh, i, 2, 'y'),
                    this.vertData(entity.cMesh, i, 2, 'z'),
                    1
-                 ];
+      ];
 
       //store distance of vectors in d vars
-      let d1 = this.vertDistData(entity.cMesh, i, 0) ;
-      let d2 = this.vertDistData(entity.cMesh, i, 1) ;
-      let d3 = this.vertDistData(entity.cMesh, i, 2) ;
+      let d1 = this.vertDistData(entity.cMesh, i, 0);
+      let d2 = this.vertDistData(entity.cMesh, i, 1);
+      let d3 = this.vertDistData(entity.cMesh, i, 2);
 
       //compose giant transformation matrices for each vector in order right to left
-      let m1 = matMatComp(g.camera.centerMatrix, diagMat(1/d1), g.camera.scaleMatrix);
-      let m2 = matMatComp(g.camera.centerMatrix, diagMat(1/d2), g.camera.scaleMatrix);
-      let m3 = matMatComp(g.camera.centerMatrix, diagMat(1/d3), g.camera.scaleMatrix);
+      let m1 = matMatComp(g.camera.centerMatrix, diagMat(1 / d1), g.camera.scaleMatrix);
+      let m2 = matMatComp(g.camera.centerMatrix, diagMat(1 / d2), g.camera.scaleMatrix);
+      let m3 = matMatComp(g.camera.centerMatrix, diagMat(1 / d3), g.camera.scaleMatrix);
 
       //transform vectors using the appropriate matrices
-      let v1 = matVecMult(m1,v1Raw);
-      let v2 = matVecMult(m2,v2Raw);
-      let v3 = matVecMult(m3,v3Raw);
+      let v1 = matVecMult(m1, v1Raw);
+      let v2 = matVecMult(m2, v2Raw);
+      let v3 = matVecMult(m3, v3Raw);
 
       //draw resulting vectors on the screen using the appropriate color of the face
-      ctx.fillStyle = cssRGB(entity.cMesh.facesR[i],entity.cMesh.facesG[i],entity.cMesh.facesB[i]);
+      ctx.fillStyle = cssRGB(entity.cMesh.facesR[i], entity.cMesh.facesG[i], entity.cMesh.facesB[i]);
 
       ctx.beginPath(v1[0], v1[1]);
-      ctx.lineTo   (v2[0], v2[1]);
-      ctx.lineTo   (v3[0], v3[1]);
-      ctx.lineTo   (v1[0], v1[1]);
+      ctx.lineTo(v2[0], v2[1]);
+      ctx.lineTo(v3[0], v3[1]);
+      ctx.lineTo(v1[0], v1[1]);
       ctx.fill();
       ctx.stroke();
     }
+  }
 
-    distBetweenFacesAndPoint(mesh) { //calculate distances between faces and an arbitrary pos/point in 3D space
-      //poimesh [x,y,z]
+  distBetweenFacesAndPoint(mesh) { //calculate distances between faces and an arbitrary pos/point in 3D space
+    //poimesh [x,y,z]
 
-      for (let i = 0; i < mesh.verts.length / 3; i++) { //calc vertDistoCamera for every vertice
-        let ii = i * 3;
-        mesh.vertsDistToCamera[i] = pythag(g.camera.x - mesh.verts[ii + 0], g.camera.y - mesh.verts[ii + 1], g.camera.z - mesh.verts[ii + 2]);
-      }
-      for (let i = 0; i < mesh.faces.length / 3; i++) { //find avg dist of every face from camera by avging it's avg vertDistToCamera
-        mesh.facesDistToCamera[i] = mean(mesh.vertDistData(i, 0), mesh.vertDistData(i, 1), mesh.vertDistData(i, 2));
-      }
+    for (let i = 0; i < mesh.verts.length / 3; i++) { //calc vertDistoCamera for every vertice
+      let ii = i * 3;
+      mesh.vertsDistToCamera[i] = pythag(g.camera.x - mesh.verts[ii + 0], g.camera.y - mesh.verts[ii + 1], g.camera.z - mesh.verts[ii + 2]);
     }
+    for (let i = 0; i < mesh.faces.length / 3; i++) { //find avg dist of every face from camera by avging it's avg vertDistToCamera
+      mesh.facesDistToCamera[i] = mean(mesh.vertDistData(i, 0), mesh.vertDistData(i, 1), mesh.vertDistData(i, 2));
+    }
+  }
 
-    sortFacesByDistanceToPoint(mesh) {
+  sortFacesByDistanceToPoint(mesh) {
 
-      this.distBetweenFacesAndPoint(mesh); //calc facesDistToCamera
+    this.distBetweenFacesAndPoint(mesh); //calc facesDistToCamera
 
-      for (let i = 1; i < mesh.facesDistToCamera.length; i++) { //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
-        let ii = i * 3; //face index of i as each face in faces arr corresponds to 3 elements
-        let j = i - 1;
-        while (j >= 0) { //itterate backwards through array until find an element which is smaller then index
-          // console.log(`${this.facesDistToCamera[i]} < ${this.facesDistToCamera[j]}`)
-          if (mesh.facesDistToCamera[i] > mesh.facesDistToCamera[j]) {
-            console.log('swap');
-            //swap elements on faces and facesDistToCamera arrays
-            let jj = j * 3; //face index of j as each face in faces arr corresponds to 3 elements
+    for (let i = 1; i < mesh.facesDistToCamera.length; i++) { //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
+      let ii = i * 3; //face index of i as each face in faces arr corresponds to 3 elements
+      let j = i - 1;
+      while (j >= 0) { //itterate backwards through array until find an element which is smaller then index
+        // console.log(`${this.facesDistToCamera[i]} < ${this.facesDistToCamera[j]}`)
+        if (mesh.facesDistToCamera[i] > mesh.facesDistToCamera[j]) {
+          console.log('swap');
+          //swap elements on faces and facesDistToCamera arrays
+          let jj = j * 3; //face index of j as each face in faces arr corresponds to 3 elements
 
-            //dist to camera swap
-            let fDistStore = mesh.facesDistToCamera[i];
-            mesh.facesDistToCamera[i] = mesh.facesDistToCamera[j];
-            mesh.facesDistToCamera[j] = fDistStore;
+          //dist to camera swap
+          let fDistStore = mesh.facesDistToCamera[i];
+          mesh.facesDistToCamera[i] = mesh.facesDistToCamera[j];
+          mesh.facesDistToCamera[j] = fDistStore;
 
-            //face colors swap
-            const rStore = mesh.facesR[i];
-            const gStore = mesh.facesG[i];
-            const bStore = mesh.facesB[i];
+          //face colors swap
+          const rStore = mesh.facesR[i];
+          const gStore = mesh.facesG[i];
+          const bStore = mesh.facesB[i];
 
-            mesh.facesR[i] = mesh.facesR[j];
-            mesh.facesG[i] = mesh.facesG[j];
-            mesh.facesB[i] = mesh.facesB[j];
+          mesh.facesR[i] = mesh.facesR[j];
+          mesh.facesG[i] = mesh.facesG[j];
+          mesh.facesB[i] = mesh.facesB[j];
 
-            mesh.facesR[j] = rStore;
-            mesh.facesG[j] = gStore;
-            mesh.facesB[j] = bStore;
+          mesh.facesR[j] = rStore;
+          mesh.facesG[j] = gStore;
+          mesh.facesB[j] = bStore;
 
-            //faces swap
-            let fStore = [
-              mesh.faces[ii + 0],
-              mesh.faces[ii + 1],
-              mesh.faces[ii + 2]
-            ];
+          //faces swap
+          let fStore = [
+            mesh.faces[ii + 0],
+            mesh.faces[ii + 1],
+            mesh.faces[ii + 2]
+          ];
 
-            let fStore1 = mesh.faces[ii + 0];
-            let fStore2 = mesh.faces[ii + 1];
-            let fStore3 = mesh.faces[ii + 2];
+          let fStore1 = mesh.faces[ii + 0];
+          let fStore2 = mesh.faces[ii + 1];
+          let fStore3 = mesh.faces[ii + 2];
 
-            mesh.faces[ii + 0] = mesh.faces[jj + 0];
-            mesh.faces[ii + 1] = mesh.faces[jj + 1];
-            mesh.faces[ii + 2] = mesh.faces[jj + 2];
+          mesh.faces[ii + 0] = mesh.faces[jj + 0];
+          mesh.faces[ii + 1] = mesh.faces[jj + 1];
+          mesh.faces[ii + 2] = mesh.faces[jj + 2];
 
-            mesh.faces[jj + 0] = fStore[0];
-            mesh.faces[jj + 1] = fStore[1];
-            mesh.faces[jj + 2] = fStore[2];
-            break;
-          }
-
-          j--;
+          mesh.faces[jj + 0] = fStore[0];
+          mesh.faces[jj + 1] = fStore[1];
+          mesh.faces[jj + 2] = fStore[2];
+          break;
         }
+
+        j--;
       }
-
     }
 
-    vertData(mesh, face, vert, component) {
-      //finds the element in verts array which corresponds to a
-      //given component of a vertex of a face
+  }
 
-      const faceIndex = (face) * 3;
-      const vertIndex = (vert);
+  vertData(mesh, face, vert, component) {
+    //finds the element in verts array which corresponds to a
+    //given component of a vertex of a face
 
-      let componentIndex; //convert string x,y,z to number
-      switch (component) {
-        case 'x':
-          componentIndex = 0;
-          break;
-        case 'y':
-          componentIndex = 1;
-          break;
-        case 'z':
-          componentIndex = 2;
-          break;
-        default:
-          console.log('ERROR: wrong input at method vertComponent');
-          break
-      }
-      if (vert > 2) {
-        console.log('ERROR: inputs too large at vertComponent')
-      };
+    const faceIndex = (face) * 3;
+    const vertIndex = (vert);
 
-      //     console.log(`vertIndexData: ${this.faces[faceIndex + vertIndex]*3}
-      // vertData: ${this.verts[this.faces[faceIndex + vertIndex]*3 + componentIndex]}`);
-      return mesh.verts[mesh.faces[faceIndex + vertIndex] * 3 + componentIndex];
+    let componentIndex; //convert string x,y,z to number
+    switch (component) {
+      case 'x':
+        componentIndex = 0;
+        break;
+      case 'y':
+        componentIndex = 1;
+        break;
+      case 'z':
+        componentIndex = 2;
+        break;
+      default:
+        console.log('ERROR: wrong input at method vertComponent');
+        break
     }
+    if (vert > 2) {
+      console.log('ERROR: inputs too large at vertComponent')
+    };
 
-    vertDistData(mesh, face, vert) {
-      //finds the element in vertDistToCamera array which corresponds to
-      //a givens face's vert's dist between vert-camera
+    //     console.log(`vertIndexData: ${this.faces[faceIndex + vertIndex]*3}
+    // vertData: ${this.verts[this.faces[faceIndex + vertIndex]*3 + componentIndex]}`);
+    return mesh.verts[mesh.faces[faceIndex + vertIndex] * 3 + componentIndex];
+  }
 
-      const faceIndex = (face) * 3;
-      const vertIndex = (vert);
+  vertDistData(mesh, face, vert) {
+    //finds the element in vertDistToCamera array which corresponds to
+    //a givens face's vert's dist between vert-camera
 
-      return mesh.vertsDistToCamera[mesh.faces[faceIndex + vertIndex]];
-    }
+    const faceIndex = (face) * 3;
+    const vertIndex = (vert);
+
+    return mesh.vertsDistToCamera[mesh.faces[faceIndex + vertIndex]];
+  }
 
 }
 

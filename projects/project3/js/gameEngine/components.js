@@ -92,13 +92,13 @@ class cPlayer extends Component { //input moves any entities with cPlayer, and t
 }
 
 class cPhysics extends Component {
-  constructor(mass=null,xVel=0,yVel=0,angularVel=0, inert = false){
+  constructor(mass=null,xVel=0,yVel=0, zVel=0, angularVel=0, inert = false){
     super();
     this.name = 'cPhysics';
     this.mass = mass;
     this.invMass = 1/mass; //inverse mass
     this.momentOfInertia = 0.0012; //how easily this object is rotated
-    this.vel = new Vector3D(xVel,yVel,0);
+    this.vel = new Vector3D(xVel,yVel,zVel);
     this.angularVel = new Vector3D(angularVel,angularVel,angularVel);
     this.inert = inert;
     this.restitution = 0.8; //bouncyness or % force transferred in collisions, 1 = bouncy, 0=not
