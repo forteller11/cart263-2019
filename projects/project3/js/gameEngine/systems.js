@@ -73,12 +73,33 @@ class sMove extends System { //moves player entity given keyboard input and tran
     const deltaMouseX = g.mouse.histX[g.mouse.histX.length - 1] - g.mouse.histX[g.mouse.histX.length - 2];
     const deltaMouseY = g.mouse.histY[g.mouse.histY.length - 1] - g.mouse.histY[g.mouse.histY.length - 2];
 
-    entity.cPos.angleX += deltaMouseX * g.mouse.sensitivity;
-    entity.cPos.angleY += deltaMouseY * g.mouse.sensitivity;
+    // entity.cPos.angleX = -Math.PI * 2 * g.mouse.x / window.innerHeight / 2;
+    // entity.cPos.angleY = Math.PI * 2 * g.mouse.y / window.innerHeight / 2;
 
     //keyboard input for player movement
     for (let i = 0; i < g.input.keysDown.length; i++) { //for every key pressed this frame...
       switch (g.input.keysDown[i]) {
+        //ROTATIONS
+        case 37: //left arrow
+          entity.cPos.angleX += g.camera.rotateSpeed;
+          break;
+        case 39: //right arrow
+          entity.cPos.angleX -= g.camera.rotateSpeed;
+          break;
+        case 38: //up arrow
+          entity.cPos.angleY -= g.camera.rotateSpeed;
+          break;
+        case 40: //down arrow
+          entity.cPos.angleY += g.camera.rotateSpeed;
+          break;
+          case 81: //Q
+            entity.cPos.angleZ += g.camera.rotateSpeed;
+            break;
+          case 69: //E
+            entity.cPos.angleZ -= g.camera.rotateSpeed;
+            break;
+
+          //MOVEMENT
         case 65: //a key
           entity.cPos.x -= g.input.moveSpeed;
           break;
@@ -86,17 +107,22 @@ class sMove extends System { //moves player entity given keyboard input and tran
           entity.cPos.x += g.input.moveSpeed;
           break;
         case 87: //w key
-          entity.cPos.z += g.input.moveSpeed;
+          entity.cPos.x += g.camera.directionVector[0] * g.input.moveSpeed;
+          entity.cPos.y += g.camera.directionVector[1] * g.input.moveSpeed;
+          entity.cPos.z += g.camera.directionVector[2] * g.input.moveSpeed;
           break;
         case 83: //s key
-          entity.cPos.z -= g.input.moveSpeed;
+          entity.cPos.x += g.camera.directionVector[0] * g.input.moveSpeed;
+          entity.cPos.y += g.camera.directionVector[1] * g.input.moveSpeed;
+          entity.cPos.z -= g.camera.directionVector[2] * g.input.moveSpeed;
           break;
-        case 32: //space bar
+        case 32: //space bar, rotate by ... degrees
           entity.cPos.y -= g.input.moveSpeed;
           break;
         case 16: //shift control
           entity.cPos.y += g.input.moveSpeed;
           break;
+
       }
 
     }
@@ -114,7 +140,7 @@ class sMove extends System { //moves player entity given keyboard input and tran
       rotMat(-g.camera.angleX, 'y'),
       rotMat(-g.camera.angleZ, 'z'));
 
-    g.camera.directionVector = matVecMult(g.camera.rotationMatrix, [1, 1, 1, 1]);
+    g.camera.directionVector = matVecMult(g.camera.rotationMatrix, [0, 0, 1, 1]); //where is the camera pointing?
 
   }
 
@@ -151,9 +177,9 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       entity.cMesh.verts[ii + 2] = rotatedVec[2];
     }
 
-    this.isEntityInFrustrum(entity);
-
-    if (entity.cMesh.inFrustrum) { //if in frustrum, draw mesh
+    this.calculateAmountInCameraFrustrum(entity);
+    console.log(entity.cMesh.inFrustrumAmount)
+    if (entity.cMesh.inFrustrumAmount > g.camera.clippingThreshold) { //if in frustrum, draw mesh
 
       this.sortFacesByDistanceToPoint(entity);
 
@@ -227,17 +253,13 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     }
   }
 
-  isEntityInFrustrum(entity) {
+  calculateAmountInCameraFrustrum(entity) {
     //dot between camDirVec and vec from camera to cPos
     let camMeshVec = new Vector3D(entity.cPos.x - g.camera.x, entity.cPos.y - g.camera.y, entity.cPos.z - g.camera.z);
     camMeshVec.normalize();
-    let inFrustrum = dot(g.camera.directionVector, [camMeshVec.x, camMeshVec.y, camMeshVec.z, 1]);
-    console.log(inFrustrum);
-    if (inFrustrum > g.camera.clippingThreshold) {
-      entity.cMesh.inFrustrum = true;
-    } else {
-      entity.cMesh.inFrustrum = false;
-    }
+    entity.cMesh.inFrustrumAmount = dot(g.camera.directionVector,
+      [camMeshVec.x, camMeshVec.y, camMeshVec.z, 1]);
+      entity.cMesh.inFrustrumAmount --; //to account for homogenous coords effects
   }
 
   sortFacesByDistanceToPoint(entity) {

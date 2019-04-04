@@ -96,12 +96,12 @@ function addComponentsBasedOnBlueprint(newEntity, blueprintName) {
 
           newEntity.addComponent(new cPos(0, ran(-posRange,posRange), ran(-posRange,posRange), ran(-posRange,posRange)));
           newEntity.addComponent(new cMesh(meshFileParsedData));
-          newEntity.addComponent(new cPhysics(1, 0,0,0, ran(-rotRange,rotRange),ran(-rotRange,rotRange),ran(rotRange))); //static = true
+          newEntity.addComponent(new cPhysics(1, 0,0,0, ran(-rotRange,rotRange),ran(-rotRange,rotRange),ran(-rotRange,rotRange))); //static = true
           break;
         }
         case 'player':
           {
-            newEntity.addComponent(new cPos(0,0,0,-10));
+            newEntity.addComponent(new cPos(0,0,0,0));
             newEntity.addComponent(new cPlayer()); //static = true
             break;
           }

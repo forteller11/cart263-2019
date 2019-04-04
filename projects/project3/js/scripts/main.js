@@ -42,9 +42,11 @@ function main() {
   ctx = createCanvas(window.innerWidth, window.innerHeight);
 
   createEntitiesFromBlueprint('player');
-  let ent = createEntitiesFromBlueprint('mesh',6);
-  console.log('UPDATE')
+  let ent = createEntitiesFromBlueprint('mesh',10);
+
   update();
   setInterval(update, fps);
+
+
 
 }

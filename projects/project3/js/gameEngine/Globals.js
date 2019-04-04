@@ -56,8 +56,8 @@ class gPhysicsConstants { //stores physics constants
       this.angleY = 0;
       this.angleZ = 0;
       this.scaleAmount = window.innerWidth;
-      this.clippingThreshold  = -0.1; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
-
+      this.clippingThreshold  = 0; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
+      this.rotateSpeed = Math.PI/60;
       //rotation of camera
       this.rotationMatrix = matMatComp(rotMat(-this.angleX, 'x'),
                                        rotMat(-this.angleY, 'y'),
@@ -70,7 +70,9 @@ class gPhysicsConstants { //stores physics constants
 
       this.scaleMatrix = diagMat(this.scaleAmount, this.scaleAmount, this.scaleAmount);
 
-    this.directionVector = matVecMult(this.rotationMatrix,[1,1,1,1]); //where is the camera pointing?
+    this.directionVector = matVecMult(this.rotationMatrix,[0,0,1,1]); //where is the camera pointing (array representing vector, with z as up direciton)
+
+    //z == up direction
     }
   }
 
