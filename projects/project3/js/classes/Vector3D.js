@@ -65,6 +65,13 @@ class Vector3D {
     }
   }
 
+  normalize(max) { //normalize vector
+    this.x /= this.mag;
+    this.y /= this.mag;
+    this.z /= this.mag;
+    this.mag = 1;
+  }
+
   angle() { //returns angle in radians of current vector
     console.log('angle return doesnt make sense in 3D')
     return Math.atan2(this.y, this.x); //save angle of vector

@@ -70,14 +70,14 @@ class sMove extends System { //moves player entity given keyboard input and tran
   systemExecution(entity) { //move player according to inputs, translate camera to player pos
     //mouse input for player movement
 
-      const deltaMouseX = g.mouse.histX[g.mouse.histX.length-1] - g.mouse.histX[g.mouse.histX.length-2];
-      const deltaMouseY = g.mouse.histY[g.mouse.histY.length-1] - g.mouse.histY[g.mouse.histY.length-2];
-  
-      entity.cPos.angleX -= deltaMouseX * g.mouse.sensitivity;
-      entity.cPos.angleY -= deltaMouseY * g.mouse.sensitivity;
+    const deltaMouseX = g.mouse.histX[g.mouse.histX.length - 1] - g.mouse.histX[g.mouse.histX.length - 2];
+    const deltaMouseY = g.mouse.histY[g.mouse.histY.length - 1] - g.mouse.histY[g.mouse.histY.length - 2];
+
+    entity.cPos.angleX += deltaMouseX * g.mouse.sensitivity;
+    entity.cPos.angleY += deltaMouseY * g.mouse.sensitivity;
 
     //keyboard input for player movement
-    for (let i = 0; i < g.input.keysDown.length; i++){ //for every key pressed this frame...
+    for (let i = 0; i < g.input.keysDown.length; i++) { //for every key pressed this frame...
       switch (g.input.keysDown[i]) {
         case 65: //a key
           entity.cPos.x -= g.input.moveSpeed;
@@ -110,10 +110,11 @@ class sMove extends System { //moves player entity given keyboard input and tran
     g.camera.angleY = entity.cPos.angleY;
     g.camera.angleZ = entity.cPos.angleZ;
 
-    // console.log(entity.cPos.angleZ)
-    g.camera.rotationMatrix = matMatComp(rotMat(g.camera.angleY, 'x'),
-      rotMat(g.camera.angleX, 'y'),
-      rotMat(g.camera.angleZ, 'z'));
+    g.camera.rotationMatrix = matMatComp(rotMat(-g.camera.angleY, 'x'),
+      rotMat(-g.camera.angleX, 'y'),
+      rotMat(-g.camera.angleZ, 'z'));
+
+    g.camera.directionVector = matVecMult(g.camera.rotationMatrix, [1, 1, 1, 1]);
 
   }
 
@@ -134,7 +135,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       rotMat(entity.cPhysics.angularVel.y, 'y'),
       rotMat(entity.cPhysics.angularVel.z, 'z'));
 
-    let worldTransMat1 = transMat( entity.cPos.x,  entity.cPos.y,  entity.cPos.z);//translates from model to world coordinates
+    let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
     let worldTransMat2 = transMat(-entity.cPos.x, -entity.cPos.y, -entity.cPos.z);
 
     //rotate verts based on rotation matrix
@@ -150,60 +151,64 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       entity.cMesh.verts[ii + 2] = rotatedVec[2];
     }
 
-    //calc distances to camera
-    this.sortFacesByDistanceToPoint(entity);
+    this.isEntityInFrustrum(entity);
 
-    for (let i = 0; i < entity.cMesh.faces.length / 3; i++) {
+    if (entity.cMesh.inFrustrum) { //if in frustrum, draw mesh
 
-      // compartmentalize verts in 1x4 arrays [x,y,z,1]
-      let v1Raw = [this.vertData(entity, i, 0, 'x'),
-                   this.vertData(entity, i, 0, 'y'),
-                   this.vertData(entity, i, 0, 'z'),
-                   1
-      ];
-      let v2Raw = [this.vertData(entity, i, 1, 'x'),
-                   this.vertData(entity, i, 1, 'y'),
-                   this.vertData(entity, i, 1, 'z'),
-                   1
-      ];
-      let v3Raw = [this.vertData(entity, i, 2, 'x'),
-                   this.vertData(entity, i, 2, 'y'),
-                   this.vertData(entity, i, 2, 'z'),
-                   1
-      ];
+      this.sortFacesByDistanceToPoint(entity);
 
-      //store distance of vectors in d vars
-      let d1 = this.vertDistData(entity, i, 0);
-      let d2 = this.vertDistData(entity, i, 1);
-      let d3 = this.vertDistData(entity, i, 2);
+      for (let i = 0; i < entity.cMesh.faces.length / 3; i++) {
+        // compartmentalize verts in 1x4 arrays [x,y,z,1]
+        let v1Raw = [this.vertData(entity, i, 0, 'x'),
+          this.vertData(entity, i, 0, 'y'),
+          this.vertData(entity, i, 0, 'z'),
+          1
+        ];
+        let v2Raw = [this.vertData(entity, i, 1, 'x'),
+          this.vertData(entity, i, 1, 'y'),
+          this.vertData(entity, i, 1, 'z'),
+          1
+        ];
+        let v3Raw = [this.vertData(entity, i, 2, 'x'),
+          this.vertData(entity, i, 2, 'y'),
+          this.vertData(entity, i, 2, 'z'),
+          1
+        ];
 
-      //compose giant transformation matrices for each vector in order right to left
-      let m1 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d1), g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1);
-      let m2 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d2), g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1);
-      let m3 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d3), g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1);
+        //store distance of vectors in d vars
+        let d1 = this.vertDistData(entity, i, 0);
+        let d2 = this.vertDistData(entity, i, 1);
+        let d3 = this.vertDistData(entity, i, 2);
 
-      //transform vectors using the appropriate matrices
-      let v1 = matVecMult(m1, v1Raw);
-      let v2 = matVecMult(m2, v2Raw);
-      let v3 = matVecMult(m3, v3Raw);
-      // console.log('=======COMPOSED__MATRICES==========')
-      // console.log(m1);
-      // console.log(m2);
-      // console.log(m3);
-      // console.log('=======VECTORS___TRANSFORMED==========');
-      // console.log(v1);
-      // console.log(v2);
-      // console.log(v3);
-      //draw resulting vectors on the screen using the appropriate color of the face
-      ctx.fillStyle = cssRGBA([entity.cMesh.facesR[i], entity.cMesh.facesG[i], entity.cMesh.facesB[i]]);
+        //compose giant transformation matrices for each vector in order right to left
+        let m1 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d1), g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1);
+        let m2 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d2), g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1);
+        let m3 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d3), g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1);
 
-      ctx.beginPath(v1[0], v1[1]);
-      ctx.lineTo(v2[0], v2[1]);
-      ctx.lineTo(v3[0], v3[1]);
-      ctx.lineTo(v1[0], v1[1]);
-      ctx.fill();
-      ctx.stroke();
+        //transform vectors using the appropriate matrices
+        let v1 = matVecMult(m1, v1Raw);
+        let v2 = matVecMult(m2, v2Raw);
+        let v3 = matVecMult(m3, v3Raw);
+        // console.log('=======COMPOSED__MATRICES==========')
+        // console.log(m1);
+        // console.log(m2);
+        // console.log(m3);
+        // console.log('=======VECTORS___TRANSFORMED==========');
+        // console.log(v1);
+        // console.log(v2);
+        // console.log(v3);
+        //draw resulting vectors on the screen using the appropriate color of the face
+        ctx.fillStyle = cssRGBA([entity.cMesh.facesR[i], entity.cMesh.facesG[i], entity.cMesh.facesB[i]]);
+
+        ctx.beginPath(v1[0], v1[1]);
+        ctx.lineTo(v2[0], v2[1]);
+        ctx.lineTo(v3[0], v3[1]);
+        ctx.lineTo(v1[0], v1[1]);
+        ctx.fill();
+        ctx.stroke();
+      }
     }
+
   }
 
   distBetweenFacesAndPoint(entity) { //calculate distances between faces and an arbitrary pos/point in 3D space
@@ -219,6 +224,19 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     }
     for (let i = 0; i < entity.cMesh.faces.length / 3; i++) { //find avg dist of every face from camera by avging it's avg vertDistToCamera
       entity.cMesh.facesDistToCamera[i] = mean(this.vertDistData(entity, i, 0), this.vertDistData(entity, i, 1), this.vertDistData(entity, i, 2));
+    }
+  }
+
+  isEntityInFrustrum(entity) {
+    //dot between camDirVec and vec from camera to cPos
+    let camMeshVec = new Vector3D(entity.cPos.x - g.camera.x, entity.cPos.y - g.camera.y, entity.cPos.z - g.camera.z);
+    camMeshVec.normalize();
+    let inFrustrum = dot(g.camera.directionVector, [camMeshVec.x, camMeshVec.y, camMeshVec.z, 1]);
+    console.log(inFrustrum);
+    if (inFrustrum > g.camera.clippingThreshold) {
+      entity.cMesh.inFrustrum = true;
+    } else {
+      entity.cMesh.inFrustrum = false;
     }
   }
 
@@ -306,7 +324,9 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     if (vert > 2) {
       console.log('ERROR: inputs too large at vertComponent')
     };
-    if (component === undefined){console.log('ERROR: not enough arguments!')}
+    if (component === undefined) {
+      console.log('ERROR: not enough arguments!')
+    }
 
     //     console.log(`vertIndexData: ${this.faces[faceIndex + vertIndex]*3}
     // vertData: ${this.verts[this.faces[faceIndex + vertIndex]*3 + componentIndex]}`);
@@ -320,7 +340,9 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     const faceIndex = (face) * 3;
     const vertIndex = (vert);
 
-    if (vert === undefined){console.log('ERROR: not enough arguments!')}
+    if (vert === undefined) {
+      console.log('ERROR: not enough arguments!')
+    }
 
     return entity.cMesh.vertsDistToCamera[entity.cMesh.faces[faceIndex + vertIndex]];
   }
@@ -349,8 +371,8 @@ class sInput extends System { //handles dragging behavior and transforming the e
 
     document.addEventListener('keydown', (e) => { //n mouse click
       let redundant = false; //is key already in keyPressed
-      for (let i = 0; i < g.input.keysDown.length; i ++){
-        if (e.keyCode === g.input.keysDown[i]){
+      for (let i = 0; i < g.input.keysDown.length; i++) {
+        if (e.keyCode === g.input.keysDown[i]) {
           redundant = true;
           break;
         }
@@ -362,9 +384,9 @@ class sInput extends System { //handles dragging behavior and transforming the e
     });
 
     document.addEventListener('keyup', (e) => { //n mouse click
-      for (let i = 0; i < g.input.keysDown.length; i ++){
-        if (e.keyCode === g.input.keysDown[i]){
-          g.input.keysDown.splice(i,1)
+      for (let i = 0; i < g.input.keysDown.length; i++) {
+        if (e.keyCode === g.input.keysDown[i]) {
+          g.input.keysDown.splice(i, 1)
           break;
         }
       }

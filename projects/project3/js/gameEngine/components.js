@@ -70,7 +70,8 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
     this.vertNorms = objBlob.vertNorms.slice(); //arr of vertex normals
 
     this.faces = objBlob.faces.slice(); //arr with indexes of vertices which make up a face, each face composed of 3 vertices/elements, [v1,v2,v3, v1,v2,v3]
-    this.facesDistToCamera = [] //dist of [face1, distOfFace2]
+    this.facesDistToCamera = []; //dist of [face1, distOfFace2]
+    this.inFrustrum = false; // is face in front of camera view(true) or behind(false)? [face1,face2,face3]
 
     this.facesR = []; //corresponds to red   component of a face[i] color
     this.facesG = []; //corresponds to green component of a face[i] color
