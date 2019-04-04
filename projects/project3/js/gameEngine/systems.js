@@ -137,11 +137,12 @@ console.log(entity.cMesh.verts);
       entity.cMesh.verts[ii + 1] = rotatedVec[1];
       entity.cMesh.verts[ii + 2] = rotatedVec[2];
     }
-    console.log('POSTROTATION')
+    console.log('POST ROTATION')
     console.log(entity.cMesh.verts);
     //calc distances to camera
     this.sortFacesByDistanceToPoint(entity.cMesh);
-
+    console.log('POST SORT')
+    console.log(entity.cMesh.verts);
     for (let i = 0; i < entity.cMesh.faces.length / 3; i++) {
 
       // compartmentalize verts in 1x4 arrays [x,y,z,1]
@@ -175,9 +176,16 @@ console.log(entity.cMesh.verts);
       let v1 = matVecMult(m1, v1Raw);
       let v2 = matVecMult(m2, v2Raw);
       let v3 = matVecMult(m3, v3Raw);
-
+      console.log('=======COMPOSED__MATRICES==========')
+      console.log(m1);
+      console.log(m2);
+      console.log(m3);
+      console.log('=======VECTORS___TRANSFORMED==========');
+console.log(v1);
+console.log(v2);
+console.log(v3);
       //draw resulting vectors on the screen using the appropriate color of the face
-      ctx.fillStyle = cssRGB(entity.cMesh.facesR[i], entity.cMesh.facesG[i], entity.cMesh.facesB[i]);
+      ctx.fillStyle = cssRGBA([entity.cMesh.facesR[i], entity.cMesh.facesG[i], entity.cMesh.facesB[i]]);
 
       ctx.beginPath(v1[0], v1[1]);
       ctx.lineTo(v2[0], v2[1]);

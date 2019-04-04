@@ -20,12 +20,13 @@ function distBetween(x1, y1, x2, y2) {
 function distFromDelta(xComponent, yComponent) { //pythag theroum
   return Math.sqrt((xComponent * xComponent) + (yComponent * yComponent))
 }
-function pythag(...args){ //pythag theorum (distance from delta) in n dimensions
+
+function pythag(...args) { //pythag theorum (distance from delta) in n dimensions
   let sum = 0;
-  for (let i = 0; i < args.length; i++){
-    sum += Math.pow(args[i],2);
+  for (let i = 0; i < args.length; i++) {
+    sum += Math.pow(args[i], 2);
   }
-  return Math.pow(sum,1/2);
+  return Math.pow(sum, 1 / 2);
 }
 
 function trackMouseMovement(e) { //store position of mouse in global variables
@@ -121,17 +122,20 @@ function createCanvas(width, height) {
   return canvas.getContext('2d');
 }
 
-function isEven(numb){ //return true if number is even
-  if ((numb%2) === 0){ //if there is no remainder
+function isEven(numb) { //return true if number is even
+  if ((numb % 2) === 0) { //if there is no remainder
     return true;
   }
   return false;
 }
 
-function cssRGB(r,g,b){
-  return `rgb(${r},${g},${b})`;
+function cssRGBA(arr) {
+  let r = arr[0];
+  let g = arr[1];
+  let b = arr[2];
+  let a = 1; //alpha 1 if not otherwise specefied
+if (arr.length === 4){ //if alpha specefied
+  a = arr[3];
 }
-
-function cssRGBA(r,g,b,a){
   return `rgb(${r},${g},${b},${a})`;
 }

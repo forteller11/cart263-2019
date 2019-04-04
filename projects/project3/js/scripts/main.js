@@ -31,21 +31,21 @@ let ctx;
 let debugMode = true;
 let debugOpacity = 0.2;
 let fps = 16.7
+let bgColor;
 
 function main() {
   g = new Globals(); //instatiates object which encaspulates globals in game (encapuslates 'singleton' components)
   systemManager = new SystemManager(); //instantiate object responsble for updating systems
 
+  bgColor = [ran(200,255), ran(200,255), ran(50), 0.7];
   //create canvas
   ctx = createCanvas(window.innerWidth, window.innerHeight);
-  ctx.fillStyle = cssRGB(ran(255), ran(255), ran(255));
-  ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
   createEntitiesFromBlueprint('player');
   let ent = createEntitiesFromBlueprint('mesh');
   console.log(ent.cMesh.verts);
   console.log('UPDATE')
   update();
-  // setInterval(update, fps);
+  setInterval(update, fps);
 
 }

@@ -91,12 +91,12 @@ function addComponentsBasedOnBlueprint(newEntity, blueprintName) {
       }
       case 'mesh':
         {
-          const rotRange = 1;
+          const rotRange = .5;
           const posRange = 5;
 
           newEntity.addComponent(new cPos(0, ran(-posRange,posRange), ran(-posRange,posRange), ran(-posRange,posRange)));
           newEntity.addComponent(new cMesh(meshFileParsedData));
-          newEntity.addComponent(new cPhysics(1, 0,0,0, ran(-rotRange,rotRange), false)); //static = true
+          newEntity.addComponent(new cPhysics(1, 0,0,0, ran(-rotRange,rotRange))); //static = true
           break;
         }
         case 'player':
