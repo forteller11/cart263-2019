@@ -72,9 +72,9 @@ class sMove extends System { //moves player entity given keyboard input and tran
 
       const deltaMouseX = g.mouse.histX[g.mouse.histX.length-1] - g.mouse.histX[g.mouse.histX.length-2];
       const deltaMouseY = g.mouse.histY[g.mouse.histY.length-1] - g.mouse.histY[g.mouse.histY.length-2];
-
-      entity.cPos.angleX += deltaMouseX * g.mouse.sensitivity;
-      entity.cPos.angleY += deltaMouseY * g.mouse.sensitivity;
+      console.log(deltaMouseY);
+      entity.cPos.angleX -= deltaMouseX * g.mouse.sensitivity;
+      entity.cPos.angleY -= deltaMouseY * g.mouse.sensitivity;
 
     //keyboard input for player movement
     for (let i = 0; i < g.input.keysDown.length; i++){ //for every key pressed this frame...
@@ -104,14 +104,17 @@ class sMove extends System { //moves player entity given keyboard input and tran
     g.camera.x = entity.cPos.x;
     g.camera.y = entity.cPos.y;
     g.camera.z = entity.cPos.z;
+    g.camera.translationMatrix = transMat(-g.camera.x, -g.camera.y, -g.camera.z);
+
     g.camera.angleX = entity.cPos.angleX;
     g.camera.angleY = entity.cPos.angleY;
     g.camera.angleZ = entity.cPos.angleZ;
 
-    g.camera.rotationMatrix = matMatComp(rotMat(-g.camera.angleX, 'x'),
-      rotMat(-g.camera.angleY, 'y'),
-      rotMat(-g.camera.angleZ, 'z'));
-    g.camera.translationMatrix = transMat(-g.camera.x, -g.camera.y, -g.camera.z);
+    // console.log(entity.cPos.angleZ)
+    g.camera.rotationMatrix = matMatComp(rotMat(g.camera.angleY, 'x'),
+      rotMat(g.camera.angleX, 'y'),
+      rotMat(g.camera.angleZ, 'z'));
+
   }
 
 }
@@ -130,6 +133,9 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       rotMat(entity.cPhysics.angularVel.x, 'x'),
       rotMat(entity.cPhysics.angularVel.y, 'y'),
       rotMat(entity.cPhysics.angularVel.z, 'z'));
+
+    let worldTransMat1 = transMat( entity.cPos.x,  entity.cPos.y,  entity.cPos.z);//translates from model to world coordinates
+    let worldTransMat2 = transMat(-entity.cPos.x, -entity.cPos.y, -entity.cPos.z);
 
     //rotate verts based on rotation matrix
     for (let i = 0; i < entity.cMesh.verts.length / 3; i++) { //rotate all verts by rotation matrix
@@ -172,22 +178,22 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       let d3 = this.vertDistData(entity.cMesh, i, 2);
 
       //compose giant transformation matrices for each vector in order right to left
-      let m1 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d1), g.camera.translationMatrix);
-      let m2 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d2), g.camera.translationMatrix);
-      let m3 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d3), g.camera.translationMatrix);
+      let m1 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d1), g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1);
+      let m2 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d2), g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1);
+      let m3 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d3), g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1);
 
       //transform vectors using the appropriate matrices
       let v1 = matVecMult(m1, v1Raw);
       let v2 = matVecMult(m2, v2Raw);
       let v3 = matVecMult(m3, v3Raw);
-//       console.log('=======COMPOSED__MATRICES==========')
-//       console.log(m1);
-//       console.log(m2);
-//       console.log(m3);
-//       console.log('=======VECTORS___TRANSFORMED==========');
-// console.log(v1);
-// console.log(v2);
-// console.log(v3);
+      // console.log('=======COMPOSED__MATRICES==========')
+      // console.log(m1);
+      // console.log(m2);
+      // console.log(m3);
+      // console.log('=======VECTORS___TRANSFORMED==========');
+      // console.log(v1);
+      // console.log(v2);
+      // console.log(v3);
       //draw resulting vectors on the screen using the appropriate color of the face
       ctx.fillStyle = cssRGBA([entity.cMesh.facesR[i], entity.cMesh.facesG[i], entity.cMesh.facesB[i]]);
 

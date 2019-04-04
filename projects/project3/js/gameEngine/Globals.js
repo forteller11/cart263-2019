@@ -23,7 +23,7 @@ class gPhysicsConstants { //stores physics constants
     this.angularVelEffectOnLinear = 10; //how much angle vel effects resultant post collision linear vel
     this.rotationTransferOnCollision = .2;
     this.windX = 0;
-    this.windY = .1;
+    this.windY = 0;
     this.windZ = 0;
   }
 }
@@ -34,13 +34,13 @@ class gPhysicsConstants { //stores physics constants
       this.click = false; //on initial click === true, then equals false
       this.down = false;
       this.x = 0;
-      this.x = 0;
+      this.y = 0;
       this.histMaxLength = 6;
       this.histX = []; //latest elements are newest
       this.histY = [];
       for (let i = 0; i < this.histMaxLength; i ++){ //fill mouse history with positions
         this.histX[i] = this.x;
-        this.histY[i] = this.y
+        this.histY[i] = this.y;
       }
       this.sensitivity = (Math.PI*2)/window.innerWidth; //how much does movement of mouse in pixels correspond to angle change in radians?
 
