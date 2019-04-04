@@ -19,7 +19,7 @@ class gPhysicsConstants { //stores physics constants
     this.name = 'cPhysicsConstants';
     this.maxPolarVel = Math.PI/4//max/min polar velocity
     this.cartesianDrag = 0.98; //rate at which linear vel approaches 0
-    this.polarDrag = .99; //rate at which rotational vel approaches 0
+    this.polarDrag = .999; //rate at which rotational vel approaches 0
     this.angularVelEffectOnLinear = 10; //how much angle vel effects resultant post collision linear vel
     this.rotationTransferOnCollision = .2;
     this.windX = 0;
@@ -49,7 +49,7 @@ class gPhysicsConstants { //stores physics constants
       this.angleX = 0;
       this.angleY = 0;
       this.angleZ = 0;
-      this.scaleAmount = window.innerHeight/6;
+      this.scaleAmount = window.innerHeight;
 
       //rotation of camera
       this.rotationMatrix = matMatComp(rotMat(-this.angleX, 'x'),
@@ -57,7 +57,7 @@ class gPhysicsConstants { //stores physics constants
                                        rotMat(-this.angleZ, 'z'));
 
       //what to offset meshes by BEFORE scaling
-      this.translationMatrix = transMat(-this.x, -this.y, -this.z); //rotation
+      this.translationMatrix = transMat(this.x, -this.y, this.z); //rotation
       //use at end to center in screen coords
       this.centerMatrix = transMat(window.innerWidth/2, window.innerHeight/2, 0);
 

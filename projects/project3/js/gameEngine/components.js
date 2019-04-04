@@ -92,14 +92,14 @@ class cPlayer extends Component { //input moves any entities with cPlayer, and t
 }
 
 class cPhysics extends Component {
-  constructor(mass=null, xVel=0,yVel=0,zVel=0, angularVel=0, inert = false){
+  constructor(mass=null, xVel=0,yVel=0,zVel=0, angularVelX=0,angularVelY=0,angularVelZ=0, inert = false){
     super();
     this.name = 'cPhysics';
     this.mass = mass;
     this.invMass = 1/mass; //inverse mass
     this.momentOfInertia = 0.0012; //how easily this object is rotated
     this.vel = new Vector3D(xVel,yVel,zVel);
-    this.angularVel = new Vector3D(angularVel,angularVel,angularVel);
+    this.angularVel = new Vector3D(angularVelX,angularVelY,angularVelZ);
     this.angularVel.mult(g.physics.polarDrag)
     console.log(this.angularVel);
     this.inert = inert;

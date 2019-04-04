@@ -71,22 +71,22 @@ class sMove extends System { //moves player entity given keyboard input and tran
     //use global movespeed
     if (g.input.pressedThisFrame) { //if a button was pressed this frame
       switch (g.input.lastKeyPressed) {
-        case 37: //left arrow key
+        case 65: //a key
           entity.cPos.x -= g.input.moveSpeed;
           break;
-        case 39: //right arrow key pressed
+        case 68: //d key
           entity.cPos.x += g.input.moveSpeed;
           break;
-        case 39: //up arrow key
-          entity.cPos.z -= g.input.moveSpeed;
-          break;
-        case 40: //down arrow key
+        case 87: //w key
           entity.cPos.z += g.input.moveSpeed;
+          break;
+        case 83: //s key
+          entity.cPos.z -= g.input.moveSpeed;
           break;
         case 32: //space bar
           entity.cPos.y -= g.input.moveSpeed;
           break;
-        case 17: //left control
+        case 16: //shift control
           entity.cPos.y += g.input.moveSpeed;
           break;
       }
@@ -168,9 +168,9 @@ console.log(entity.cMesh.verts);
       let d3 = this.vertDistData(entity.cMesh, i, 2);
 
       //compose giant transformation matrices for each vector in order right to left
-      let m1 = matMatComp(g.camera.centerMatrix, diagMat(1 / d1), g.camera.scaleMatrix);
-      let m2 = matMatComp(g.camera.centerMatrix, diagMat(1 / d2), g.camera.scaleMatrix);
-      let m3 = matMatComp(g.camera.centerMatrix, diagMat(1 / d3), g.camera.scaleMatrix);
+      let m1 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d1), g.camera.translationMatrix);
+      let m2 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d2), g.camera.translationMatrix);
+      let m3 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d3), g.camera.translationMatrix);
 
       //transform vectors using the appropriate matrices
       let v1 = matVecMult(m1, v1Raw);
