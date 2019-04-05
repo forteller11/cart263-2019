@@ -26,9 +26,11 @@ function createEntitiesFromBlueprint(...args) {
   if (numberToCreate === 1) { //return entities if only to create one
     return createEntity(blueprintName);
   } else {
+    let entities = [];
     for (let i = 0; i < numberToCreate; i++) { //else dont return entities
-      createEntity(blueprintName);
+      entities.push(createEntity(blueprintName));
     }
+    return entities;
   }
 }
 

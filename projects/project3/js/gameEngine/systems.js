@@ -69,13 +69,10 @@ class sMove extends System { //moves player entity given keyboard input and tran
   systemExecution(entity) { //move player according to inputs, translate camera to player pos
     //mouse input for player movement
 
-console.log(matVecMult(rotMat(Math.PI/2,'y'), g.camera.directionVector))
     const deltaMouseX = g.mouse.histX[g.mouse.histX.length - 1] - g.mouse.histX[g.mouse.histX.length - 2];
     const deltaMouseY = g.mouse.histY[g.mouse.histY.length - 1] - g.mouse.histY[g.mouse.histY.length - 2];
 
-    // entity.cPos.angleX = -Math.PI * 2 * g.mouse.x / window.innerHeight / 2;
-    // entity.cPos.angleY = Math.PI * 2 * g.mouse.y / window.innerHeight / 2;
-
+    console.log(g.camera.orientationVector);
     //keyboard input for player movement
     for (let i = 0; i < g.input.keysDown.length; i++) { //for every key pressed this frame...
       switch (g.input.keysDown[i]) {
@@ -92,55 +89,62 @@ console.log(matVecMult(rotMat(Math.PI/2,'y'), g.camera.directionVector))
         case 40: //down arrow
           entity.cPos.angleY += g.camera.rotateSpeed;
           break;
-          case 81: //Q
-            entity.cPos.angleZ += g.camera.rotateSpeed;
-            break;
-          case 69: //E
-            entity.cPos.angleZ -= g.camera.rotateSpeed;
-            break;
+        case 81: //Q
+          entity.cPos.angleZ += g.camera.rotateSpeed;
+          break;
+        case 69: //E
+          entity.cPos.angleZ -= g.camera.rotateSpeed;
+          break;
           //MOVEMENT
-        case 65: {//a key
-        const rotVec = matVecMult(rotMat(Math.PI/2,'y'), g.camera.directionVector); //rotate vec 90
-        entity.cPos.x += rotVec[0] * g.input.moveSpeed;
-        entity.cPos.y -= rotVec[1] * g.input.moveSpeed;
-        entity.cPos.z -= rotVec[2] * g.input.moveSpeed;
-        // entity.cPos.y -= g.camera.directionVector[1] * g.input.moveSpeed;
-        //   entity.cPos.z += g.camera.directionVector[2] * g.input.moveSpeed;
-          break;
-        }
-        case 68: {//d key
-        const rotVec = matVecMult(rotMat(Math.PI/2,'y'), g.camera.directionVector); //rotate vec 90
-        entity.cPos.x -= rotVec[0] * g.input.moveSpeed;
-        entity.cPos.y += rotVec[1] * g.input.moveSpeed;
-        entity.cPos.z += rotVec[2] * g.input.moveSpeed;
-          break;
-        }
-        case 87: {//w key
-        entity.cPos.x -= g.camera.directionVector[0] * g.input.moveSpeed;
-        entity.cPos.y -= g.camera.directionVector[1] * g.input.moveSpeed;
-          entity.cPos.z += g.camera.directionVector[2] * g.input.moveSpeed;
-          break;
-        }
-        case 83: {//s key
-        entity.cPos.x += g.camera.directionVector[0] * g.input.moveSpeed;
-        entity.cPos.y += g.camera.directionVector[1] * g.input.moveSpeed;
-          entity.cPos.z -= g.camera.directionVector[2] * g.input.moveSpeed;
-          break;
-        }
-        case 32: {//space bar, rotate by ... degrees
-          const rotVec = matVecMult(rotMat(Math.PI/2,'x'), g.camera.directionVector); //rotate vec 90
-          entity.cPos.x += rotVec[0] * g.input.moveSpeed;
-          entity.cPos.y -= rotVec[1] * g.input.moveSpeed;
-          entity.cPos.z -= rotVec[2] * g.input.moveSpeed;
-          break;
-        }
-        case 16: {//shift control
-          const rotVec = matVecMult(rotMat(Math.PI/2,'x'), g.camera.directionVector); //rotate vec 90
-          entity.cPos.x -= rotVec[0] * g.input.moveSpeed;
-          entity.cPos.y += rotVec[1] * g.input.moveSpeed;
-          entity.cPos.z += rotVec[2] * g.input.moveSpeed;
-          break;
-        }
+        case 65:
+          { //a key
+            const rotVec = matVecMult(rotMat(Math.PI / 2, 'y'), g.camera.directionVector); //rotate vec 90
+            entity.cPos.x += rotVec[0] * g.input.moveSpeed;
+            entity.cPos.y -= rotVec[1] * g.input.moveSpeed;
+            entity.cPos.z -= rotVec[2] * g.input.moveSpeed;
+            // entity.cPos.y -= g.camera.directionVector[1] * g.input.moveSpeed;
+            //   entity.cPos.z += g.camera.directionVector[2] * g.input.moveSpeed;
+            break;
+          }
+        case 68:
+          { //d key
+            const rotVec = matVecMult(rotMat(Math.PI / 2, 'y'), g.camera.directionVector); //rotate vec 90
+            entity.cPos.x -= rotVec[0] * g.input.moveSpeed;
+            entity.cPos.y += rotVec[1] * g.input.moveSpeed;
+            entity.cPos.z += rotVec[2] * g.input.moveSpeed;
+            break;
+          }
+        case 87:
+          { //w key
+            entity.cPos.x -= g.camera.directionVector[0] * g.input.moveSpeed;
+            entity.cPos.y -= g.camera.directionVector[1] * g.input.moveSpeed;
+            entity.cPos.z += g.camera.directionVector[2] * g.input.moveSpeed;
+
+            break;
+          }
+        case 83:
+          { //s key
+            entity.cPos.x += g.camera.directionVector[0] * g.input.moveSpeed;
+            entity.cPos.y += g.camera.directionVector[1] * g.input.moveSpeed;
+            entity.cPos.z -= g.camera.directionVector[2] * g.input.moveSpeed;
+            break;
+          }
+        case 32:
+          { //space bar, rotate by ... degrees
+            const rotVec = matVecMult(rotMat(-Math.PI / 2, 'x'), g.camera.directionVector); //rotate vec 90
+            entity.cPos.x += rotVec[0] * g.input.moveSpeed;
+            entity.cPos.y += rotVec[1] * g.input.moveSpeed;
+            entity.cPos.z -= rotVec[2] * g.input.moveSpeed;
+            break;
+          }
+        case 16:
+          { //shift control
+            const rotVec = matVecMult(rotMat(-Math.PI / 2, 'x'), g.camera.directionVector); //rotate vec 90
+            entity.cPos.x -= rotVec[0] * g.input.moveSpeed;
+            entity.cPos.y -= rotVec[1] * g.input.moveSpeed;
+            entity.cPos.z += rotVec[2] * g.input.moveSpeed;
+            break;
+          }
 
       }
 
@@ -159,7 +163,7 @@ console.log(matVecMult(rotMat(Math.PI/2,'y'), g.camera.directionVector))
       rotMat(-g.camera.angleX, 'y'),
       rotMat(-g.camera.angleZ, 'z'));
 
-    g.camera.directionVector = matVecMult(g.camera.rotationMatrix, [0, 0, 1, 1]); //where is the camera pointing?
+    g.camera.directionVector = matVecMult(g.camera.rotationMatrix, g.camera.orientationVector); //where is the camera pointing?
 
   }
 
@@ -168,8 +172,43 @@ console.log(matVecMult(rotMat(Math.PI/2,'y'), g.camera.directionVector))
 class sRender extends System { //applys drags and phy constants (gravity if applicable)
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
-    this.requiredComponents = ['cPos', 'cMesh', 'cPhysics'];
+    this.requiredComponents = ['cPos', 'cMesh'];
     //also uses cCamera
+  }
+  update() {
+    for (let i = 0; i < this.relevantEntities.length; i++) { //calc distance to camera
+      this.relevantEntities[i].cMesh.distToCamera = pythag(
+        this.relevantEntities[i].cPos.x-g.camera.x,
+        this.relevantEntities[i].cPos.y-g.camera.y,
+        this.relevantEntities[i].cPos.z-g.camera.z
+      )
+    }
+    this.sortEntitiesByDistToCamera()
+    super.update();
+  }
+  sortEntitiesByDistToCamera() {
+    let e = this.relevantEntities;
+
+    if (e.length > 1) { //only sort if there are more than 2 entities
+
+      for (let i = 1; i < e.length; i++) {
+        let j = i - 1;
+        while (j >= 0) {
+
+          if (e[j].cMesh.distToCamera < e[i].cMesh.distToCamera) {
+            //swap
+            let eStore = e[i];
+            e[i] = e[j];
+            e[j] = eStore;
+            break;
+          }
+          j--;
+        }
+
+
+      }
+    }
+    //sort
   }
 
   systemExecution(entity) { //for every mesh, then translate based and around cam
@@ -181,7 +220,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       rotMat(entity.cPhysics.angularVel.z, 'z'));
 
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
-    let preProjectionMat = matMatComp( g.camera.rotationMatrix, worldTransMat1, g.camera.translationMatrix); //precalc camera for better perf
+    let preProjectionMat = matMatComp(g.camera.rotationMatrix, worldTransMat1, g.camera.translationMatrix); //precalc camera for better perf
     let postProjectionMat = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix); //precalc these for better perf
 
     //rotate verts based on rotation matrix
@@ -200,63 +239,63 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     this.calculateAmountInCameraFrustrum(entity);
 
 
-      this.sortFacesByDistanceToPoint(entity);
+    this.sortFacesByDistanceToPoint(entity);
 
-      for (let i = 0; i < entity.cMesh.faces.length / 3; i++) {
-        // compartmentalize verts in 1x4 arrays [x,y,z,1]
-        let v1Raw = [this.vertData(entity, i, 0, 'x'),
-          this.vertData(entity, i, 0, 'y'),
-          this.vertData(entity, i, 0, 'z'),
-          1
-        ];
-        let v2Raw = [this.vertData(entity, i, 1, 'x'),
-          this.vertData(entity, i, 1, 'y'),
-          this.vertData(entity, i, 1, 'z'),
-          1
-        ];
-        let v3Raw = [this.vertData(entity, i, 2, 'x'),
-          this.vertData(entity, i, 2, 'y'),
-          this.vertData(entity, i, 2, 'z'),
-          1
-        ];
+    for (let i = 0; i < entity.cMesh.faces.length / 3; i++) {
+      // compartmentalize verts in 1x4 arrays [x,y,z,1]
+      let v1Raw = [this.vertData(entity, i, 0, 'x'),
+        this.vertData(entity, i, 0, 'y'),
+        this.vertData(entity, i, 0, 'z'),
+        1
+      ];
+      let v2Raw = [this.vertData(entity, i, 1, 'x'),
+        this.vertData(entity, i, 1, 'y'),
+        this.vertData(entity, i, 1, 'z'),
+        1
+      ];
+      let v3Raw = [this.vertData(entity, i, 2, 'x'),
+        this.vertData(entity, i, 2, 'y'),
+        this.vertData(entity, i, 2, 'z'),
+        1
+      ];
 
-        //store distance of vectors in d vars
-        let d1 = this.vertDistData(entity, i, 0);
-        let d2 = this.vertDistData(entity, i, 1);
-        let d3 = this.vertDistData(entity, i, 2);
+      //store distance of vectors in d vars
+      let d1 = this.vertDistData(entity, i, 0);
+      let d2 = this.vertDistData(entity, i, 1);
+      let d3 = this.vertDistData(entity, i, 2);
 
-        //compose giant transformation matrices for each vector in order right to left
-        let m1 = matMatComp(postProjectionMat, diagMat(1 / d1 ), preProjectionMat);
-        let m2 = matMatComp(postProjectionMat, diagMat(1 / d2), preProjectionMat);
-        let m3 = matMatComp(postProjectionMat, diagMat(1 / d3    ), preProjectionMat);
+      //compose giant transformation matrices for each vector in order right to left
+      let m1 = matMatComp(postProjectionMat, diagMat(1 / d1), preProjectionMat);
+      let m2 = matMatComp(postProjectionMat, diagMat(1 / d2), preProjectionMat);
+      let m3 = matMatComp(postProjectionMat, diagMat(1 / d3), preProjectionMat);
 
-        //transform vectors using the appropriate matrices
-        let v1 = matVecMult(m1, v1Raw);
-        let v2 = matVecMult(m2, v2Raw);
-        let v3 = matVecMult(m3, v3Raw);
-        // console.log('=======COMPOSED__MATRICES==========')
-        // console.log(m1);
-        // console.log(m2);
-        // console.log(m3);
-        // console.log('=======VECTORS___TRANSFORMED==========');
-        // console.log(v1);
-        // console.log(v2);
-        // console.log(v3);
-        //draw resulting vectors on the screen using the appropriate color of the face
+      //transform vectors using the appropriate matrices
+      let v1 = matVecMult(m1, v1Raw);
+      let v2 = matVecMult(m2, v2Raw);
+      let v3 = matVecMult(m3, v3Raw);
+      // console.log('=======COMPOSED__MATRICES==========')
+      // console.log(m1);
+      // console.log(m2);
+      // console.log(m3);
+      // console.log('=======VECTORS___TRANSFORMED==========');
+      // console.log(v1);
+      // console.log(v2);
+      // console.log(v3);
+      //draw resulting vectors on the screen using the appropriate color of the face
 
-        const faceZAvg = mean(v1[2],v2[2],v3[2]);
-        // console.log(faceZAvg);
-        if (faceZAvg > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
-          // const faceZAvg = mean(v1[2],v2[2],v3[2]);
-          ctx.fillStyle = cssRGBA([entity.cMesh.facesR[i], entity.cMesh.facesG[i], entity.cMesh.facesB[i]]);
-          ctx.beginPath(v1[0], v1[1]);
-          ctx.lineTo(v2[0], v2[1]);
-          ctx.lineTo(v3[0], v3[1]);
-          ctx.lineTo(v1[0], v1[1]);
-          ctx.fill();
-          ctx.stroke();
-        }
+      const faceZAvg = mean(v1[2], v2[2], v3[2]);
+      // console.log(faceZAvg);
+      if (faceZAvg > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
+        // const faceZAvg = mean(v1[2],v2[2],v3[2]);
+        ctx.fillStyle = cssRGBA([entity.cMesh.facesR[i], entity.cMesh.facesG[i], entity.cMesh.facesB[i]]);
+        ctx.beginPath(v1[0], v1[1]);
+        ctx.lineTo(v2[0], v2[1]);
+        ctx.lineTo(v3[0], v3[1]);
+        ctx.lineTo(v1[0], v1[1]);
+        ctx.fill();
+        ctx.stroke();
       }
+    }
 
   }
 
@@ -282,7 +321,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     camMeshVec.normalize();
     entity.cMesh.inFrustrumAmount = dot(g.camera.directionVector,
       [camMeshVec.x, camMeshVec.y, camMeshVec.z, 1]);
-      entity.cMesh.inFrustrumAmount --  ; //to account for homogenous coords effects
+    entity.cMesh.inFrustrumAmount--; //to account for homogenous coords effects
   }
 
   sortFacesByDistanceToPoint(entity) {

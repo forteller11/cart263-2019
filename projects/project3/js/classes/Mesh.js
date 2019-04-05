@@ -1,5 +1,7 @@
 class Mesh {
   constructor(objBlob) {
+    this.distToCamera = undefined; //how far is meshes distToCamera in worldview
+
     this.verts = objBlob.verts; //array of vertexes in format x,y,z,x,y,z....
     this.vertsDistToCamera = []; //array of how far the vert is away from the camera [distForxyz,distForv2,v3,v4...]
 

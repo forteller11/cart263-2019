@@ -102,7 +102,6 @@ class cPhysics extends Component {
     this.vel = new Vector3D(xVel,yVel,zVel);
     this.angularVel = new Vector3D(angularVelX,angularVelY,angularVelZ);
     this.angularVel.mult(g.physics.polarDrag)
-    console.log(this.angularVel);
     this.inert = inert;
     this.restitution = 0.8; //bouncyness or % force transferred in collisions, 1 = bouncy, 0=not
     if (mass===null){console.log('mass not set, define by cCollision as PI r ^2');}

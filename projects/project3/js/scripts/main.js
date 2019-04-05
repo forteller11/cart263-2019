@@ -42,7 +42,9 @@ function main() {
   ctx = createCanvas(window.innerWidth, window.innerHeight);
 
   createEntitiesFromBlueprint('player');
-  let ent = createEntitiesFromBlueprint('mesh',30);
+  let ent = createEntitiesFromBlueprint('mesh', 30);
+  ent[0].cPos.x = 0;
+  ent[0].cPos.y = 0;
 
   update();
   setInterval(update, fps);
