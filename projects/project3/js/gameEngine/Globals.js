@@ -56,7 +56,7 @@ class gPhysicsConstants { //stores physics constants
       this.angleY = 0;
       this.angleZ = 0;
       this.scaleAmount = pythag(window.innerWidth/2,window.innerHeight/2)*1;
-      this.clippingThreshold  = -1; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
+      this.clippingThreshold  = 0; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
       this.clippingRange = .5; //larger = more to see
       this.rotateSpeed = Math.PI/120;
       //rotation of camera

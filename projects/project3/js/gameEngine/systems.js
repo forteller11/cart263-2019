@@ -178,8 +178,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     }
 
     this.calculateAmountInCameraFrustrum(entity);
-    console.log(entity.cMesh.inFrustrumAmount);
-    if (entity.cMesh.inFrustrumAmount > g.camera.clippingThreshold) { //if in frustrum, draw mesh
+
 
       this.sortFacesByDistanceToPoint(entity);
 
@@ -207,8 +206,8 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         let d3 = this.vertDistData(entity, i, 2);
 
         //compose giant transformation matrices for each vector in order right to left
-        let m1 = matMatComp(postProjectionMat, diagMat(1 / d1*.9 ), preProjectionMat);
-        let m2 = matMatComp(postProjectionMat, diagMat(1 / d2*.96), preProjectionMat);
+        let m1 = matMatComp(postProjectionMat, diagMat(1 / d1 ), preProjectionMat);
+        let m2 = matMatComp(postProjectionMat, diagMat(1 / d2), preProjectionMat);
         let m3 = matMatComp(postProjectionMat, diagMat(1 / d3    ), preProjectionMat);
 
         //transform vectors using the appropriate matrices
@@ -224,16 +223,20 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         // console.log(v2);
         // console.log(v3);
         //draw resulting vectors on the screen using the appropriate color of the face
-        ctx.fillStyle = cssRGBA([entity.cMesh.facesR[i], entity.cMesh.facesG[i], entity.cMesh.facesB[i]]);
 
-        ctx.beginPath(v1[0], v1[1]);
-        ctx.lineTo(v2[0], v2[1]);
-        ctx.lineTo(v3[0], v3[1]);
-        ctx.lineTo(v1[0], v1[1]);
-        ctx.fill();
-        ctx.stroke();
+        const faceZAvg = mean(v1[2],v2[2],v3[2]);
+        // console.log(faceZAvg);
+        if (faceZAvg > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
+          // const faceZAvg = mean(v1[2],v2[2],v3[2]);
+          ctx.fillStyle = cssRGBA([entity.cMesh.facesR[i], entity.cMesh.facesG[i], entity.cMesh.facesB[i]]);
+          ctx.beginPath(v1[0], v1[1]);
+          ctx.lineTo(v2[0], v2[1]);
+          ctx.lineTo(v3[0], v3[1]);
+          ctx.lineTo(v1[0], v1[1]);
+          ctx.fill();
+          ctx.stroke();
+        }
       }
-    }
 
   }
 
@@ -259,7 +262,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     camMeshVec.normalize();
     entity.cMesh.inFrustrumAmount = dot(g.camera.directionVector,
       [camMeshVec.x, camMeshVec.y, camMeshVec.z, 1]);
-      entity.cMesh.inFrustrumAmount --; //to account for homogenous coords effects
+      entity.cMesh.inFrustrumAmount --  ; //to account for homogenous coords effects
   }
 
   sortFacesByDistanceToPoint(entity) {

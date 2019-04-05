@@ -9,7 +9,7 @@ into a world of rotating triangles
 window.onload = preload;
 
 //text files to be loaded
-let meshFileDirectory = 'assets/triangle02.obj';
+let meshFileDirectory = 'assets/triangle03.obj';
 let meshFileParsedData; //to be loaded
 
 function preload(){ //loads all files before main funciton
