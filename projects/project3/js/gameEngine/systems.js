@@ -69,6 +69,7 @@ class sMove extends System { //moves player entity given keyboard input and tran
   systemExecution(entity) { //move player according to inputs, translate camera to player pos
     //mouse input for player movement
 
+console.log(matVecMult(rotMat(Math.PI/2,'y'), g.camera.directionVector))
     const deltaMouseX = g.mouse.histX[g.mouse.histX.length - 1] - g.mouse.histX[g.mouse.histX.length - 2];
     const deltaMouseY = g.mouse.histY[g.mouse.histY.length - 1] - g.mouse.histY[g.mouse.histY.length - 2];
 
@@ -97,30 +98,49 @@ class sMove extends System { //moves player entity given keyboard input and tran
           case 69: //E
             entity.cPos.angleZ -= g.camera.rotateSpeed;
             break;
-
           //MOVEMENT
-        case 65: //a key
-          entity.cPos.x -= g.input.moveSpeed;
+        case 65: {//a key
+        const rotVec = matVecMult(rotMat(Math.PI/2,'y'), g.camera.directionVector); //rotate vec 90
+        entity.cPos.x += rotVec[0] * g.input.moveSpeed;
+        entity.cPos.y -= rotVec[1] * g.input.moveSpeed;
+        entity.cPos.z -= rotVec[2] * g.input.moveSpeed;
+        // entity.cPos.y -= g.camera.directionVector[1] * g.input.moveSpeed;
+        //   entity.cPos.z += g.camera.directionVector[2] * g.input.moveSpeed;
           break;
-        case 68: //d key
-          entity.cPos.x += g.input.moveSpeed;
+        }
+        case 68: {//d key
+        const rotVec = matVecMult(rotMat(Math.PI/2,'y'), g.camera.directionVector); //rotate vec 90
+        entity.cPos.x -= rotVec[0] * g.input.moveSpeed;
+        entity.cPos.y += rotVec[1] * g.input.moveSpeed;
+        entity.cPos.z += rotVec[2] * g.input.moveSpeed;
           break;
-        case 87: //w key
-          entity.cPos.x += g.camera.directionVector[0] * g.input.moveSpeed;
-          entity.cPos.y += g.camera.directionVector[1] * g.input.moveSpeed;
+        }
+        case 87: {//w key
+        entity.cPos.x -= g.camera.directionVector[0] * g.input.moveSpeed;
+        entity.cPos.y -= g.camera.directionVector[1] * g.input.moveSpeed;
           entity.cPos.z += g.camera.directionVector[2] * g.input.moveSpeed;
           break;
-        case 83: //s key
-          entity.cPos.x -= g.camera.directionVector[0] * g.input.moveSpeed;
-          entity.cPos.y -= g.camera.directionVector[1] * g.input.moveSpeed;
+        }
+        case 83: {//s key
+        entity.cPos.x += g.camera.directionVector[0] * g.input.moveSpeed;
+        entity.cPos.y += g.camera.directionVector[1] * g.input.moveSpeed;
           entity.cPos.z -= g.camera.directionVector[2] * g.input.moveSpeed;
           break;
-        case 32: //space bar, rotate by ... degrees
-          entity.cPos.y -= g.input.moveSpeed;
+        }
+        case 32: {//space bar, rotate by ... degrees
+          const rotVec = matVecMult(rotMat(Math.PI/2,'x'), g.camera.directionVector); //rotate vec 90
+          entity.cPos.x += rotVec[0] * g.input.moveSpeed;
+          entity.cPos.y -= rotVec[1] * g.input.moveSpeed;
+          entity.cPos.z -= rotVec[2] * g.input.moveSpeed;
           break;
-        case 16: //shift control
-          entity.cPos.y += g.input.moveSpeed;
+        }
+        case 16: {//shift control
+          const rotVec = matVecMult(rotMat(Math.PI/2,'x'), g.camera.directionVector); //rotate vec 90
+          entity.cPos.x -= rotVec[0] * g.input.moveSpeed;
+          entity.cPos.y += rotVec[1] * g.input.moveSpeed;
+          entity.cPos.z += rotVec[2] * g.input.moveSpeed;
           break;
+        }
 
       }
 
@@ -161,7 +181,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       rotMat(entity.cPhysics.angularVel.z, 'z'));
 
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
-    let preProjectionMat = matMatComp(g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1); //precalc camera for better perf
+    let preProjectionMat = matMatComp( g.camera.rotationMatrix, worldTransMat1, g.camera.translationMatrix); //precalc camera for better perf
     let postProjectionMat = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix); //precalc these for better perf
 
     //rotate verts based on rotation matrix

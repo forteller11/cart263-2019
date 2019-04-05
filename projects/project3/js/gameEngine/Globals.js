@@ -80,7 +80,7 @@ class gPhysicsConstants { //stores physics constants
   class gInput{ //tracks keyboard input
     constructor(){
       this.keysDown = [] //array of keyCodes of keys currentdown
-      this.moveSpeed = .1;
+      this.moveSpeed = .3;
     }
   }
 
