@@ -27,7 +27,6 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
 
   systemExecution(entity) {
     if (debugMode) {
-      ctx.strokeStyle = "#5cc639";
       ctx.strokeRect(entity.cPos.x, entity.cPos.y, 2, 2);
     }
     entity.cPos.angleX += entity.cPhysics.angularVel.x;
@@ -112,8 +111,8 @@ class sMove extends System { //moves player entity given keyboard input and tran
           entity.cPos.z += g.camera.directionVector[2] * g.input.moveSpeed;
           break;
         case 83: //s key
-          entity.cPos.x += g.camera.directionVector[0] * g.input.moveSpeed;
-          entity.cPos.y += g.camera.directionVector[1] * g.input.moveSpeed;
+          entity.cPos.x -= g.camera.directionVector[0] * g.input.moveSpeed;
+          entity.cPos.y -= g.camera.directionVector[1] * g.input.moveSpeed;
           entity.cPos.z -= g.camera.directionVector[2] * g.input.moveSpeed;
           break;
         case 32: //space bar, rotate by ... degrees
@@ -162,7 +161,8 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       rotMat(entity.cPhysics.angularVel.z, 'z'));
 
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
-    let worldTransMat2 = transMat(-entity.cPos.x, -entity.cPos.y, -entity.cPos.z);
+    let preProjectionMat = matMatComp(g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1); //precalc camera for better perf
+    let postProjectionMat = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix); //precalc these for better perf
 
     //rotate verts based on rotation matrix
     for (let i = 0; i < entity.cMesh.verts.length / 3; i++) { //rotate all verts by rotation matrix
@@ -178,7 +178,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     }
 
     this.calculateAmountInCameraFrustrum(entity);
-    console.log(entity.cMesh.inFrustrumAmount)
+    console.log(entity.cMesh.inFrustrumAmount);
     if (entity.cMesh.inFrustrumAmount > g.camera.clippingThreshold) { //if in frustrum, draw mesh
 
       this.sortFacesByDistanceToPoint(entity);
@@ -207,9 +207,9 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         let d3 = this.vertDistData(entity, i, 2);
 
         //compose giant transformation matrices for each vector in order right to left
-        let m1 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d1), g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1);
-        let m2 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d2), g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1);
-        let m3 = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix, diagMat(1 / d3), g.camera.rotationMatrix, g.camera.translationMatrix, worldTransMat1);
+        let m1 = matMatComp(postProjectionMat, diagMat(1 / d1*.9 ), preProjectionMat);
+        let m2 = matMatComp(postProjectionMat, diagMat(1 / d2*.96), preProjectionMat);
+        let m3 = matMatComp(postProjectionMat, diagMat(1 / d3    ), preProjectionMat);
 
         //transform vectors using the appropriate matrices
         let v1 = matVecMult(m1, v1Raw);
@@ -769,7 +769,6 @@ class sOverlap extends System { //this system is responsble for checking for col
     }
 
     if (debugMode) {
-      ctx.strokeStyle = "#3984c6";
       for (let i = 0; i < collisionPointsX.length; i++) {
         ctx.strokeRect(collisionPointsX[i], collisionPointsY[i], 7, 7);
       }

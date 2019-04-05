@@ -19,7 +19,7 @@ class gPhysicsConstants { //stores physics constants
     this.name = 'cPhysicsConstants';
     this.maxPolarVel = Math.PI/4//max/min polar velocity
     this.cartesianDrag = 0.98; //rate at which linear vel approaches 0
-    this.polarDrag = .999; //rate at which rotational vel approaches 0
+    this.polarDrag = .996; //rate at which rotational vel approaches 0
     this.angularVelEffectOnLinear = 10; //how much angle vel effects resultant post collision linear vel
     this.rotationTransferOnCollision = .2;
     this.windX = 0;
@@ -55,9 +55,10 @@ class gPhysicsConstants { //stores physics constants
       this.angleX = 0;
       this.angleY = 0;
       this.angleZ = 0;
-      this.scaleAmount = window.innerWidth;
-      this.clippingThreshold  = 0; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
-      this.rotateSpeed = Math.PI/60;
+      this.scaleAmount = pythag(window.innerWidth/2,window.innerHeight/2)*1;
+      this.clippingThreshold  = -1; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
+      this.clippingRange = .5; //larger = more to see
+      this.rotateSpeed = Math.PI/120;
       //rotation of camera
       this.rotationMatrix = matMatComp(rotMat(-this.angleX, 'x'),
                                        rotMat(-this.angleY, 'y'),
@@ -70,7 +71,7 @@ class gPhysicsConstants { //stores physics constants
 
       this.scaleMatrix = diagMat(this.scaleAmount, this.scaleAmount, this.scaleAmount);
 
-    this.directionVector = matVecMult(this.rotationMatrix,[0,0,1,1]); //where is the camera pointing (array representing vector, with z as up direciton)
+      this.directionVector = matVecMult(this.rotationMatrix,[0,0,1,1]); //where is the camera pointing (array representing vector, with z as up direciton)
 
     //z == up direction
     }
