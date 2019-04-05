@@ -9,19 +9,26 @@ into a world of rotating triangles
 window.onload = preload;
 
 //text files to be loaded
-let meshFileDirectory = 'assets/triangle03.obj';
-let meshFileParsedData; //to be loaded
+let request = [];
+let meshFileDirectory = ['0','1','2','3'];
+let meshFileParsedData = []; //to be loaded
+let requestComplete = 0;
 
 function preload(){ //loads all files before main funciton
+for (let i = 0; i < meshFileDirectory.length; i ++){
+  request[i] = new XMLHttpRequest();
+  request[i].open('GET', 'assets/'+meshFileDirectory[i]+'.obj'); //open/setup request
+  request[i].send();
 
-  let request = new XMLHttpRequest();
-  request.open('GET', meshFileDirectory); //open/setup request
-  request.send();
-
-  request.onload = () => {
-    meshFileParsedData = convertObjFileToMeshBlob(request.response);
-    main();
+  request[i].onload = () => {
+    meshFileParsedData[i] = convertObjFileToMeshBlob(request[i].response);
+    requestComplete++;
+    if (requestComplete === meshFileDirectory.length){ //if all requests have finished, start main
+      main();
+    }
   }
+}
+
 }
 
 let g; //global object
@@ -34,6 +41,7 @@ let fps = 16.7;
 let bgColor;
 
 function main() {
+  console.log('main');
   g = new Globals(); //instatiates object which encaspulates globals in game (encapuslates 'singleton' components)
   systemManager = new SystemManager(); //instantiate object responsble for updating systems
 
