@@ -69,80 +69,88 @@ class sMove extends System { //moves player entity given keyboard input and tran
   systemExecution(entity) { //move player according to inputs, translate camera to player pos
     //mouse input for player movement
 
-    const deltaMouseX = g.mouse.histX[g.mouse.histX.length - 1] - g.mouse.histX[g.mouse.histX.length - 2];
-    const deltaMouseY = g.mouse.histY[g.mouse.histY.length - 1] - g.mouse.histY[g.mouse.histY.length - 2];
-
-    console.log(g.camera.orientationVector);
+    // const deltaMouseX = g.mouse.histX[g.mouse.histX.length - 1] - g.mouse.histX[g.mouse.histX.length - 2];
+    // const deltaMouseY = g.mouse.histY[g.mouse.histY.length - 1] - g.mouse.histY[g.mouse.histY.length - orientation  console.log(`${Math.round(g.camera.angleX*100)/100}, ${Math.round(g.camera.angleY*100/100)}, ${Math.round(g.camera.angleZ*100/100)} `);
     //keyboard input for player movement
+
     for (let i = 0; i < g.input.keysDown.length; i++) { //for every key pressed this frame...
       switch (g.input.keysDown[i]) {
         //ROTATIONS
         case 37: //left arrow
-          entity.cPos.angleX += g.camera.rotateSpeed;
-          break;
-        case 39: //right arrow
           entity.cPos.angleX -= g.camera.rotateSpeed;
           break;
-        case 38: //up arrow
-          entity.cPos.angleY -= g.camera.rotateSpeed;
+        case 39: //right arrow
+          entity.cPos.angleX += g.camera.rotateSpeed;
           break;
-        case 40: //down arrow
+        case 38: //up arrow
           entity.cPos.angleY += g.camera.rotateSpeed;
           break;
-        case 81: //Q
-          entity.cPos.angleZ += g.camera.rotateSpeed;
+        case 40: //down arrow
+          entity.cPos.angleY -= g.camera.rotateSpeed;
           break;
-        case 69: //E
+        case 81: //Q
           entity.cPos.angleZ -= g.camera.rotateSpeed;
           break;
+        case 69: //E
+          entity.cPos.angleZ += g.camera.rotateSpeed;
+          break;
+        }
+        g.camera.angleX = entity.cPos.angleX;
+        g.camera.angleY = entity.cPos.angleY;
+        g.camera.angleZ = entity.cPos.angleZ;
+
+        g.camera.rotationMatrix = matMatComp(
+          rotMat(g.camera.angleY, 'x'),
+          rotMat(g.camera.angleX, 'y'),
+          rotMat(g.camera.angleZ, 'z'));
+
+          let moveForward = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.forwardOrientation));
+          let moveRight = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.rightOrientation));
+          let moveUp = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.upOrientation));
+
+        switch (g.input.keysDown[i]) {
           //MOVEMENT
         case 65:
           { //a key
-            const rotVec = matVecMult(rotMat(Math.PI / 2, 'y'), g.camera.directionVector); //rotate vec 90
-            entity.cPos.x += rotVec[0] * g.input.moveSpeed;
-            entity.cPos.y -= rotVec[1] * g.input.moveSpeed;
-            entity.cPos.z -= rotVec[2] * g.input.moveSpeed;
-            // entity.cPos.y -= g.camera.directionVector[1] * g.input.moveSpeed;
-            //   entity.cPos.z += g.camera.directionVector[2] * g.input.moveSpeed;
+            entity.cPos.x -= moveRight[0];
+            entity.cPos.y += moveRight[1];
+            entity.cPos.z += moveRight[2];
             break;
           }
         case 68:
           { //d key
-            const rotVec = matVecMult(rotMat(Math.PI / 2, 'y'), g.camera.directionVector); //rotate vec 90
-            entity.cPos.x -= rotVec[0] * g.input.moveSpeed;
-            entity.cPos.y += rotVec[1] * g.input.moveSpeed;
-            entity.cPos.z += rotVec[2] * g.input.moveSpeed;
+            entity.cPos.x += moveRight[0];
+            entity.cPos.y -= moveRight[1];
+            entity.cPos.z -= moveRight[2];
             break;
           }
         case 87:
           { //w key
-            entity.cPos.x -= g.camera.directionVector[0] * g.input.moveSpeed;
-            entity.cPos.y -= g.camera.directionVector[1] * g.input.moveSpeed;
-            entity.cPos.z += g.camera.directionVector[2] * g.input.moveSpeed;
+            entity.cPos.x -= moveForward[0];
+            entity.cPos.y -= moveForward[1];
+            entity.cPos.z += moveForward[2];
 
             break;
           }
         case 83:
           { //s key
-            entity.cPos.x += g.camera.directionVector[0] * g.input.moveSpeed;
-            entity.cPos.y += g.camera.directionVector[1] * g.input.moveSpeed;
-            entity.cPos.z -= g.camera.directionVector[2] * g.input.moveSpeed;
+            entity.cPos.x += moveForward[0];
+            entity.cPos.y += moveForward[1];
+            entity.cPos.z -= moveForward[2];
             break;
           }
         case 32:
           { //space bar, rotate by ... degrees
-            const rotVec = matVecMult(rotMat(-Math.PI / 2, 'x'), g.camera.directionVector); //rotate vec 90
-            entity.cPos.x += rotVec[0] * g.input.moveSpeed;
-            entity.cPos.y += rotVec[1] * g.input.moveSpeed;
-            entity.cPos.z -= rotVec[2] * g.input.moveSpeed;
+            entity.cPos.x += moveUp[0];
+            entity.cPos.y -= moveUp[1];
+            entity.cPos.z += moveUp[2];
             break;
           }
         case 16:
           { //shift control
-            const rotVec = matVecMult(rotMat(-Math.PI / 2, 'x'), g.camera.directionVector); //rotate vec 90
-            entity.cPos.x -= rotVec[0] * g.input.moveSpeed;
-            entity.cPos.y -= rotVec[1] * g.input.moveSpeed;
-            entity.cPos.z += rotVec[2] * g.input.moveSpeed;
+            entity.cPos.x -= moveUp[0];
+            entity.cPos.y += moveUp[1];
+            entity.cPos.z -= moveUp[2];
             break;
           }
 
@@ -154,16 +162,6 @@ class sMove extends System { //moves player entity given keyboard input and tran
     g.camera.y = entity.cPos.y;
     g.camera.z = entity.cPos.z;
     g.camera.translationMatrix = transMat(-g.camera.x, -g.camera.y, -g.camera.z);
-
-    g.camera.angleX = entity.cPos.angleX;
-    g.camera.angleY = entity.cPos.angleY;
-    g.camera.angleZ = entity.cPos.angleZ;
-
-    g.camera.rotationMatrix = matMatComp(rotMat(-g.camera.angleY, 'x'),
-      rotMat(-g.camera.angleX, 'y'),
-      rotMat(-g.camera.angleZ, 'z'));
-
-    g.camera.directionVector = matVecMult(g.camera.rotationMatrix, g.camera.orientationVector); //where is the camera pointing?
 
   }
 
@@ -235,9 +233,6 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       entity.cMesh.verts[ii + 1] = rotatedVec[1];
       entity.cMesh.verts[ii + 2] = rotatedVec[2];
     }
-
-    this.calculateAmountInCameraFrustrum(entity);
-
 
     this.sortFacesByDistanceToPoint(entity);
 
@@ -313,15 +308,6 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     for (let i = 0; i < entity.cMesh.faces.length / 3; i++) { //find avg dist of every face from camera by avging it's avg vertDistToCamera
       entity.cMesh.facesDistToCamera[i] = mean(this.vertDistData(entity, i, 0), this.vertDistData(entity, i, 1), this.vertDistData(entity, i, 2));
     }
-  }
-
-  calculateAmountInCameraFrustrum(entity) {
-    //dot between camDirVec and vec from camera to cPos
-    let camMeshVec = new Vector3D(entity.cPos.x - g.camera.x, entity.cPos.y - g.camera.y, entity.cPos.z - g.camera.z);
-    camMeshVec.normalize();
-    entity.cMesh.inFrustrumAmount = dot(g.camera.directionVector,
-      [camMeshVec.x, camMeshVec.y, camMeshVec.z, 1]);
-    entity.cMesh.inFrustrumAmount--; //to account for homogenous coords effects
   }
 
   sortFacesByDistanceToPoint(entity) {

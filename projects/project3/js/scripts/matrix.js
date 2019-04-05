@@ -232,3 +232,11 @@ function dot(v1, v2) { //dot product
   }
   return dotSum;
 }
+
+function scalarVecMult(scalar,vec){ //scalar vector multiplication
+  let newVec = [];
+  for (let i = 0; i < vec.length; i++){
+    newVec[i] = vec[i] * scalar;
+  }
+  return newVec;
+}

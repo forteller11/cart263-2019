@@ -59,11 +59,13 @@ class gPhysicsConstants { //stores physics constants
       this.clippingThreshold  = 0; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
       this.clippingRange = .5; //larger = more to see
       this.rotateSpeed = Math.PI/120;
-      this.orientationVector = [0, 0, 1, 1]; //determines forward direction
+      this.forwardOrientation = [0, 0, 1, 1]; //determines forward direction
+      this.rightOrientation = [1,0,0,1];
+      this.upOrientation = [0,1,0,1];
       //rotation of camera
-      this.rotationMatrix = matMatComp(rotMat(-this.angleX, 'x'),
-                                       rotMat(-this.angleY, 'y'),
-                                       rotMat(-this.angleZ, 'z'));
+      this.rotationMatrix = matMatComp(rotMat(this.angleX, 'x'),
+                                       rotMat(this.angleY, 'y'),
+                                       rotMat(this.angleZ, 'z'));
 
       //what to offset meshes by BEFORE scaling
       this.translationMatrix = transMat(this.x, -this.y, this.z); //rotation
@@ -71,8 +73,6 @@ class gPhysicsConstants { //stores physics constants
       this.centerMatrix = transMat(window.innerWidth/2, window.innerHeight/2, 0);
 
       this.scaleMatrix = diagMat(this.scaleAmount, this.scaleAmount, this.scaleAmount);
-
-      this.directionVector = matVecMult(this.rotationMatrix,this.orientationVector); //where is the camera pointing (array representing vector, with z as up direciton)
 
     //z == up direction
     }
