@@ -1,86 +1,49 @@
 'use strict';
 
-function matVecMult(mat, vec) { //matrix-Vector multiply
-  //matrix is 2D array
-  //vector is 1D array
-
-  let transformedVec = [];
-  for (let i = 0; i < mat.length; i++) { //initialise vector output to have components === rows of matrix
-    transformedVec[i] = 0;
-  }
-  /*treat each col of matrix as an ntuple
-  [x1, x2, x3]
-  [y1, y2, y3]
-  [z1, z2, z3]
-  */
-  for (let i = 0; i < mat.length; i++) { //rows of matrix
-    for (let j = 0; j < mat[i].length; j++) { //collums of matrix
-      transformedVec[i] += mat[i][j] * vec[j]; //vec matrix mult
-    }
-  }
-
-  return transformedVec;
+function matVecMult(m, v) { //matrix-Vector multiply
+  return [
+    m[0][0] * v[0] + m[0][1] * v[0] + m[0][2] * v[0] + m[0][3] * v[0],
+    m[1][0] * v[0] + m[1][1] * v[0] + m[1][2] * v[0] + m[1][3] * v[0],
+    m[2][0] * v[0] + m[2][1] * v[0] + m[2][2] * v[0] + m[2][3] * v[0],
+    1
+  ]
 }
 
-// dot product of vec horz with vec vert in each segment,
-`
-[x1a,y1a]   [x1b,x2b]   == [1a*1b,1a*2b]
-[x2a,y2a]   [y1b,y2b]   == [2a*1b,2a*2b]
-
-first matrix rows are vec, 2nd collums are vec, dot v*v in and the result is the transformed matrix
-basically tra
-`
-
-function dot(v1, v2) { //dot product
-  //each vec is 1D array
-  if (!(v1.length === v2.length)) {
-    console.log(`ERROR AT FUNCTION "DOT":
-  vectors dimensions aren't equal!`)
-  }
-
-  let dotSum = 0;
-  for (let i = 0; i < v1.length; i++) {
-    dotSum += v1[i] * v2[i];
-  }
-  return dotSum;
+function rotXYZMat(x, y, z) {
+  console.log('ERROR: this function is unfinished!')
+  return [
+    [1, 0, 0, 0],
+    [0, Math.cos(rad), Math.sin(rad), 0],
+    [0, -Math.sin(rad), Math.cos(rad), 0],
+    [0, 0, 0, 1]
+  ]
 }
 
-function rotMat(rad, axis) {
-  //rad === radians to rotate
-  //axis === string of what axis to rotate 'x','y' or 'z'
+function rotXMat(rad) {
+  return [
+    [1, 0, 0, 0],
+    [0, Math.cos(rad), Math.sin(rad), 0],
+    [0, -Math.sin(rad), Math.cos(rad), 0],
+    [0, 0, 0, 1]
+  ]
+}
 
-  switch (axis) {
-    case 'x':
-      {
-        return [
-          [1, 0, 0, 0],
-          [0, Math.cos(rad), Math.sin(rad), 0],
-          [0, -Math.sin(rad), Math.cos(rad), 0],
-          [0, 0, 0, 1]
-        ]
-      }
-    case 'y':
-      {
-        return [
-          [Math.cos(rad), 0, -Math.sin(rad), 0],
-          [0, 1, 0, 0],
-          [Math.sin(rad), 0, Math.cos(rad), 0],
-          [0, 0, 0, 1]
-        ]
-      }
-    case 'z':
-      {
-        return [
-          [Math.cos(rad), Math.sin(rad), 0, 0],
-          [-Math.sin(rad), Math.cos(rad), 0, 0],
-          [0, 0, 1, 0],
-          [0, 0, 0, 1]
-        ]
-      }
-    default:
-      console.log('Error:Invalid axis declaration!');
-      break
-  }
+function rotYMat(rad, axis) {
+  return [
+    [Math.cos(rad), 0, -Math.sin(rad), 0],
+    [0, 1, 0, 0],
+    [Math.sin(rad), 0, Math.cos(rad), 0],
+    [0, 0, 0, 1]
+  ]
+}
+
+function rotZMat(rad, axis) {
+  return [
+    [Math.cos(rad), Math.sin(rad), 0, 0],
+    [-Math.sin(rad), Math.cos(rad), 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1]
+  ]
 }
 
 function nDiagMat(...args) { //returns diagonal matrix of n size
@@ -159,17 +122,11 @@ function diagMat(...args) { //returns 4x4 diag matrix
   ]
 }
 
-function transMat(...args) { //returns 4x4 translation matrix
-  //identity matrix but
-
-  if (!(args.length === 3)) {
-    console.log('ERROR: wrong num of arguments!')
-  }
-
+function transMat(x, y, z) { //returns 4x4 translation matrix
   return [
-    [1, 0, 0, args[0]],
-    [0, 1, 0, args[1]],
-    [0, 0, 1, args[2]],
+    [1, 0, 0, x],
+    [0, 1, 0, y],
+    [0, 0, 1, z],
     [0, 0, 0, 1]
   ]
 }
@@ -219,24 +176,34 @@ function matMatComp(...args) { //composed n matrices together into a single tran
   return composedMat;
 }
 
-function dot(v1, v2) { //dot product
-  //each vec is 1D array
-  if (!(v1.length === v2.length)) {
-    console.log(`ERROR AT FUNCTION "DOT":
-  vectors dimensions aren't equal!`)
-  }
 
-  let dotSum = 0;
-  for (let i = 0; i < v1.length; i++) {
-    dotSum += v1[i] * v2[i];
-  }
-  return dotSum;
+function scalarVecMult(scalar, vec) { //scalar vector multiplication
+  return [
+    vec[0] * scalar,
+    vec[1] * scalar,
+    vec[2] * scalar,
+    1
+  ];
 }
 
-function scalarVecMult(scalar,vec){ //scalar vector multiplication
-  let newVec = [];
-  for (let i = 0; i < vec.length; i++){
-    newVec[i] = vec[i] * scalar;
-  }
-  return newVec;
+function mag(v){
+  return Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+}
+function dot(v1, v2) {
+  return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+}
+
+function projVecOntoVec(v1, v2) {
+  return dot(v1, v2) / mag(v2);
+}
+
+function determinant(v1, v2) { //dot product
+  //each vec is 1D array
+  // v
+  // dotSum
+  // return dotSum;
+}
+
+function cross(v1,v2) {
+
 }
