@@ -100,9 +100,9 @@ class sMove extends System { //moves player entity given keyboard input and tran
         g.camera.angleZ = entity.cPos.angleZ;
 
         g.camera.rotationMatrix = matMatComp(
-          rotMat(g.camera.angleY, 'x'),
-          rotMat(g.camera.angleX, 'y'),
-          rotMat(g.camera.angleZ, 'z'));
+          rotMatX(g.camera.angleY),
+          rotMatY(g.camera.angleX),
+          rotMatZ(g.camera.angleZ));
 
           let moveForward = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.forwardOrientation));
           let moveRight = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.rightOrientation));
@@ -174,8 +174,17 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     //also uses cCamera
   }
   update() {
+    ctx.fillStyle = cssRGBA([0,0,0,1]);
+      // ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+      ctx.beginPath(0, 0);
+      ctx.lineTo(700, 200);
+      ctx.lineTo(300, -300);
+
+      ctx.fill();
+
     for (let i = 0; i < this.relevantEntities.length; i++) { //calc distance to camera
-      this.relevantEntities[i].cMesh.distToCamera = pythag(
+        this.relevantEntities[i].cMesh.distToCamera = pythag(
         this.relevantEntities[i].cPos.x-g.camera.x,
         this.relevantEntities[i].cPos.y-g.camera.y,
         this.relevantEntities[i].cPos.z-g.camera.z
@@ -213,51 +222,34 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
     //create rotation matrix based on entities angular velocity
     let rotationMatXYZ = matMatComp(
-      rotMat(entity.cPhysics.angularVel.x, 'x'),
-      rotMat(entity.cPhysics.angularVel.y, 'y'),
-      rotMat(entity.cPhysics.angularVel.z, 'z'));
+      rotMatX(entity.cPhysics.angularVel.x),
+      rotMatY(entity.cPhysics.angularVel.y),
+      rotMatZ(entity.cPhysics.angularVel.z));
 
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
     let preProjectionMat = matMatComp(g.camera.rotationMatrix, worldTransMat1, g.camera.translationMatrix); //precalc camera for better perf
     let postProjectionMat = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix); //precalc these for better perf
 
     //rotate verts based on rotation matrix
-    for (let i = 0; i < entity.cMesh.verts.length / 3; i++) { //rotate all verts by rotation matrix
-      let ii = i * 3;
-      let vert = [entity.cMesh.verts[ii + 0], entity.cMesh.verts[ii + 1], entity.cMesh.verts[ii + 2], 1]; //encapsulate verts ntuples intoa  single array
+    for (let i = 0; i < entity.cMesh.verts.length; i++) { //rotate all verts by rotation matrix
 
-      let rotatedVec = matVecMult(rotationMatXYZ, vert); //multiply vertex by rotation matrix
+      let rotatedVec = matVecMult(rotationMatXYZ, entity.cMesh.verts[i]); //multiply vertex by rotation matrix
 
-      //store rotated vertex
-      entity.cMesh.verts[ii + 0] = rotatedVec[0];
-      entity.cMesh.verts[ii + 1] = rotatedVec[1];
-      entity.cMesh.verts[ii + 2] = rotatedVec[2];
     }
 
     this.sortFacesByDistanceToPoint(entity);
 
-    for (let i = 0; i < entity.cMesh.faces.length / 3; i++) {
-      // compartmentalize verts in 1x4 arrays [x,y,z,1]
-      let v1Raw = [this.vertData(entity, i, 0, 'x'),
-        this.vertData(entity, i, 0, 'y'),
-        this.vertData(entity, i, 0, 'z'),
-        1
-      ];
-      let v2Raw = [this.vertData(entity, i, 1, 'x'),
-        this.vertData(entity, i, 1, 'y'),
-        this.vertData(entity, i, 1, 'z'),
-        1
-      ];
-      let v3Raw = [this.vertData(entity, i, 2, 'x'),
-        this.vertData(entity, i, 2, 'y'),
-        this.vertData(entity, i, 2, 'z'),
-        1
-      ];
+    for (let i = 0; i < entity.cMesh.faces.length; i++) {
+// console.table(entity.cMesh.verts);
+
+      let v1Raw = entity.cMesh.verts[entity.cMesh.faces[i][0]].slice();
+      let v2Raw = entity.cMesh.verts[entity.cMesh.faces[i][1]].slice();
+      let v3Raw = entity.cMesh.verts[entity.cMesh.faces[i][2]].slice();
 
       //store distance of vectors in d vars
-      let d1 = this.vertDistData(entity, i, 0);
-      let d2 = this.vertDistData(entity, i, 1);
-      let d3 = this.vertDistData(entity, i, 2);
+      let d1 = entity.cMesh.vertsDistToCamera[entity.cMesh.faces[i][0]];
+      let d2 = entity.cMesh.vertsDistToCamera[entity.cMesh.faces[i][1]];
+      let d3 = entity.cMesh.vertsDistToCamera[entity.cMesh.faces[i][2]];
 
       //compose giant transformation matrices for each vector in order right to left
       let m1 = matMatComp(postProjectionMat, diagMat(1 / d1), preProjectionMat);
@@ -276,13 +268,14 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       // console.log(v1);
       // console.log(v2);
       // console.log(v3);
-      //draw resulting vectors on the screen using the appropriate color of the face
+      // draw resulting vectors on the screen using the appropriate color of the face
+
+
 
       const faceZAvg = mean(v1[2], v2[2], v3[2]);
-      // console.log(faceZAvg);
       if (faceZAvg > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
         // const faceZAvg = mean(v1[2],v2[2],v3[2]);
-        ctx.fillStyle = cssRGBA([entity.cMesh.facesR[i], entity.cMesh.facesG[i], entity.cMesh.facesB[i]]);
+        ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
         ctx.beginPath(v1[0], v1[1]);
         ctx.lineTo(v2[0], v2[1]);
         ctx.lineTo(v3[0], v3[1]);
@@ -296,16 +289,21 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
   distBetweenFacesAndPoint(entity) { //calculate distances between faces and an arbitrary pos/point in 3D space
     //poimesh [x,y,z]
 
-    for (let i = 0; i < entity.cMesh.verts.length / 3; i++) { //calc vertDistoCamera for every vertice
-      let ii = i * 3;
+    for (let i = 0; i < entity.cMesh.verts.length; i++) { //calc vertDistoCamera for every vertice
+
       entity.cMesh.vertsDistToCamera[i] = pythag(
-        g.camera.x - entity.cPos.x - entity.cMesh.verts[ii + 0],
-        g.camera.y - entity.cPos.y - entity.cMesh.verts[ii + 1],
-        g.camera.z - entity.cPos.z - entity.cMesh.verts[ii + 2]
+        g.camera.x - entity.cPos.x - entity.cMesh.verts[i][0],
+        g.camera.y - entity.cPos.y - entity.cMesh.verts[i][1],
+        g.camera.z - entity.cPos.z - entity.cMesh.verts[i][2]
       );
+
     }
-    for (let i = 0; i < entity.cMesh.faces.length / 3; i++) { //find avg dist of every face from camera by avging it's avg vertDistToCamera
-      entity.cMesh.facesDistToCamera[i] = mean(this.vertDistData(entity, i, 0), this.vertDistData(entity, i, 1), this.vertDistData(entity, i, 2));
+    for (let i = 0; i < entity.cMesh.faces.length; i++) { //find avg dist of every face from camera by avging it's avg vertDistToCamera
+      entity.cMesh.facesDistToCamera[i] = mean( //avg all distances which make up every  face
+        entity.cMesh.vertsDistToCamera[entity.cMesh.faces[i][0]],
+        entity.cMesh.vertsDistToCamera[entity.cMesh.faces[i][1]],
+        entity.cMesh.vertsDistToCamera[entity.cMesh.faces[i][2]]
+      );
     }
   }
 
@@ -314,51 +312,25 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     this.distBetweenFacesAndPoint(entity); //calc facesDistToCamera
 
     for (let i = 1; i < entity.cMesh.facesDistToCamera.length; i++) { //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
-      let ii = i * 3; //face index of i as each face in faces arr corresponds to 3 elements
       let j = i - 1;
+
       while (j >= 0) { //itterate backwards through array until find an element which is smaller then index
         // console.log(`${this.facesDistToCamera[i]} < ${this.facesDistToCamera[j]}`)
         if (entity.cMesh.facesDistToCamera[i] > entity.cMesh.facesDistToCamera[j]) {
-
-          //swap elements on faces and facesDistToCamera arrays
-          let jj = j * 3; //face index of j as each face in faces arr corresponds to 3 elements
-
           //dist to camera swap
           let fDistStore = entity.cMesh.facesDistToCamera[i];
           entity.cMesh.facesDistToCamera[i] = entity.cMesh.facesDistToCamera[j];
           entity.cMesh.facesDistToCamera[j] = fDistStore;
 
           //face colors swap
-          const rStore = entity.cMesh.facesR[i];
-          const gStore = entity.cMesh.facesG[i];
-          const bStore = entity.cMesh.facesB[i];
-
-          entity.cMesh.facesR[i] = entity.cMesh.facesR[j];
-          entity.cMesh.facesG[i] = entity.cMesh.facesG[j];
-          entity.cMesh.facesB[i] = entity.cMesh.facesB[j];
-
-          entity.cMesh.facesR[j] = rStore;
-          entity.cMesh.facesG[j] = gStore;
-          entity.cMesh.facesB[j] = bStore;
+          let fColorStore = entity.cMesh.faceColors[i].slice();
+          entity.cMesh.faceColors[i] = entity.cMesh.faceColors[j];
+          entity.cMesh.faceColors[j] = fColorStore;
 
           //faces swap
-          let fStore = [
-            entity.cMesh.faces[ii + 0],
-            entity.cMesh.faces[ii + 1],
-            entity.cMesh.faces[ii + 2]
-          ];
-
-          let fStore1 = entity.cMesh.faces[ii + 0];
-          let fStore2 = entity.cMesh.faces[ii + 1];
-          let fStore3 = entity.cMesh.faces[ii + 2];
-
-          entity.cMesh.faces[ii + 0] = entity.cMesh.faces[jj + 0];
-          entity.cMesh.faces[ii + 1] = entity.cMesh.faces[jj + 1];
-          entity.cMesh.faces[ii + 2] = entity.cMesh.faces[jj + 2];
-
-          entity.cMesh.faces[jj + 0] = fStore[0];
-          entity.cMesh.faces[jj + 1] = fStore[1];
-          entity.cMesh.faces[jj + 2] = fStore[2];
+          let fStore = entity.cMesh.faces[i].slice();
+          entity.cMesh.faces[i] = entity.cMesh.faces[j];
+          entity.cMesh.faces[j] = fStore;
           break;
         }
 

@@ -64,22 +64,18 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
   constructor(objBlob){
     super();
     this.name = 'cMesh';
-    this.verts = objBlob.verts.slice(); //array of vertexes in format x,y,z,x,y,z.... (slice is used to copy array instead of just provide a reference to objBlob)
 
+    this.verts = objBlob.verts;
     this.vertsDistToCamera = []; //array of how far the vert is away from the camera [distForxyz,distForv2,v3,v4...]
     this.vertNorms = objBlob.vertNorms.slice(); //arr of vertex normals
-
-    this.faces = objBlob.faces.slice(); //arr with indexes of vertices which make up a face, each face composed of 3 vertices/elements, [v1,v2,v3, v1,v2,v3]
+    this.faces = objBlob.faces;
+    console.table(this.faces)
     this.facesDistToCamera = []; //dist of [face1, distOfFace2]
     this.inFrustrumAmount = 0; // twe is object centered in camera (1 === 100%, -1 = it's behind camera direclty, 0 === 90 degrees)
 
-    this.facesR = []; //corresponds to red   component of a face[i] color
-    this.facesG = []; //corresponds to green component of a face[i] color
-    this.facesB = []; //corresponds to blue  component of a face[i] color
-    for (let i = 0; i < this.faces.length; i++) {
-      this.facesR[i] = ran(255);
-      this.facesG[i] = ran(255);
-      this.facesB[i] = ran(255);
+    this.faceColors = new Array(this.faces.length);
+    for (let i = 0; i < this.faces.length; i++) { //rgb
+      this.faceColors[i] = [ran(255),ran(255),ran(255)];
     }
 
   }

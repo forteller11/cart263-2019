@@ -50,10 +50,30 @@ function convertObjFileToMeshBlob(obj) {
     reducedFArr.push(fArr[i]-1); //make it start at 0
   }
 
+  let fArr2D = new Array(reducedFArr.length/3);
+  for (let i = 0; i < fArr2D.length; i ++){
+    let ii = i*3;
+      fArr2D[i] = [
+        reducedFArr[ii+0],
+        reducedFArr[ii+1],
+        reducedFArr[ii+1]
+      ]
+  }
+
+  let vArr2D = new Array(vArr.length/3);
+  for (let i = 0; i < vArr2D.length; i ++){
+    let ii = i*3;
+      vArr2D[i] = createVec(
+        vArr[ii+0],
+        vArr[ii+1],
+        vArr[ii+2]
+      )
+  }
+
   const meshBlob = {
-    verts: vArr,
+    verts: vArr2D,
     vertNorms: vnArr,
-    faces: reducedFArr
+    faces: fArr2D
   }
 
   dLog(meshBlob);
