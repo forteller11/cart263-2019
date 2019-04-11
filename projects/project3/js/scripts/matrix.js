@@ -24,13 +24,13 @@ function createVec(x,y,z){
 // }
 
 function matVecMult(m, v) { //matrix-Vector multiply
-  return createVec(
-    m[0][0] * v[0] + m[0][1] * v[1] + m[0][2] * v[2] + m[0][3] * 1, //x
-    m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2] + m[1][3] * 1, //y
-    m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2] + m[2][3] * 1 //z
-  )
+  return [
+    m[0][0] * v[0] + m[0][1] * v[0] + m[0][2] * v[0] + m[0][3] * v[0], //x
+    m[1][0] * v[1] + m[1][1] * v[1] + m[1][2] * v[1] + m[1][3] * v[1], //y
+    m[2][0] * v[2] + m[2][1] * v[2] + m[2][2] * v[2] + m[2][3] * v[2], //z
+    mag(v)
+  ]
 }
-
 
 function rotXYZMat(x, y, z) {
   console.log('ERROR: this function is unfinished!')

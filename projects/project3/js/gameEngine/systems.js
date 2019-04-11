@@ -174,6 +174,14 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     //also uses cCamera
   }
   update() {
+    ctx.fillStyle = cssRGBA([0,0,0,1]);
+      // ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+      ctx.beginPath(0, 0);
+      ctx.lineTo(700, 200);
+      ctx.lineTo(300, -300);
+
+      ctx.fill();
 
     for (let i = 0; i < this.relevantEntities.length; i++) { //calc distance to camera
         this.relevantEntities[i].cMesh.distToCamera = pythag(
@@ -216,8 +224,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     let rotationMatXYZ = matMatComp(
       rotMatX(entity.cPhysics.angularVel.x),
       rotMatY(entity.cPhysics.angularVel.y),
-      rotMatZ(entity.cPhysics.angularVel.z)
-    );
+      rotMatZ(entity.cPhysics.angularVel.z));
 
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
     let preProjectionMat = matMatComp(g.camera.rotationMatrix, worldTransMat1, g.camera.translationMatrix); //precalc camera for better perf
@@ -238,18 +245,16 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       let v1Raw = entity.cMesh.verts[entity.cMesh.faces[i][0]].slice();
       let v2Raw = entity.cMesh.verts[entity.cMesh.faces[i][1]].slice();
       let v3Raw = entity.cMesh.verts[entity.cMesh.faces[i][2]].slice();
-      console.log(v1Raw);
-      console.log(v2Raw);
-      console.log(v3Raw);
+
       //store distance of vectors in d vars
       let d1 = entity.cMesh.vertsDistToCamera[entity.cMesh.faces[i][0]];
       let d2 = entity.cMesh.vertsDistToCamera[entity.cMesh.faces[i][1]];
       let d3 = entity.cMesh.vertsDistToCamera[entity.cMesh.faces[i][2]];
 
       //compose giant transformation matrices for each vector in order right to left
-      let m1 = matMatComp(postProjectionMat, preProjectionMat);
-      let m2 = matMatComp(postProjectionMat, preProjectionMat);
-      let m3 = matMatComp(postProjectionMat, preProjectionMat);
+      let m1 = matMatComp(postProjectionMat, diagMat(1 / d1), preProjectionMat);
+      let m2 = matMatComp(postProjectionMat, diagMat(1 / d2), preProjectionMat);
+      let m3 = matMatComp(postProjectionMat, diagMat(1 / d3), preProjectionMat);
 
       //transform vectors using the appropriate matrices
       let v1 = matVecMult(m1, v1Raw);
@@ -270,25 +275,12 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       const faceZAvg = mean(v1[2], v2[2], v3[2]);
       if (faceZAvg > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
         // const faceZAvg = mean(v1[2],v2[2],v3[2]);
-        v1[0] = Math.round(v1[0]);
-        v1[1] = Math.round(v1[1]);
-        v2[0] = Math.round(v2[0]);
-        v2[1] = Math.round(v2[1]);
-        v3[0] = Math.round(v3[0]);
-        v3[1] = Math.round(v3[1]);
-//         console.log(`${v1[0]},${v1[1]},
-// ${v2[0]},${v2[1]},
-// ${v3[0]},${v3[1]},
-// `);
-        ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i])
-        ctx.strokeStyle = cssRGBA(entity.cMesh.faceColors[i])
+        ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
         ctx.beginPath(v1[0], v1[1]);
         ctx.lineTo(v2[0], v2[1]);
         ctx.lineTo(v3[0], v3[1]);
         ctx.lineTo(v1[0], v1[1]);
-         // ctx.closePath();
         ctx.fill();
-        // ctx.stroke();
       }
     }
 

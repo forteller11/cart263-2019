@@ -20,15 +20,10 @@ let mesh;
 let cameraOrigin;
 
 function main() {
-  let m1 = [
-    [5,6,3,1],
-    [-2,3,3,3],
-    [10,1,10,2],
-    [1,1,-10,-2]
-  ]
-  let v1 = [5,6,-1,1];
+  let m1 = rotMatX(2);
+  let m2 = rotMatY(-.3);
 
-console.log(matVecMult(m1,v1))
+console.time()
 
 //   let v1 = createVec(-1,3,-0);
 //   let v2  = createVec(2,2,5);

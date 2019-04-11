@@ -56,7 +56,7 @@ function convertObjFileToMeshBlob(obj) {
       fArr2D[i] = [
         reducedFArr[ii+0],
         reducedFArr[ii+1],
-        reducedFArr[ii+2]
+        reducedFArr[ii+1]
       ]
   }
 
@@ -69,7 +69,6 @@ function convertObjFileToMeshBlob(obj) {
         vArr[ii+2]
       )
   }
-  console.table(vArr2D);
 
   const meshBlob = {
     verts: vArr2D,
