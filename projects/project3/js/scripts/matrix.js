@@ -1,29 +1,11 @@
 'use strict';
 
-/*
-all vectors take the form [x,y,z,magnitude];
-in proper notation though all vectors would actually take the form [x,y,z,1]
-where "1" = the homogenous coordinate which can be used by translation matrices, this
-one however does not have to be stored as is simply assumed by all matrix functions
-
-the only time the magnitude of the vector [x,y,z,magnitude] is calculated is when
-the vector is created or multiplied by a matrix
-*/
-
-function createVec(x,y,z){
-  return [
-    x,
-    y,
-    z,
-    mag([x,y,z])
-  ]
-}
 function matVecMult(m, v) { //matrix-Vector multiply
   return [
-    m[0][0] * v[0] + m[0][1] * v[0] + m[0][2] * v[0] + m[0][3] * v[0], //x
-    m[1][0] * v[1] + m[1][1] * v[1] + m[1][2] * v[1] + m[1][3] * v[1], //y
-    m[2][0] * v[2] + m[2][1] * v[2] + m[2][2] * v[2] + m[2][3] * v[2], //z
-    mag(v)
+    m[0][0] * v[0] + m[0][1] * v[0] + m[0][2] * v[0] + m[0][3] * v[0],
+    m[1][0] * v[0] + m[1][1] * v[0] + m[1][2] * v[0] + m[1][3] * v[0],
+    m[2][0] * v[0] + m[2][1] * v[0] + m[2][2] * v[0] + m[2][3] * v[0],
+    1
   ]
 }
 
@@ -37,7 +19,7 @@ function rotXYZMat(x, y, z) {
   ]
 }
 
-function rotMatX(rad) {
+function rotXMat(rad) {
   return [
     [1, 0, 0, 0],
     [0, Math.cos(rad), Math.sin(rad), 0],
@@ -46,7 +28,7 @@ function rotMatX(rad) {
   ]
 }
 
-function rotMatY(rad, axis) {
+function rotYMat(rad, axis) {
   return [
     [Math.cos(rad), 0, -Math.sin(rad), 0],
     [0, 1, 0, 0],
@@ -55,7 +37,7 @@ function rotMatY(rad, axis) {
   ]
 }
 
-function rotMatZ(rad, axis) {
+function rotZMat(rad, axis) {
   return [
     [Math.cos(rad), Math.sin(rad), 0, 0],
     [-Math.sin(rad), Math.cos(rad), 0, 0],
@@ -148,35 +130,7 @@ function transMat(x, y, z) { //returns 4x4 translation matrix
     [0, 0, 0, 1]
   ]
 }
-function comp(m1,m2){
-  // const x1 = m1[0][0]*m2[0][0] + m1[0][1]*m2[1][0]  + m1[0][2]*m2[2][0] + m1[0][3]*m2[3][0];
-  // const y1 = m1[1][0]*m2[0][0] + m1[1][1]*m2[1][0]  + m1[1][2]*m2[2][0] + m1[1][3]*m2[3][0];
-  // const z1 = m1[2][0]*m2[0][0] + m1[2][1]*m2[1][0]  + m1[2][2]*m2[2][0] + m1[2][3]*m2[3][0];
-  // const w1 = m1[3][0]*m2[0][0] + m1[3][1]*m2[1][0]  + m1[3][2]*m2[2][0] + m1[3][3]*m2[3][0];
-  //
-  // const x2 = m1[0][1]*m2[0][1] + m1[0][1]*m2[1][1]  + m1[0][2]*m2[2][1] + m1[0][3]*m2[3][1];
-  // const y2 = m1[1][1]*m2[0][1] + m1[1][1]*m2[1][1]  + m1[1][2]*m2[2][1] + m1[1][3]*m2[3][1];
-  // const z2 = m1[2][1]*m2[0][1] + m1[2][1]*m2[1][1]  + m1[2][2]*m2[2][1] + m1[2][3]*m2[3][1];
-  // const w2 = m1[3][1]*m2[0][1] + m1[3][1]*m2[1][1]  + m1[3][2]*m2[2][1] + m1[3][3]*m2[3][1];
-  //
-  // const x3 = m1[0][2]*m2[0][2] + m1[0][1]*m2[1][2]  + m1[0][2]*m2[2][2] + m1[0][3]*m2[3][2];
-  // const y3 = m1[1][2]*m2[0][2] + m1[1][1]*m2[1][2]  + m1[1][2]*m2[2][2] + m1[1][3]*m2[3][2];
-  // const z3 = m1[2][2]*m2[0][2] + m1[2][1]*m2[1][2]  + m1[2][2]*m2[2][2] + m1[2][3]*m2[3][2];
-  // const w3 = m1[3][2]*m2[0][2] + m1[3][1]*m2[1][2]  + m1[3][2]*m2[2][2] + m1[3][3]*m2[3][2];
-  //
-  // const x4 = m1[0][3]*m2[0][3] + m1[0][3]*m2[1][3]  + m1[0][3]*m2[2][3] + m1[0][3]*m2[3][3];
-  // const y4 = m1[1][3]*m2[0][3] + m1[1][3]*m2[1][3]  + m1[1][3]*m2[2][3] + m1[1][3]*m2[3][3];
-  // const z4 = m1[2][3]*m2[0][3] + m1[2][3]*m2[1][3]  + m1[2][3]*m2[2][3] + m1[2][3]*m2[3][3];
-  // const w4 = m1[3][3]*m2[0][3] + m1[3][3]*m2[1][3]  + m1[3][3]*m2[2][3] + m1[3][3]*m2[3][3];
 
-
-  return [
-    [m1[0][0]*m2[0][0] + m1[0][1]*m2[1][0]  + m1[0][2]*m2[2][0] + m1[0][3]*m2[3][0],m1[0][1]*m2[0][1] + m1[0][1]*m2[1][1]  + m1[0][2]*m2[2][1] + m1[0][3]*m2[3][1],m1[0][2]*m2[0][2] + m1[0][1]*m2[1][2]  + m1[0][2]*m2[2][2] + m1[0][3]*m2[3][2],m1[0][3]*m2[0][3] + m1[0][3]*m2[1][3]  + m1[0][3]*m2[2][3] + m1[0][3]*m2[3][3]],
-    [m1[1][0]*m2[0][0] + m1[1][1]*m2[1][0]  + m1[1][2]*m2[2][0] + m1[1][3]*m2[3][0],m1[1][1]*m2[0][1] + m1[1][1]*m2[1][1]  + m1[1][2]*m2[2][1] + m1[1][3]*m2[3][1],m1[1][2]*m2[0][2] + m1[1][1]*m2[1][2]  + m1[1][2]*m2[2][2] + m1[1][3]*m2[3][2],m1[1][3]*m2[0][3] + m1[1][3]*m2[1][3]  + m1[1][3]*m2[2][3] + m1[1][3]*m2[3][3]],
-    [m1[2][0]*m2[0][0] + m1[2][1]*m2[1][0]  + m1[2][2]*m2[2][0] + m1[2][3]*m2[3][0],m1[2][1]*m2[0][1] + m1[2][1]*m2[1][1]  + m1[2][2]*m2[2][1] + m1[2][3]*m2[3][1],m1[2][2]*m2[0][2] + m1[2][1]*m2[1][2]  + m1[2][2]*m2[2][2] + m1[2][3]*m2[3][2],m1[2][3]*m2[0][3] + m1[2][3]*m2[1][3]  + m1[2][3]*m2[2][3] + m1[2][3]*m2[3][3]],
-    [m1[3][0]*m2[0][0] + m1[3][1]*m2[1][0]  + m1[3][2]*m2[2][0] + m1[3][3]*m2[3][0],m1[3][1]*m2[0][1] + m1[3][1]*m2[1][1]  + m1[3][2]*m2[2][1] + m1[3][3]*m2[3][1],m1[3][2]*m2[0][2] + m1[3][1]*m2[1][2]  + m1[3][2]*m2[2][2] + m1[3][3]*m2[3][2],m1[3][3]*m2[0][3] + m1[3][3]*m2[1][3]  + m1[3][3]*m2[2][3] + m1[3][3]*m2[3][3]],
-  ]
-}
 function matMatComp(...args) { //composed n matrices together into a single transformation matrix
   //composiiton matrix treats the latest elements as if they were transformed first args[length-1],args[length-2],args[length-3]...
 
@@ -223,19 +177,18 @@ function matMatComp(...args) { //composed n matrices together into a single tran
 }
 
 
-function scalarVecMult(scalar, v) { //scalar vector multiplication
+function scalarVecMult(scalar, vec) { //scalar vector multiplication
   return [
-    v[0] * scal, //x
-    v[1] * scal, //y
-    v[2] * scal, //z
-    v[3] * scal //magnitude
+    vec[0] * scalar,
+    vec[1] * scalar,
+    vec[2] * scalar,
+    1
   ];
 }
 
 function mag(v){
   return Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
 }
-
 function dot(v1, v2) {
   return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 }
@@ -244,42 +197,13 @@ function projVecOntoVec(v1, v2) {
   return dot(v1, v2) / mag(v2);
 }
 
-function surfaceAreaOf2Vecs(v1,v2) {
-  let b = projVecOntoVec(v1,v2);
-  let height = Math.sqrt(v1[3]*v1[3] - b*b); //a^2 = c^2 - b^2
-  return height*v2[3];
+function determinant(v1, v2) { //dot product
+  //each vec is 1D array
+  // v
+  // dotSum
+  // return dotSum;
 }
 
-function normalize(v){ //normalizes v
-  v[0] = v[0]/v[3];
-  v[1] = v[1]/v[3];
-  v[2] = v[2]/v[3];
-  v[3] = 1;
-}
+function cross(v1,v2) {
 
-function returnNormalized(v){ //returns normalized version of v
-  return [
-    v[0]/v[3],
-    v[1]/v[3],
-    v[2]/v[3],
-    1
-  ]
 }
-
-function cross(v1,v2){ //returns cross product
-  return createVec(
-    v1[1] * v2[2] - v1[2] * v2[1], //y1 z2 - y2 z1
-    v1[2] * v2[0] - v1[0] * v2[2], //x1 z2 - x2 z1
-    v1[0] * v2[1] - v1[1] * v2[0] //x1 y2 - y1 x2
-  )
-}
-
-// function determinantOfVecs(v1,v2,v3) {
-//   let b = projVecOntoVec(v1,v2);
-//   let height = Math.sqrt(v1[3]*v1[3] - b*b); //a^2 = c^2 - b^2
-//   //
-//   // let b2 = projVecOntoVec(v1,v3);
-//   // let depth = Math.sqrt(v1[3]*v1[3] - b2*b2); //a^2 = c^2 - b^2
-//
-//   return height*v2[3];
-// }
