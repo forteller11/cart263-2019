@@ -288,6 +288,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         ctx.lineTo(v3[0], v3[1]);
         ctx.lineTo(v1[0], v1[1]);
         ctx.fill();
+        ctx.stroke();
       }
     }
 

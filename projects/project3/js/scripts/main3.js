@@ -20,8 +20,23 @@ let mesh;
 let cameraOrigin;
 
 function main() {
-  let vec1 = [-1,0,1,1];
-  let vec2  = [3,0,3,1];
-console.log(dot(vec1,vec2))
+    dLog('main');
+  cameraOrigin = [0, 0, -1];
+
+  //create canvas
+  ctx = createCanvas(window.innerWidth, window.innerHeight);
+  ctx.fillStyle = cssRGB(ran(255), ran(255), ran(255));
+  ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+  let request = new XMLHttpRequest();
+  request.open('GET', 'assets/triangle02.obj'); //open/setup request
+  request.send();
+
+  request.onload = () => {
+    mesh = new Mesh(convertObjFileToMeshBlob(request.response));
+
+    update();
+    setInterval(update, fps);
+  }
 
 }
