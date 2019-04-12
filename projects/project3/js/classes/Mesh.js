@@ -2,12 +2,7 @@ class Mesh {
   constructor(objBlob) {
     this.distToCamera = undefined; //how far is meshes distToCamera in worldview
 
-    this.verts = new Array((objBlob.verts.length/3)); //array of vertexes in format x,y,z,x,y,z....
-    for (let i = 0; i < objBlob.verts.length/3; i ++){
-      let ii = i*3;
-      //returns array representing vec [x,y,z,magnitude]
-      this.verts[i] = createVec(objBlob.verts[ii+0],objBlob.verts[ii+1],objBlob.verts[ii+2])
-    }
+    this.verts = objBlob.verts; //array of vertexes in format x,y,z,x,y,z....
     this.vertsDistToCamera = []; //array of how far the vert is away from the camera [distForxyz,distForv2,v3,v4...]
 
     this.vertNorms = objBlob.vertNorms; //arr of vertex normals
@@ -103,7 +98,7 @@ class Mesh {
     //finds the element in verts array which corresponds to a
     //given component of a vertex of a face
 
-    const faceIndex = (face) * 4;
+    const faceIndex = (face) * 3;
     const vertIndex = (vert);
 
     let componentIndex; //convert string x,y,z to number

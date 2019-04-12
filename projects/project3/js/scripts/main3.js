@@ -23,8 +23,12 @@ function main() {
   let m1 = rotMatX(2);
   let m2 = rotMatY(-.3);
 
-console.time()
-
+// console.time(1)
+//   console.log(matMatComp(m1,m2));
+//   console.timeEnd(1)
+  console.time(2)
+  console.log(comp(m1,m2));
+    console.timeEnd(2)
 //   let v1 = createVec(-1,3,-0);
 //   let v2  = createVec(2,2,5);
 //   let v3 = createVec(3,3,3);

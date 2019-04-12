@@ -63,9 +63,9 @@ class gPhysicsConstants { //stores physics constants
       this.rightOrientation = [1,0,0,1];
       this.upOrientation = [0,1,0,1];
       //rotation of camera
-      this.rotationMatrix = matMatComp(rotMatX(this.angleX),
-                                       rotMatY(this.angleY),
-                                       rotMatZ(this.angleZ));
+      this.rotationMatrix = matMatComp(rotMat(this.angleX, 'x'),
+                                       rotMat(this.angleY, 'y'),
+                                       rotMat(this.angleZ, 'z'));
 
       //what to offset meshes by BEFORE scaling
       this.translationMatrix = transMat(this.x, -this.y, this.z); //rotation
