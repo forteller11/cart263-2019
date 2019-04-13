@@ -3,6 +3,9 @@ assignment8: graphics programming
 Charly Yan Miller
 In which i've spent a long time getting your screen to look like it's a window
 into a world of rotating triangles
+
+In which I learn what can be done with homogenous coordinates [x, y, z, w] OTHER than translation
+https://hackernoon.com/programmers-guide-to-homogeneous-coordinates-73cbfd2bcc65
 */
 
 'use strict';
@@ -37,7 +40,7 @@ let globalEntityIdCounter = 0; //everytime an entity is created it is given a un
 let ctx;
 let debugMode = true;
 let debugOpacity = 0.2;
-let fps = 16.7;
+let fps = 60;
 let bgColor;
 
 function main() {
@@ -50,9 +53,8 @@ function main() {
   ctx = createCanvas(window.innerWidth, window.innerHeight);
 
   createEntitiesFromBlueprint('player');
-  let ent = createEntitiesFromBlueprint('mesh', 30);
-  ent[0].cPos.x = 0;
-  ent[0].cPos.y = 0;
+  let ent = createEntitiesFromBlueprint('mesh', 1);
+
 
   update();
   setInterval(update, fps);

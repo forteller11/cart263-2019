@@ -100,9 +100,10 @@ class sMove extends System { //moves player entity given keyboard input and tran
         g.camera.angleZ = entity.cPos.angleZ;
 
         g.camera.rotationMatrix = matMatComp(
-          rotMat(g.camera.angleY, 'x'),
-          rotMat(g.camera.angleX, 'y'),
-          rotMat(g.camera.angleZ, 'z'));
+          rotMatX(g.camera.angleX),
+          rotMatY(g.camera.angleY),
+          rotMatZ(g.camera.angleZ)
+        );
 
           let moveForward = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.forwardOrientation));
           let moveRight = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.rightOrientation));
@@ -213,51 +214,37 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
     //create rotation matrix based on entities angular velocity
     let rotationMatXYZ = matMatComp(
-      rotMat(entity.cPhysics.angularVel.x, 'x'),
-      rotMat(entity.cPhysics.angularVel.y, 'y'),
-      rotMat(entity.cPhysics.angularVel.z, 'z'));
+      rotMatX(entity.cPhysics.angularVel.x),
+      rotMatY(entity.cPhysics.angularVel.y),
+      rotMatZ(entity.cPhysics.angularVel.z)
+    )
 
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
     let preProjectionMat = matMatComp(g.camera.rotationMatrix, worldTransMat1, g.camera.translationMatrix); //precalc camera for better perf
     let postProjectionMat = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix); //precalc these for better perf
 
     //rotate verts based on rotation matrix
-    for (let i = 0; i < entity.cMesh.verts.length / 3; i++) { //rotate all verts by rotation matrix
-      let ii = i * 3;
-      let vert = [entity.cMesh.verts[ii + 0], entity.cMesh.verts[ii + 1], entity.cMesh.verts[ii + 2], 1]; //encapsulate verts ntuples intoa  single array
-
-      let rotatedVec = matVecMult(rotationMatXYZ, vert); //multiply vertex by rotation matrix
-
-      //store rotated vertex
-      entity.cMesh.verts[ii + 0] = rotatedVec[0];
-      entity.cMesh.verts[ii + 1] = rotatedVec[1];
-      entity.cMesh.verts[ii + 2] = rotatedVec[2];
+    for (let i = 0; i < entity.cMesh.verts.length; i++) { //rotate all verts by rotation matrix
+      let rotatedVec = matVecMult(rotationMatXYZ, entity.cMesh.verts[i]); //multiply vertex by rotation matrix
     }
 
-    this.sortFacesByDistanceToPoint(entity);
+    // this.sortFacesByDistanceToPoint(entity);
 
-    for (let i = 0; i < entity.cMesh.faces.length / 3; i++) {
-      // compartmentalize verts in 1x4 arrays [x,y,z,1]
-      let v1Raw = [this.vertData(entity, i, 0, 'x'),
-        this.vertData(entity, i, 0, 'y'),
-        this.vertData(entity, i, 0, 'z'),
-        1
-      ];
-      let v2Raw = [this.vertData(entity, i, 1, 'x'),
-        this.vertData(entity, i, 1, 'y'),
-        this.vertData(entity, i, 1, 'z'),
-        1
-      ];
-      let v3Raw = [this.vertData(entity, i, 2, 'x'),
-        this.vertData(entity, i, 2, 'y'),
-        this.vertData(entity, i, 2, 'z'),
-        1
-      ];
+    for (let i = 0; i < entity.cMesh.faces.length; i++) {
+      // homogenize coords from [x,y,z] to [x,y,z,w];
+      const wInit = 1;
+
+      let v1Raw = entity.cMesh.verts[ entity.cMesh.faces[i][0] ].slice();
+      v1Raw.push(wInit); //make homo coordinate [x,y,z,w]
+      let v2Raw = entity.cMesh.verts[ entity.cMesh.faces[i][0] ].slice();
+      v2Raw.push(wInit);
+      let v3Raw = entity.cMesh.verts[ entity.cMesh.faces[i][0] ].slice();
+      v3Raw.push(wInit);
 
       //store distance of vectors in d vars
-      let d1 = this.vertDistData(entity, i, 0);
-      let d2 = this.vertDistData(entity, i, 1);
-      let d3 = this.vertDistData(entity, i, 2);
+      let d1 = 1;
+      let d2 = 1;
+      let d3 = 1;
 
       //compose giant transformation matrices for each vector in order right to left
       let m1 = matMatComp(postProjectionMat, diagMat(1 / d1), preProjectionMat);
@@ -276,17 +263,27 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       // console.log(v1);
       // console.log(v2);
       // console.log(v3);
+      // console.log(v1Raw);
+      // console.log('===========');
       //draw resulting vectors on the screen using the appropriate color of the face
 
-      const faceZAvg = mean(v1[2], v2[2], v3[2]);
+      const faceZAvg = mean(v1[2], v2[2], v3[3]);
+      console.log(faceZAvg);
       // console.log(faceZAvg);
       if (faceZAvg > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
-        // const faceZAvg = mean(v1[2],v2[2],v3[2]);
-        ctx.fillStyle = cssRGBA([entity.cMesh.facesR[i], entity.cMesh.facesG[i], entity.cMesh.facesB[i]]);
+        ctx.fillStyle = cssRGBA([entity.cMesh.faceColors, 1]);
+        ctx.strokeStyle = cssRGBA([entity.cMesh.faceColors, 1]);
+        console.log(ctx.fillStyle);
         ctx.beginPath(v1[0], v1[1]);
         ctx.lineTo(v2[0], v2[1]);
         ctx.lineTo(v3[0], v3[1]);
         ctx.lineTo(v1[0], v1[1]);
+
+        ctx.beginPath(0,0);
+        ctx.lineTo(1000,0);
+        ctx.lineTo(200,600);
+        ctx.lineTo(0,0);
+
         ctx.fill();
         ctx.stroke();
       }

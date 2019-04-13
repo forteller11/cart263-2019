@@ -4,15 +4,11 @@ function matVecMult(mat, vec) { //matrix-Vector multiply
   //matrix is 2D array
   //vector is 1D array
 
-  let transformedVec = [];
+  let transformedVec = new Array(vec.length).fill(0); //creates an array of vec length where all elements === 0
   for (let i = 0; i < mat.length; i++) { //initialise vector output to have components === rows of matrix
     transformedVec[i] = 0;
   }
-  /*treat each col of matrix as an ntuple
-  [x1, x2, x3]
-  [y1, y2, y3]
-  [z1, z2, z3]
-  */
+
   for (let i = 0; i < mat.length; i++) { //rows of matrix
     for (let j = 0; j < mat[i].length; j++) { //collums of matrix
       transformedVec[i] += mat[i][j] * vec[j]; //vec matrix mult
@@ -33,54 +29,37 @@ basically tra
 
 function dot(v1, v2) { //dot product
   //each vec is 1D array
-  if (!(v1.length === v2.length)) {
-    console.log(`ERROR AT FUNCTION "DOT":
-  vectors dimensions aren't equal!`)
-  }
-
   let dotSum = 0;
   for (let i = 0; i < v1.length; i++) {
     dotSum += v1[i] * v2[i];
   }
   return dotSum;
 }
+function rotMatX(rad){ //rotates 3D vector
+  return [
+    [1, 0, 0, 1],
+    [0, Math.cos(rad), Math.sin(rad), 1],
+    [0, -Math.sin(rad), Math.cos(rad), 1],
+    [0, 0, 0, 1]
+  ]
+}
 
-function rotMat(rad, axis) {
-  //rad === radians to rotate
-  //axis === string of what axis to rotate 'x','y' or 'z'
+function rotMatY(rad){
+  return [
+    [Math.cos(rad), 0, -Math.sin(rad), 1] ,
+    [0, 1, 0, 1] ,
+    [Math.sin( rad), 0, Math.cos(rad), 1],
+    [0, 0, 0 , 1]
+  ]
+}
 
-  switch (axis) {
-    case 'x':
-      {
-        return [
-          [1, 0, 0, 0],
-          [0, Math.cos(rad), Math.sin(rad), 0],
-          [0, -Math.sin(rad), Math.cos(rad), 0],
-          [0, 0, 0, 1]
-        ]
-      }
-    case 'y':
-      {
-        return [
-          [Math.cos(rad), 0, -Math.sin(rad), 0],
-          [0, 1, 0, 0],
-          [Math.sin(rad), 0, Math.cos(rad), 0],
-          [0, 0, 0, 1]
-        ]
-      }
-    case 'z':
-      {
-        return [
-          [Math.cos(rad), Math.sin(rad), 0, 0],
-          [-Math.sin(rad), Math.cos(rad), 0, 0],
-          [0, 0, 1, 0],
-          [0, 0, 0, 1]
-        ]
-      }
-    default:
-      console.log('Error:Invalid axis declaration!');
-      break
-  }
+function rotMatZ(rad){
+  return [
+    [Math.cos(rad), Math.sin(rad), 0, 1],
+    [-Math.sin(rad), Math.cos(rad), 0, 1],
+    [0, 0, 1, 1],
+    [0, 0, 0, 1]
+  ]
 }
 
 function nDiagMat(...args) { //returns diagonal matrix of n size
@@ -160,12 +139,6 @@ function diagMat(...args) { //returns 4x4 diag matrix
 }
 
 function transMat(...args) { //returns 4x4 translation matrix
-  //identity matrix but
-
-  if (!(args.length === 3)) {
-    console.log('ERROR: wrong num of arguments!')
-  }
-
   return [
     [1, 0, 0, args[0]],
     [0, 1, 0, args[1]],
@@ -220,12 +193,6 @@ function matMatComp(...args) { //composed n matrices together into a single tran
 }
 
 function dot(v1, v2) { //dot product
-  //each vec is 1D array
-  if (!(v1.length === v2.length)) {
-    console.log(`ERROR AT FUNCTION "DOT":
-  vectors dimensions aren't equal!`)
-  }
-
   let dotSum = 0;
   for (let i = 0; i < v1.length; i++) {
     dotSum += v1[i] * v2[i];
@@ -233,10 +200,43 @@ function dot(v1, v2) { //dot product
   return dotSum;
 }
 
-function scalarVecMult(scalar,vec){ //scalar vector multiplication
-  let newVec = [];
-  for (let i = 0; i < vec.length; i++){
-    newVec[i] = vec[i] * scalar;
+function scalarVecMult(scalar,v){ //scalar vector multiplication
+  let newVec = new Array(v.length);
+  for (let i = 0; i < v.length; i++){
+    newVec[i] = v[i] * scalar;
   }
   return newVec;
+}
+
+function mag(v){
+  let sum = 0;
+  for (let i = 0; i < v.length; i ++){
+    sum  += v[i]*v[i];
+  }
+  return Math.sqrt(sum);
+}
+function normalize(v){ //normalizes v
+  let mag = mag(v);
+  for (let i = 0; i < v.length; i++){
+    v[i] = v[i]/mag;
+  }
+}
+
+function returnNormalized(v){ //returns normalized version of v
+  let mag = mag(v);
+  let newVec = new Array(v.length);
+  for (let i = 0; i < newVec.length; i++){
+    newVec[i] = v[i]/mag;
+  }
+  return newVec;
+}
+
+function crossEucledian(v1,v2){ //returns cross product********
+  //NOTE: returns vector perpindicular in euclidian space (cross in 3D) not using w dimension!
+  return
+  [
+    v1[1] * v2[2] - v1[2] * v2[1], //y1 z2 - y2 z1
+    v1[2] * v2[0] - v1[0] * v2[2], //x1 z2 - x2 z1
+    v1[0] * v2[1] - v1[1] * v2[0]
+  ]
 }
