@@ -228,13 +228,13 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       let rotatedVec = matVecMult(rotationMatXYZ, entity.cMesh.verts[i]); //multiply vertex by rotation matrix
     }
 
-    // this.sortFacesByDistanceToPoint(entity);
+    this.sortFacesByDistanceToPoint(entity);
 
     for (let i = 0; i < entity.cMesh.faces.length; i++) {
       // homogenize coords from [x,y,z] to [x,y,z,w];
       const wInit = 1;
-      console.log(entity.cMesh.verts);
-      console.log(entity.cMesh.faces);
+      // console.log(entity.cMesh.verts);
+      // console.log(entity.cMesh.faces);
       let v1Raw = entity.cMesh.verts[ entity.cMesh.faces[i][0] ].slice();
       v1Raw.push(wInit); //make homo coordinate [x,y,z,w]
       let v2Raw = entity.cMesh.verts[ entity.cMesh.faces[i][1] ].slice();
@@ -262,21 +262,21 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       // console.log(m2);
       // console.log(m3);
       // console.log('=======VECTORS___TRANSFORMED==========');
-      console.log(v1);
-      console.log(v2);
-      console.log(v3);
+      // console.log(v1);
+      // console.log(v2);
+      // console.log(v3);
       // console.log(v1Raw);
       // console.log('===========');
       //draw resulting vectors on the screen using the appropriate color of the face
 
       const faceZAvg = mean(v1[2], v2[2], v3[3]);
-      console.log(faceZAvg);
+      console.log(entity.cMesh.faceColors[i]);
       // console.log(faceZAvg);
       if (faceZAvg > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
-        ctx.fillStyle = cssRGBA([entity.cMesh.faceColors, 1]);
-        ctx.strokeStyle = cssRGBA([entity.cMesh.faceColors, 1]);
-          ctx.fillStyle = cssRGBA([ran(255), ran(255), ran(255), 1]);
-        console.log(ctx.fillStyle);
+        ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
+        // ctx.strokeStyle = cssRGBA([0,0,0,1]);
+
+
         ctx.beginPath(v1[0], v1[1]);
         ctx.lineTo(v2[0], v2[1]);
         ctx.lineTo(v3[0], v3[1]);
@@ -311,11 +311,26 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
   }
 
   sortFacesByDistanceToPoint(entity) {
+    //calculate vector and dist from camera to every point
+    let camPos = [1,1,1,1];
+    camPos = matVecMult(g.camera.translationMatrix,camPos);
+    for (let i = 0; entity.cMesh.vecToVertsFromCamera.length; i++){
+      console.log(entity.cMesh.verts[i]);
+      entity.cMesh.vecToVertsFromCamera[i] = subVecs(entity.cMesh.verts[i], camPos);
+      entity.cMesh.vertsDistToCamera[i] = mag(entity.cMesh.vecToVertsFromCamera[i])-1;
+    }
 
+    for (let i = 0; entity.cMesh.faces.length; i++){ //for evrey face calc avg distToCamera from the verts that comrpise it
+      entity.cMesh.facesDistToCamera = mean(
+          this.vertsDistToCamera[ entityentity.cMesh.faces[i][0] ],
+          this.vertsDistToCamera[ entityentity.cMesh.faces[i][1] ],
+          this.vertsDistToCamera[ entityentity.cMesh.faces[i][2] ]
+      )
+    }
+    //calculate dist from camera to every face
     this.distBetweenFacesAndPoint(entity); //calc facesDistToCamera
 
     for (let i = 1; i < entity.cMesh.facesDistToCamera.length; i++) { //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
-      let ii = i * 3; //face index of i as each face in faces arr corresponds to 3 elements
       let j = i - 1;
       while (j >= 0) { //itterate backwards through array until find an element which is smaller then index
         // console.log(`${this.facesDistToCamera[i]} < ${this.facesDistToCamera[j]}`)

@@ -55,7 +55,7 @@ class gPhysicsConstants { //stores physics constants
       this.angleX = 0;
       this.angleY = 0;
       this.angleZ = 0;
-      this.scaleAmount = pythag(window.innerWidth/2,window.innerHeight/2);
+      this.scaleAmount = pythag(window.innerWidth/2,window.innerHeight/2)*.1;
       // this.scaleAmount = 0; //TEMPORARY REMOVE
       this.clippingThreshold  = 0; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
       this.clippingRange = .5; //larger = more to see

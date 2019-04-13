@@ -35,6 +35,23 @@ function dot(v1, v2) { //dot product
   }
   return dotSum;
 }
+
+function addVecs(v1,v2){
+  let newV = new Array(v1.length);
+  for (let i = 0; i < v1.length; i ++){
+    newV[i] = v1[i] + v2[i];
+  }
+  return newV;
+}
+
+function subVecs(v1,v2){
+  let newV = new Array(v1.length);
+  for (let i = 0; i < v1.length; i ++){
+    newV[i] = v1[i] - v2[i];
+  }
+  return newV;
+}
+
 function rotMatX(rad){ //rotates 3D vector
   return [
     [1, 0, 0, 1],

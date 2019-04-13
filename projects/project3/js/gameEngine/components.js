@@ -66,19 +66,20 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
     this.name = 'cMesh';
 
     this.verts = objBlob.verts.slice();
-    this.vertsDistToCamera = []; //array of how far the vert is away from the camera [distForxyz,distForv2,v3,v4...]
-    this.vecToCameraFromFaces = []; // avg pos of face - camera pos = vec to faceCenter from camera
     this.vertNorms = objBlob.vertNorms.slice(); //arr of vertex normals
-    this.faces = objBlob.faces.slice();
-    console.table(this.faces);
-    console.table(this.verts);
-    this.facesDistToCamera = []; //dist of [face1, distOfFace2]
-    this.inFrustrumAmount = 0; // twe is object centered in camera (1 === 100%, -1 = it's behind camera direclty, 0 === 90 degrees)
+    this.vertsDistToCamera = new Array(this.verts.length); //array of how far the vert is away from the camera [distForxyz
+    this.vecToVertsFromCamera = new Array(this.verts.length); //
 
+    this.faces = objBlob.faces.slice();
+    this.facesDistToCamera = new Array(this.faces.length); //dist of [face1, distOfFace2]
+    this.vecToCameraFromFaces = new Array(this.faces.length); // avg pos of face - camera pos = vec to faceCenter from camera
     this.faceColors = new Array(this.faces.length);
     for (let i = 0; i < this.faces.length; i++) { //rgb
-      this.faceColors[i] = [ran(255),ran(255),ran(255)];
+      this.faceColors[i] = [ran(255),ran(255),ran(255),1];
     }
+
+    console.table(this.faces);
+    console.table(this.verts);
 
     // console.log(this.verts)
   }
