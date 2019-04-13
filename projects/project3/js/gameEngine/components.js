@@ -80,6 +80,7 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
       this.faceColors[i] = [ran(255),ran(255),ran(255)];
     }
 
+    // console.log(this.verts)
   }
 }
 

@@ -233,14 +233,16 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     for (let i = 0; i < entity.cMesh.faces.length; i++) {
       // homogenize coords from [x,y,z] to [x,y,z,w];
       const wInit = 1;
-
+      console.log(entity.cMesh.verts);
+      console.log(entity.cMesh.faces);
       let v1Raw = entity.cMesh.verts[ entity.cMesh.faces[i][0] ].slice();
       v1Raw.push(wInit); //make homo coordinate [x,y,z,w]
-      let v2Raw = entity.cMesh.verts[ entity.cMesh.faces[i][0] ].slice();
+      let v2Raw = entity.cMesh.verts[ entity.cMesh.faces[i][1] ].slice();
       v2Raw.push(wInit);
-      let v3Raw = entity.cMesh.verts[ entity.cMesh.faces[i][0] ].slice();
+      let v3Raw = entity.cMesh.verts[ entity.cMesh.faces[i][2] ].slice();
       v3Raw.push(wInit);
-
+      // console.log(v2Raw);
+      // console.log(v3Raw);
       //store distance of vectors in d vars
       let d1 = 1;
       let d2 = 1;
@@ -260,9 +262,9 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       // console.log(m2);
       // console.log(m3);
       // console.log('=======VECTORS___TRANSFORMED==========');
-      // console.log(v1);
-      // console.log(v2);
-      // console.log(v3);
+      console.log(v1);
+      console.log(v2);
+      console.log(v3);
       // console.log(v1Raw);
       // console.log('===========');
       //draw resulting vectors on the screen using the appropriate color of the face
@@ -273,16 +275,17 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       if (faceZAvg > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
         ctx.fillStyle = cssRGBA([entity.cMesh.faceColors, 1]);
         ctx.strokeStyle = cssRGBA([entity.cMesh.faceColors, 1]);
+          ctx.fillStyle = cssRGBA([ran(255), ran(255), ran(255), 1]);
         console.log(ctx.fillStyle);
         ctx.beginPath(v1[0], v1[1]);
         ctx.lineTo(v2[0], v2[1]);
         ctx.lineTo(v3[0], v3[1]);
         ctx.lineTo(v1[0], v1[1]);
 
-        ctx.beginPath(0,0);
-        ctx.lineTo(1000,0);
-        ctx.lineTo(200,600);
-        ctx.lineTo(0,0);
+        // ctx.beginPath(0,0);
+        // ctx.lineTo(1000,0);
+        // ctx.lineTo(200,600);
+        // ctx.lineTo(0,0);
 
         ctx.fill();
         ctx.stroke();

@@ -56,7 +56,7 @@ class gPhysicsConstants { //stores physics constants
       this.angleY = 0;
       this.angleZ = 0;
       this.scaleAmount = pythag(window.innerWidth/2,window.innerHeight/2);
-      this.scaleAmount = 0; //TEMPORARY REMOVE
+      // this.scaleAmount = 0; //TEMPORARY REMOVE
       this.clippingThreshold  = 0; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
       this.clippingRange = .5; //larger = more to see
       this.rotateSpeed = Math.PI/120;
@@ -75,8 +75,8 @@ class gPhysicsConstants { //stores physics constants
       //use at end to center in screen coords
       this.centerMatrix = transMat(window.innerWidth/2, window.innerHeight/2, 0);
 
-      this.scaleMatrix = diagMat(this.scaleAmount, this.scaleAmount, this.scaleAmount);
-
+      this.scaleMatrix = diagMat(this.scaleAmount, this.scaleAmount, this.scaleAmount, 1);
+console.log(this.scaleMatrix);
     //z == up direction
     }
 
