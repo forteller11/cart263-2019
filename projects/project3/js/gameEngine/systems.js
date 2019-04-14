@@ -211,7 +211,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
   }
 
   systemExecution(entity) { //for every mesh, then translate based and around cam
-
+console.log(entity.cMesh.camToFacesMag)
     //create rotation matrix based on entities angular velocity
     let rotationMatXYZ = matMatComp(
       rotMatX(entity.cPhysics.angularVel.x),
@@ -265,14 +265,12 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       // console.log(m2);
       // console.log(m3);
       // console.log('=======VECTORS___TRANSFORMED==========');
-      // console.log(v1);
-      // console.log(v2);
-      // console.log(v3);
+
       // console.log(v1Raw);
       // console.log('===========');
       //draw resulting vectors on the screen using the appropriate color of the face
 
-      if (entity.cMesh.camToFaces[2] > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
+      if (entity.cMesh.camToFaces[i][2] > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
         ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
         // ctx.strokeStyle = cssRGBA([0,0,0,1]);
         //roudn to prevent subpixel rendering and improve performance
@@ -282,6 +280,10 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         v2[1] = Math.round(v2[1]);
         v3[0] = Math.round(v3[0]);
         v3[1] = Math.round(v3[1]);
+
+        // console.log(v1);
+        // console.log(v2);
+        // console.log(v3);
 
         ctx.beginPath(v1[0], v1[1]);
         ctx.lineTo(v2[0], v2[1]);
@@ -318,27 +320,21 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
     for (let i = 0; i < entity.cMesh.faces.length; i++){ //for evrey face calc avg distToCamera from the verts that comrpise it
       // console.log(entity.cMesh.camToVerts);
-      entity.cMesh.camToFaces = meanVec(
+      entity.cMesh.camToFaces[i] = meanVec(
           entity.cMesh.camToVerts[ entity.cMesh.faces[i][0] ],
           entity.cMesh.camToVerts[ entity.cMesh.faces[i][1] ],
           entity.cMesh.camToVerts[ entity.cMesh.faces[i][2] ]
       );
-      // console.log(entity.cMesh.camToFaces);
-    entity.cMesh.camToFacesMag = mag(entity.cMesh.camToFaces);
-    // console.log(entity.cMesh.camToFacesMag);
+    entity.cMesh.camToFacesMag[i] = mag(entity.cMesh.camToFaces[i]);
     }
 
-
+// console.log(entity.cMesh.camToFaces);
     for (let i = 1; i < entity.cMesh.camToFacesMag.length; i++) { //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
+// console.log('ah');
       let j = i - 1;
       while (j >= 0) { //itterate backwards through array until find an element which is smaller then index
-        // console.log(`${this.facesDistToCamera[i]} < ${this.facesDistToCamera[j]}`)
-        if (entity.cMesh.camToFacesMag[i] > entity.cMesh.camToFacesMag[j]) { //swap
+        if (entity.cMesh.camToFacesMag[j] < entity.cMesh.camToFacesMag[i]) { //swap
 
-          //camToFace swap
-          let camToFacesStore = entity.cMesh.camToFaces[i].slice();
-          entity.cMesh.camToFaces[i] = entity.cMesh.camToFaces[j];
-          entity.cMesh.camToFaces[j] = camToFacesStore;
 
           //faces swap
           let facesStore = entity.cMesh.faces[i].slice();
@@ -346,9 +342,19 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
           entity.cMesh.faces[j] = facesStore;
 
           //camToFaceMag swap
-          let camToFacesMagStore = entity.cMesh.camToFacesMag[i].slice();
+          // console.log(entity.cMesh.camToFacesMag[i]);
+          // console.log(entity.cMesh.camToFacesMag[j]);
+          let camToFacesMagStore = entity.cMesh.camToFacesMag[i];
           entity.cMesh.camToFacesMag[i] = entity.cMesh.camToFacesMag[j];
           entity.cMesh.camToFacesMag[j] = camToFacesMagStore;
+          // console.log(entity.cMesh.camToFacesMag[i]);
+          // console.log(entity.cMesh.camToFacesMag[j]);
+          // console.log('===============');
+
+          //camToFace swap
+          let camToFacesStore = entity.cMesh.camToFaces[i].slice();
+          entity.cMesh.camToFaces[i] = entity.cMesh.camToFaces[j];
+          entity.cMesh.camToFaces[j] = camToFacesStore;
 
           //face colors swap
           let faceColorsStore = entity.cMesh.faceColors[i].slice();
