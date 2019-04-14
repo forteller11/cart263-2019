@@ -270,7 +270,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       //draw resulting vectors on the screen using the appropriate color of the face
 
       const faceZAvg = mean(v1[2], v2[2], v3[3]);
-      console.log(entity.cMesh.faceColors[i]);
+      // console.log(entity.cMesh.faceColors[i]);
       // console.log(faceZAvg);
       if (faceZAvg > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
         ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
@@ -312,21 +312,29 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
   sortFacesByDistanceToPoint(entity) {
     //calculate vector and dist from camera to every point
-    let camPos = matVecMult(g.camera.translationMatrix, [1,1,1,1]);
-    console.log(camPos);
-    for (let i = 0; i < entity.cMesh.camToVerts.length; i++){
-      // console.log(entity.cMesh.verts[i]);
-      entity.cMesh.camToVerts[i] = subVecs(homoFromEuclid(entity.cMesh.verts[i]), camPos);
-      entity.cMesh.camToVertsMag[i] = mag(entity.cMesh.camToVerts[i])-1;
+    let camPos = [
+      g.camera.translationMatrix[0][3],
+      g.camera.translationMatrix[1][3],
+      g.camera.translationMatrix[2][3]
+    ];
+
+    for (let i = 0; i < entity.cMesh.verts.length; i++){
+      entity.cMesh.camToVerts[i] = subVecs(entity.cMesh.verts[i], camPos);
+      // console.log(entity.cMesh.camToVerts[i]);
+      entity.cMesh.camToVertsMag[i] = mag(entity.cMesh.camToVerts[i]);
+      // console.log(entity.cMesh.camToVertsMag[i]);
     }
 
-    for (let i = 0; i < entity.cMesh.camToFaces.length; i++){ //for evrey face calc avg distToCamera from the verts that comrpise it
-
-      entity.cMesh.facesDistToCamera = meanVec(
-          this.vertsDistToCamera[ entityentity.cMesh.faces[i][0] ],
-          this.vertsDistToCamera[ entityentity.cMesh.faces[i][1] ],
-          this.vertsDistToCamera[ entityentity.cMesh.faces[i][2] ]
-      )
+    for (let i = 0; i < entity.cMesh.faces.length; i++){ //for evrey face calc avg distToCamera from the verts that comrpise it
+      // console.log(entity.cMesh.camToVerts);
+      entity.cMesh.camToFaces = meanVec(
+          entity.cMesh.camToVerts[ entity.cMesh.faces[i][0] ],
+          entity.cMesh.camToVerts[ entity.cMesh.faces[i][1] ],
+          entity.cMesh.camToVerts[ entity.cMesh.faces[i][2] ]
+      );
+      // console.log(entity.cMesh.camToFaces);
+    entity.cMesh.camToFacesMag = mag(entity.cMesh.camToFaces);
+    // console.log(entity.cMesh.camToFacesMag);
     }
     //calculate dist from camera to every face
     this.distBetweenFacesAndPoint(entity); //calc facesDistToCamera

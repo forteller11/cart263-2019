@@ -23,8 +23,8 @@ function main() {
     dLog('main');
 let v1 = [0,1,2];
 let v2 = [1,1,1];
-let v3 = [0,0,0];
+let v3 = [4,2,-3];
 
-console.log(meanVec(v1,v2,v3));
+console.log(subVecs(v2,v3));
 
 }

@@ -81,7 +81,11 @@ function rotMatZ(rad){
 
 function homoFromEuclid(v){ //takes a 3D vector in euclidian space and adds a 1 making it a homogenous coord (still in euclid at that very value of w===1)
   let newV = v.slice();
-  return newV.push(1);
+  // console.log(newV);
+  newV.push(1);
+  // console.log(newV);
+  // console.log(v)
+  return newV;
 }
 
 function meanVec(...args){ //returns vector whose components are the mean of all the vectors put in as paramters
