@@ -312,16 +312,17 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
   sortFacesByDistanceToPoint(entity) {
     //calculate vector and dist from camera to every point
-    let camPos = [1,1,1,1];
-    camPos = matVecMult(g.camera.translationMatrix,camPos);
-    for (let i = 0; entity.cMesh.vecToVertsFromCamera.length; i++){
-      console.log(entity.cMesh.verts[i]);
-      entity.cMesh.vecToVertsFromCamera[i] = subVecs(entity.cMesh.verts[i], camPos);
-      entity.cMesh.vertsDistToCamera[i] = mag(entity.cMesh.vecToVertsFromCamera[i])-1;
+    let camPos = matVecMult(g.camera.translationMatrix, [1,1,1,1]);
+    console.log(camPos);
+    for (let i = 0; i < entity.cMesh.camToVerts.length; i++){
+      // console.log(entity.cMesh.verts[i]);
+      entity.cMesh.camToVerts[i] = subVecs(homoFromEuclid(entity.cMesh.verts[i]), camPos);
+      entity.cMesh.camToVertsMag[i] = mag(entity.cMesh.camToVerts[i])-1;
     }
 
-    for (let i = 0; entity.cMesh.faces.length; i++){ //for evrey face calc avg distToCamera from the verts that comrpise it
-      entity.cMesh.facesDistToCamera = mean(
+    for (let i = 0; i < entity.cMesh.camToFaces.length; i++){ //for evrey face calc avg distToCamera from the verts that comrpise it
+
+      entity.cMesh.facesDistToCamera = meanVec(
           this.vertsDistToCamera[ entityentity.cMesh.faces[i][0] ],
           this.vertsDistToCamera[ entityentity.cMesh.faces[i][1] ],
           this.vertsDistToCamera[ entityentity.cMesh.faces[i][2] ]

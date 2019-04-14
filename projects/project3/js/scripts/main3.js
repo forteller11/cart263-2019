@@ -21,22 +21,10 @@ let cameraOrigin;
 
 function main() {
     dLog('main');
-  cameraOrigin = [0, 0, -1];
+let v1 = [0,1,2];
+let v2 = [1,1,1];
+let v3 = [0,0,0];
 
-  //create canvas
-  ctx = createCanvas(window.innerWidth, window.innerHeight);
-  ctx.fillStyle = cssRGB(ran(255), ran(255), ran(255));
-  ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-
-  let request = new XMLHttpRequest();
-  request.open('GET', 'assets/triangle02.obj'); //open/setup request
-  request.send();
-
-  request.onload = () => {
-    mesh = new Mesh(convertObjFileToMeshBlob(request.response));
-
-    update();
-    setInterval(update, fps);
-  }
+console.log(meanVec(v1,v2,v3));
 
 }

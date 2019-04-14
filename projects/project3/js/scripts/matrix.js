@@ -79,6 +79,25 @@ function rotMatZ(rad){
   ]
 }
 
+function homoFromEuclid(v){ //takes a 3D vector in euclidian space and adds a 1 making it a homogenous coord (still in euclid at that very value of w===1)
+  let newV = v.slice();
+  return newV.push(1);
+}
+
+function meanVec(...args){ //returns vector whose components are the mean of all the vectors put in as paramters
+  //where each argument is an array/vector of same length
+  let meanV = new Array(args[0].length).fill(0);
+  // console.log(args[2][2]);
+  for (let i = 0; i < args[0].length; i ++){ //for every component of every vec
+
+    for (let j = 0; j < args.length; j ++){ //cycle through all vectors
+      meanV[i] += args[j][i];
+    }
+    meanV[i] = meanV[i]/args.length;
+  }
+  return meanV;
+}
+
 function nDiagMat(...args) { //returns diagonal matrix of n size
   //args[0] === size of square matrix
   //args[1] === what to put on diagonals of matrix
