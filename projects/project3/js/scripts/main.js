@@ -53,7 +53,7 @@ function main() {
   ctx = createCanvas(window.innerWidth, window.innerHeight);
 
   createEntitiesFromBlueprint('player');
-  let ent = createEntitiesFromBlueprint('mesh', 5);
+  let ent = createEntitiesFromBlueprint('mesh', 20);
 
 
   update();

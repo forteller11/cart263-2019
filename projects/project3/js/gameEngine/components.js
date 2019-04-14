@@ -67,13 +67,13 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
 
     this.verts = objBlob.verts.slice();
     this.vertNorms = objBlob.vertNorms.slice(); //arr of vertex normals
-    this.vertsDistToCamera = new Array(this.verts.length); //array of how far the vert is away from the camera [distForxyz
     this.camToVerts = new Array(this.verts.length); //vector       from camera to all vertexes
     this.camToVertsMag = new Array(this.verts.length); //magnitude from camera to all vertexes
 
     this.faces = objBlob.faces.slice();
-    this.facesDistToCamera = new Array(this.faces.length); //dist of [face1, distOfFace2]
-    this.vecToCameraFromFaces = new Array(this.faces.length); // avg pos of face - camera pos = vec to faceCenter from camera
+    this.camToFaces = new Array(this.faces.length); // avg pos of face - camera pos = vec to faceCenter from camera
+    this.camToFacesMag = new Array(this.faces.length);
+
     this.faceColors = new Array(this.faces.length);
     for (let i = 0; i < this.faces.length; i++) { //rgb
       this.faceColors[i] = [ran(255),ran(255),ran(255),1];

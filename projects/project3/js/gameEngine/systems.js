@@ -233,20 +233,23 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     for (let i = 0; i < entity.cMesh.faces.length; i++) {
       // homogenize coords from [x,y,z] to [x,y,z,w];
       const wInit = 1;
-      // console.log(entity.cMesh.verts);
-      // console.log(entity.cMesh.faces);
-      let v1Raw = entity.cMesh.verts[ entity.cMesh.faces[i][0] ].slice();
+
+      const v1Index = entity.cMesh.faces[i][0];
+      const v2Index = entity.cMesh.faces[i][1];
+      const v3Index = entity.cMesh.faces[i][2];
+
+      let v1Raw = entity.cMesh.verts[v1Index].slice();
       v1Raw.push(wInit); //make homo coordinate [x,y,z,w]
-      let v2Raw = entity.cMesh.verts[ entity.cMesh.faces[i][1] ].slice();
+      let v2Raw = entity.cMesh.verts[v2Index].slice();
       v2Raw.push(wInit);
-      let v3Raw = entity.cMesh.verts[ entity.cMesh.faces[i][2] ].slice();
+      let v3Raw = entity.cMesh.verts[v3Index].slice();
       v3Raw.push(wInit);
       // console.log(v2Raw);
       // console.log(v3Raw);
       //store distance of vectors in d vars
-      let d1 = 1;
-      let d2 = 1;
-      let d3 = 1;
+      let d1 = entity.cMesh.camToVertsMag[v1Index];
+      let d2 = entity.cMesh.camToVertsMag[v2Index];
+      let d3 = entity.cMesh.camToVertsMag[v3Index];
 
       //compose giant transformation matrices for each vector in order right to left
       let m1 = matMatComp(postProjectionMat, diagMat(1 / d1), preProjectionMat);
@@ -269,13 +272,16 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       // console.log('===========');
       //draw resulting vectors on the screen using the appropriate color of the face
 
-      const faceZAvg = mean(v1[2], v2[2], v3[3]);
-      // console.log(entity.cMesh.faceColors[i]);
-      // console.log(faceZAvg);
-      if (faceZAvg > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
+      if (entity.cMesh.camToFaces[2] > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
         ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
         // ctx.strokeStyle = cssRGBA([0,0,0,1]);
-
+        //roudn to prevent subpixel rendering and improve performance
+        v1[0] = Math.round(v1[0]);
+        v1[1] = Math.round(v1[1]);
+        v2[0] = Math.round(v2[0]);
+        v2[1] = Math.round(v2[1]);
+        v3[0] = Math.round(v3[0]);
+        v3[1] = Math.round(v3[1]);
 
         ctx.beginPath(v1[0], v1[1]);
         ctx.lineTo(v2[0], v2[1]);
@@ -294,28 +300,13 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
   }
 
-  distBetweenFacesAndPoint(entity) { //calculate distances between faces and an arbitrary pos/point in 3D space
-    //poimesh [x,y,z]
-
-    for (let i = 0; i < entity.cMesh.verts.length / 3; i++) { //calc vertDistoCamera for every vertice
-      let ii = i * 3;
-      entity.cMesh.vertsDistToCamera[i] = pythag(
-        g.camera.x - entity.cPos.x - entity.cMesh.verts[ii + 0],
-        g.camera.y - entity.cPos.y - entity.cMesh.verts[ii + 1],
-        g.camera.z - entity.cPos.z - entity.cMesh.verts[ii + 2]
-      );
-    }
-    for (let i = 0; i < entity.cMesh.faces.length / 3; i++) { //find avg dist of every face from camera by avging it's avg vertDistToCamera
-      entity.cMesh.facesDistToCamera[i] = mean(this.vertDistData(entity, i, 0), this.vertDistData(entity, i, 1), this.vertDistData(entity, i, 2));
-    }
-  }
 
   sortFacesByDistanceToPoint(entity) {
-    //calculate vector and dist from camera to every point
+    //calculate vector and dist from camera to every point and face
     let camPos = [
-      g.camera.translationMatrix[0][3],
-      g.camera.translationMatrix[1][3],
-      g.camera.translationMatrix[2][3]
+      g.camera.x,
+      g.camera.y,
+      g.camera.z
     ];
 
     for (let i = 0; i < entity.cMesh.verts.length; i++){
@@ -336,54 +327,34 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     entity.cMesh.camToFacesMag = mag(entity.cMesh.camToFaces);
     // console.log(entity.cMesh.camToFacesMag);
     }
-    //calculate dist from camera to every face
-    this.distBetweenFacesAndPoint(entity); //calc facesDistToCamera
 
-    for (let i = 1; i < entity.cMesh.facesDistToCamera.length; i++) { //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
+
+    for (let i = 1; i < entity.cMesh.camToFacesMag.length; i++) { //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
       let j = i - 1;
       while (j >= 0) { //itterate backwards through array until find an element which is smaller then index
         // console.log(`${this.facesDistToCamera[i]} < ${this.facesDistToCamera[j]}`)
-        if (entity.cMesh.facesDistToCamera[i] > entity.cMesh.facesDistToCamera[j]) {
+        if (entity.cMesh.camToFacesMag[i] > entity.cMesh.camToFacesMag[j]) { //swap
 
-          //swap elements on faces and facesDistToCamera arrays
-          let jj = j * 3; //face index of j as each face in faces arr corresponds to 3 elements
-
-          //dist to camera swap
-          let fDistStore = entity.cMesh.facesDistToCamera[i];
-          entity.cMesh.facesDistToCamera[i] = entity.cMesh.facesDistToCamera[j];
-          entity.cMesh.facesDistToCamera[j] = fDistStore;
-
-          //face colors swap
-          const rStore = entity.cMesh.facesR[i];
-          const gStore = entity.cMesh.facesG[i];
-          const bStore = entity.cMesh.facesB[i];
-
-          entity.cMesh.facesR[i] = entity.cMesh.facesR[j];
-          entity.cMesh.facesG[i] = entity.cMesh.facesG[j];
-          entity.cMesh.facesB[i] = entity.cMesh.facesB[j];
-
-          entity.cMesh.facesR[j] = rStore;
-          entity.cMesh.facesG[j] = gStore;
-          entity.cMesh.facesB[j] = bStore;
+          //camToFace swap
+          let camToFacesStore = entity.cMesh.camToFaces[i].slice();
+          entity.cMesh.camToFaces[i] = entity.cMesh.camToFaces[j];
+          entity.cMesh.camToFaces[j] = camToFacesStore;
 
           //faces swap
-          let fStore = [
-            entity.cMesh.faces[ii + 0],
-            entity.cMesh.faces[ii + 1],
-            entity.cMesh.faces[ii + 2]
-          ];
+          let facesStore = entity.cMesh.faces[i].slice();
+          entity.cMesh.faces[i] = entity.cMesh.faces[j];
+          entity.cMesh.faces[j] = facesStore;
 
-          let fStore1 = entity.cMesh.faces[ii + 0];
-          let fStore2 = entity.cMesh.faces[ii + 1];
-          let fStore3 = entity.cMesh.faces[ii + 2];
+          //camToFaceMag swap
+          let camToFacesMagStore = entity.cMesh.camToFacesMag[i].slice();
+          entity.cMesh.camToFacesMag[i] = entity.cMesh.camToFacesMag[j];
+          entity.cMesh.camToFacesMag[j] = camToFacesMagStore;
 
-          entity.cMesh.faces[ii + 0] = entity.cMesh.faces[jj + 0];
-          entity.cMesh.faces[ii + 1] = entity.cMesh.faces[jj + 1];
-          entity.cMesh.faces[ii + 2] = entity.cMesh.faces[jj + 2];
+          //face colors swap
+          let faceColorsStore = entity.cMesh.faceColors[i].slice();
+          entity.cMesh.faceColors[i] = entity.cMesh.faceColors[j];
+          entity.cMesh.faceColors[j] = faceColorsStore;
 
-          entity.cMesh.faces[jj + 0] = fStore[0];
-          entity.cMesh.faces[jj + 1] = fStore[1];
-          entity.cMesh.faces[jj + 2] = fStore[2];
           break;
         }
 
