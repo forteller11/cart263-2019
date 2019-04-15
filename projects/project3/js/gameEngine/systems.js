@@ -250,20 +250,22 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       let d2 = entity.cMesh.camToVertsMag[v2Index];
       let d3 = entity.cMesh.camToVertsMag[v3Index];
 
-
+// console.log(entity.cMesh.camToFacesMag[i]);
 // console.log(d1);
-let warpStart = 10;
-let warpEnd = 30;
-let sensitivity = 1; //more = less sens
-  // console.log(entity.cMesh.camToFacesMag[i] );
-if ((entity.cMesh.camToFacesMag[i] > warpStart)){
+//  at distance from camera g.camera.fadeStart begin shrinking inwards until g.camera.fadeEnd distance
 
-  let startAtZero = entity.cMesh.camToFacesMag[i]-warpStart;
-  let shrinkBy = 1-(startAtZero/warpEnd); //0 at start, 1 at end
+let shrinkBy = 1;
+if ((entity.cMesh.camToFacesMag[i] > g.camera.fadeStart)){
+  let startAtZero = entity.cMesh.camToFacesMag[i]-g.camera.fadeStart;
+  shrinkBy = 1-(startAtZero/g.camera.fadeEnd); //1 at start, then 0
   shrinkBy = constrain(shrinkBy,0,1);
+    // console.log(shrinkBy);
   v1Raw = scalarVecMult(shrinkBy, v1Raw);
+  v1Raw[3] = wInit;
   v2Raw = scalarVecMult(shrinkBy, v2Raw);
+  v2Raw[3] = wInit;
   v3Raw = scalarVecMult(shrinkBy, v3Raw);
+  v3Raw[3] = wInit;
 }
 
 
@@ -289,14 +291,16 @@ if ((entity.cMesh.camToFacesMag[i] > warpStart)){
       //draw resulting vectors on the screen using the appropriate color of the face
 
       // if (entity.cMesh.camToFaces[i][2] > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
+      if (shrinkBy > 0){
         // ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
         ctx.fillStyle = cssRGBA([
           entity.cMesh.faceColors[i][0],
           entity.cMesh.faceColors[i][1],
           entity.cMesh.faceColors[i][2],
-          1/(entity.cMesh.camToFacesMag[i]/100)]
+          Math.pow(shrinkBy,3)]
         );
-        ctx.strokeStyle = cssRGBA([0,0,0,1]);
+        ctx.strokeStyle = cssRGBA([0,0,0,1-shrinkBy]);
+
         //roudn to prevent subpixel rendering and improve performance
         v1[0] = Math.round(v1[0]);
         v1[1] = Math.round(v1[1]);
@@ -317,6 +321,7 @@ if ((entity.cMesh.camToFacesMag[i] > warpStart)){
         ctx.fill();
         ctx.stroke();
       }
+    }
     // }
 
   }

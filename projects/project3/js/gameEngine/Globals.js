@@ -58,7 +58,8 @@ class gPhysicsConstants { //stores physics constants
       this.scaleAmount = pythag(window.innerWidth/2,window.innerHeight/2)*2;
       // this.scaleAmount = 0; //TEMPORARY REMOVE
       this.clippingThreshold  = -2; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
-      this.clippingRange = .5; //larger = more to see
+      this.fadeStart = 70;
+      this.fadeEnd = 100;
       this.rotateSpeed = Math.PI/120;
       this.forwardOrientation = [0, 0, 1, 1]; //determines forward direction
       this.rightOrientation = [1,0,0,1];
