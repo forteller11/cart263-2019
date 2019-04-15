@@ -242,18 +242,32 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       const v3Index = entity.cMesh.faces[i][2];
 
       let v1Raw = entity.cMesh.vertsRotated[v1Index].slice();
-      // v1Raw.push(wInit); //make homo coordinate [x,y,z,w]
       let v2Raw = entity.cMesh.vertsRotated[v2Index].slice();
-      // v2Raw.push(wInit);
       let v3Raw = entity.cMesh.vertsRotated[v3Index].slice();
-      // v3Raw.push(wInit);
-      // console.log(v2Raw);
-      // console.log(v3Raw);
+
       //store distance of vectors in d vars
       let d1 = entity.cMesh.camToVertsMag[v1Index];
       let d2 = entity.cMesh.camToVertsMag[v2Index];
       let d3 = entity.cMesh.camToVertsMag[v3Index];
-      // console.log(d1);
+
+
+// console.log(d1);
+let warpStart = 10;
+let warpEnd = 30;
+let sensitivity = 1; //more = less sens
+  // console.log(entity.cMesh.camToFacesMag[i] );
+if ((entity.cMesh.camToFacesMag[i] > warpStart)){
+
+  let startAtZero = entity.cMesh.camToFacesMag[i]-warpStart;
+  let shrinkBy = 1-(startAtZero/warpEnd); //0 at start, 1 at end
+  shrinkBy = constrain(shrinkBy,0,1);
+  v1Raw = scalarVecMult(shrinkBy, v1Raw);
+  v2Raw = scalarVecMult(shrinkBy, v2Raw);
+  v3Raw = scalarVecMult(shrinkBy, v3Raw);
+}
+
+
+
 
       //compose giant transformation matrices for each vector in order right to left
       let m1 = matMatComp(postProjectionMat, diagMat(1 / d1), preProjectionMat);
@@ -302,8 +316,8 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
         ctx.fill();
         ctx.stroke();
-      // }
-    }
+      }
+    // }
 
   }
 
@@ -322,8 +336,9 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         entity.cMesh.vertsRotated[i][1] + entity.cPos.y - g.camera.y,
         entity.cMesh.vertsRotated[i][2] + entity.cPos.z - g.camera.z
       ]
-      // console.log(entity.cMesh.camToVerts[i]);
+      // if (  entity.cMesh.camToVertsMag[i][2] > g.camera.clippingThreshold){ //only calculate mag if in front of camera
       entity.cMesh.camToVertsMag[i] = mag(entity.cMesh.camToVerts[i]);
+    // }
       // console.log(entity.cMesh.camToVertsMag[i]);
     }
 
@@ -334,6 +349,8 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
           entity.cMesh.camToVerts[ entity.cMesh.faces[i][1] ],
           entity.cMesh.camToVerts[ entity.cMesh.faces[i][2] ]
       );
+
+
     entity.cMesh.camToFacesMag[i] = mag(entity.cMesh.camToFaces[i]);
     }
 
