@@ -13,7 +13,7 @@ window.onload = preload;
 
 //text files to be loaded
 let request = [];
-let meshFileDirectory = ['0','1','2','3'];
+let meshFileDirectory = ['0','1','2','3','4','5'];
 let meshFileParsedData = []; //to be loaded
 let requestComplete = 0;
 
