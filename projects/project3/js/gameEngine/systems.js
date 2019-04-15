@@ -100,8 +100,8 @@ class sMove extends System { //moves player entity given keyboard input and tran
         g.camera.angleZ = entity.cPos.angleZ;
 
         g.camera.rotationMatrix = matMatComp(
-          rotMatX(g.camera.angleX),
-          rotMatY(g.camera.angleY),
+          rotMatX(g.camera.angleY),
+          rotMatY(g.camera.angleX),
           rotMatZ(g.camera.angleZ)
         );
 
@@ -175,26 +175,30 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     //also uses cCamera
   }
   update() {
-    for (let i = 0; i < this.relevantEntities.length; i++) { //calc distance to camera
-      this.relevantEntities[i].cMesh.distToCamera = pythag(
-        this.relevantEntities[i].cPos.x-g.camera.x,
-        this.relevantEntities[i].cPos.y-g.camera.y,
-        this.relevantEntities[i].cPos.z-g.camera.z
-      )
-    }
+
     this.sortEntitiesByDistToCamera()
-    super.update();
+    super.update(); //system execution (on every entity)
   }
+
   sortEntitiesByDistToCamera() {
     let e = this.relevantEntities;
+
+    for (let i = 0; i < e.length; i++) { //calc distance to camera
+      e[i].cMesh.camToCenter = pythag(
+      e[i].cPos.x-g.camera.x,
+      e[i].cPos.y-g.camera.y,
+      e[i].cPos.z-g.camera.z
+    )
+    // console.log(e[i].cMesh.camToCenter);
+    // console.log('----')
+  }
 
     if (e.length > 1) { //only sort if there are more than 2 entities
 
       for (let i = 1; i < e.length; i++) {
         let j = i - 1;
         while (j >= 0) {
-
-          if (e[j].cMesh.distToCamera < e[i].cMesh.distToCamera) {
+          if (e[j].cMesh.camToCenter < e[i].cMesh.camToCenter) {
             //swap
             let eStore = e[i];
             e[i] = e[j];
@@ -203,15 +207,12 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
           }
           j--;
         }
-
-
       }
     }
-    //sort
   }
 
   systemExecution(entity) { //for every mesh, then translate based and around cam
-console.log(entity.cMesh.camToFacesMag)
+// console.log(entity.cMesh.camToFacesMag)
     //create rotation matrix based on entities angular velocity
     let rotationMatXYZ = matMatComp(
       rotMatX(entity.cPhysics.angularVel.x),
@@ -221,6 +222,7 @@ console.log(entity.cMesh.camToFacesMag)
 
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
     let preProjectionMat = matMatComp(g.camera.rotationMatrix, worldTransMat1, g.camera.translationMatrix); //precalc camera for better perf
+    // console.table(g.camera.translationMatrix);
     let postProjectionMat = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix); //precalc these for better perf
 
     //rotate verts based on rotation matrix
@@ -250,6 +252,7 @@ console.log(entity.cMesh.camToFacesMag)
       let d1 = entity.cMesh.camToVertsMag[v1Index];
       let d2 = entity.cMesh.camToVertsMag[v2Index];
       let d3 = entity.cMesh.camToVertsMag[v3Index];
+      // console.log(d1);
 
       //compose giant transformation matrices for each vector in order right to left
       let m1 = matMatComp(postProjectionMat, diagMat(1 / d1), preProjectionMat);
@@ -270,9 +273,15 @@ console.log(entity.cMesh.camToFacesMag)
       // console.log('===========');
       //draw resulting vectors on the screen using the appropriate color of the face
 
-      if (entity.cMesh.camToFaces[i][2] > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
-        ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
-        // ctx.strokeStyle = cssRGBA([0,0,0,1]);
+      // if (entity.cMesh.camToFaces[i][2] > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
+        // ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
+        ctx.fillStyle = cssRGBA([
+          entity.cMesh.faceColors[i][0],
+          entity.cMesh.faceColors[i][1],
+          entity.cMesh.faceColors[i][2],
+          1/(entity.cMesh.camToFacesMag[i]/100)]
+        );
+        ctx.strokeStyle = cssRGBA([0,0,0,1]);
         //roudn to prevent subpixel rendering and improve performance
         v1[0] = Math.round(v1[0]);
         v1[1] = Math.round(v1[1]);
@@ -290,14 +299,9 @@ console.log(entity.cMesh.camToFacesMag)
         ctx.lineTo(v3[0], v3[1]);
         ctx.lineTo(v1[0], v1[1]);
 
-        // ctx.beginPath(0,0);
-        // ctx.lineTo(1000,0);
-        // ctx.lineTo(200,600);
-        // ctx.lineTo(0,0);
-
         ctx.fill();
         ctx.stroke();
-      }
+      // }
     }
 
   }
@@ -312,7 +316,11 @@ console.log(entity.cMesh.camToFacesMag)
     ];
 
     for (let i = 0; i < entity.cMesh.verts.length; i++){
-      entity.cMesh.camToVerts[i] = subVecs(entity.cMesh.verts[i], camPos);
+      entity.cMesh.camToVerts[i] = [
+        entity.cMesh.verts[i][0] + entity.cPos.x - g.camera.x,
+        entity.cMesh.verts[i][1] + entity.cPos.y - g.camera.y,
+        entity.cMesh.verts[i][2] + entity.cPos.z - g.camera.z
+      ]
       // console.log(entity.cMesh.camToVerts[i]);
       entity.cMesh.camToVertsMag[i] = mag(entity.cMesh.camToVerts[i]);
       // console.log(entity.cMesh.camToVertsMag[i]);
@@ -333,7 +341,7 @@ console.log(entity.cMesh.camToFacesMag)
 // console.log('ah');
       let j = i - 1;
       while (j >= 0) { //itterate backwards through array until find an element which is smaller then index
-        if (entity.cMesh.camToFacesMag[j] < entity.cMesh.camToFacesMag[i]) { //swap
+        if (entity.cMesh.camToFacesMag[j] > entity.cMesh.camToFacesMag[i]) { //swap
 
 
           //faces swap
@@ -368,54 +376,6 @@ console.log(entity.cMesh.camToFacesMag)
       }
     }
 
-  }
-
-  vertData(entity, face, vert, component) {
-    //finds the element in verts array which corresponds to a
-    //given component of a vertex of a face
-
-    const faceIndex = (face) * 3;
-    const vertIndex = (vert);
-
-    let componentIndex; //convert string x,y,z to number
-    switch (component) {
-      case 'x':
-        componentIndex = 0;
-        break;
-      case 'y':
-        componentIndex = 1;
-        break;
-      case 'z':
-        componentIndex = 2;
-        break;
-      default:
-        console.log('ERROR: wrong input at method vertComponent');
-        break
-    }
-    if (vert > 2) {
-      console.log('ERROR: inputs too large at vertComponent')
-    };
-    if (component === undefined) {
-      console.log('ERROR: not enough arguments!')
-    }
-
-    //     console.log(`vertIndexData: ${this.faces[faceIndex + vertIndex]*3}
-    // vertData: ${this.verts[this.faces[faceIndex + vertIndex]*3 + componentIndex]}`);
-    return entity.cMesh.verts[entity.cMesh.faces[faceIndex + vertIndex] * 3 + componentIndex];
-  }
-
-  vertDistData(entity, face, vert) {
-    //finds the element in vertDistToCamera array which corresponds to
-    //a givens face's vert's dist between vert-camera
-
-    const faceIndex = (face) * 3;
-    const vertIndex = (vert);
-
-    if (vert === undefined) {
-      console.log('ERROR: not enough arguments!')
-    }
-
-    return entity.cMesh.vertsDistToCamera[entity.cMesh.faces[faceIndex + vertIndex]];
   }
 
 }

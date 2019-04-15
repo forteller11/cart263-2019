@@ -65,6 +65,8 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
     super();
     this.name = 'cMesh';
 
+        this.camToCenter = undefined; //how far is meshes distToCamera in worldview
+
     this.verts = objBlob.verts.slice();
     this.vertNorms = objBlob.vertNorms.slice(); //arr of vertex normals
     this.camToVerts = new Array(this.verts.length); //vector       from camera to all vertexes
