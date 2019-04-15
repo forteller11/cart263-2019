@@ -212,23 +212,24 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
   }
 
   systemExecution(entity) { //for every mesh, then translate based and around cam
-// console.log(entity.cMesh.camToFacesMag)
-    //create rotation matrix based on entities angular velocity
+
+    //calculated rotated verts
     let rotationMatXYZ = matMatComp(
-      rotMatX(entity.cPhysics.angularVel.x),
-      rotMatY(entity.cPhysics.angularVel.y),
-      rotMatZ(entity.cPhysics.angularVel.z)
+      rotMatX(entity.cPos.angleX),
+      rotMatY(entity.cPos.angleY),
+      rotMatZ(entity.cPos.angleZ)
     )
+
+    for (let i = 0; i < entity.cMesh.verts.length; i++) { //rotate all verts by rotation matrix
+      let vHomo = entity.cMesh.verts[i].slice();
+      vHomo.push(1); //make homo coordinate [x,y,z,w]
+      entity.cMesh.vertsRotated[i] = matVecMult(rotationMatXYZ, vHomo); //multiply vertex by rotation matrix
+    }
 
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
     let preProjectionMat = matMatComp(g.camera.rotationMatrix, worldTransMat1, g.camera.translationMatrix); //precalc camera for better perf
     // console.table(g.camera.translationMatrix);
     let postProjectionMat = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix); //precalc these for better perf
-
-    //rotate verts based on rotation matrix
-    for (let i = 0; i < entity.cMesh.verts.length; i++) { //rotate all verts by rotation matrix
-      let rotatedVec = matVecMult(rotationMatXYZ, entity.cMesh.verts[i]); //multiply vertex by rotation matrix
-    }
 
     this.sortFacesByDistanceToPoint(entity);
 
@@ -240,12 +241,12 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       const v2Index = entity.cMesh.faces[i][1];
       const v3Index = entity.cMesh.faces[i][2];
 
-      let v1Raw = entity.cMesh.verts[v1Index].slice();
-      v1Raw.push(wInit); //make homo coordinate [x,y,z,w]
-      let v2Raw = entity.cMesh.verts[v2Index].slice();
-      v2Raw.push(wInit);
-      let v3Raw = entity.cMesh.verts[v3Index].slice();
-      v3Raw.push(wInit);
+      let v1Raw = entity.cMesh.vertsRotated[v1Index].slice();
+      // v1Raw.push(wInit); //make homo coordinate [x,y,z,w]
+      let v2Raw = entity.cMesh.vertsRotated[v2Index].slice();
+      // v2Raw.push(wInit);
+      let v3Raw = entity.cMesh.vertsRotated[v3Index].slice();
+      // v3Raw.push(wInit);
       // console.log(v2Raw);
       // console.log(v3Raw);
       //store distance of vectors in d vars
@@ -315,11 +316,11 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       g.camera.z
     ];
 
-    for (let i = 0; i < entity.cMesh.verts.length; i++){
+    for (let i = 0; i < entity.cMesh.vertsRotated.length; i++){
       entity.cMesh.camToVerts[i] = [
-        entity.cMesh.verts[i][0] + entity.cPos.x - g.camera.x,
-        entity.cMesh.verts[i][1] + entity.cPos.y - g.camera.y,
-        entity.cMesh.verts[i][2] + entity.cPos.z - g.camera.z
+        entity.cMesh.vertsRotated[i][0] + entity.cPos.x - g.camera.x,
+        entity.cMesh.vertsRotated[i][1] + entity.cPos.y - g.camera.y,
+        entity.cMesh.vertsRotated[i][2] + entity.cPos.z - g.camera.z
       ]
       // console.log(entity.cMesh.camToVerts[i]);
       entity.cMesh.camToVertsMag[i] = mag(entity.cMesh.camToVerts[i]);
