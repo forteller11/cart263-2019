@@ -77,16 +77,16 @@ class sMove extends System { //moves player entity given keyboard input and tran
       switch (g.input.keysDown[i]) {
         //ROTATIONS
         case 37: //left arrow
-          entity.cPos.angleX -= g.camera.rotateSpeed;
+          entity.cPos.angleY -= g.camera.rotateSpeed;
           break;
         case 39: //right arrow
-          entity.cPos.angleX += g.camera.rotateSpeed;
-          break;
-        case 38: //up arrow
           entity.cPos.angleY += g.camera.rotateSpeed;
           break;
+        case 38: //up arrow
+          entity.cPos.angleX += g.camera.rotateSpeed;
+          break;
         case 40: //down arrow
-          entity.cPos.angleY -= g.camera.rotateSpeed;
+          entity.cPos.angleX -= g.camera.rotateSpeed;
           break;
         case 81: //Q
           entity.cPos.angleZ -= g.camera.rotateSpeed;
@@ -94,64 +94,68 @@ class sMove extends System { //moves player entity given keyboard input and tran
         case 69: //E
           entity.cPos.angleZ += g.camera.rotateSpeed;
           break;
-        }
-        g.camera.angleX = entity.cPos.angleX;
-        g.camera.angleY = entity.cPos.angleY;
-        g.camera.angleZ = entity.cPos.angleZ;
+      }
+      g.camera.angleX = entity.cPos.angleX;
+      g.camera.angleY = entity.cPos.angleY;
+      g.camera.angleZ = entity.cPos.angleZ;
 
-        g.camera.rotationMatrix = matMatComp(
-          rotMatX(g.camera.angleY),
-          rotMatY(g.camera.angleX),
-          rotMatZ(g.camera.angleZ)
-        );
+      g.camera.rotationMatrix = matMatComp(
+        rotMatX(g.camera.angleX),
+        rotMatY(g.camera.angleY),
+        rotMatZ(g.camera.angleZ)
+      );
 
-          let moveForward = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.forwardOrientation));
-          let moveRight = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.rightOrientation));
-          let moveUp = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.upOrientation));
+      // let moveForward = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.forwardOrientation));
+      // let moveRight = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.rightOrientation));
+      // let moveUp = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.upOrientation));
 
-        switch (g.input.keysDown[i]) {
-          //MOVEMENT
+      switch (g.input.keysDown[i]) {
+        //MOVEMENT
         case 65:
           { //a key
-            entity.cPos.x -= moveRight[0];
-            entity.cPos.y += moveRight[1];
-            entity.cPos.z += moveRight[2];
+            // entity.cPos.x -= moveRight[0];
+            // entity.cPos.y += moveRight[1];
+            // entity.cPos.z += moveRight[2];
+            entity.cPos.x -= g.input.moveSpeed;
             break;
           }
         case 68:
           { //d key
-            entity.cPos.x += moveRight[0];
-            entity.cPos.y -= moveRight[1];
-            entity.cPos.z -= moveRight[2];
+            // entity.cPos.x += moveRight[0];
+            // entity.cPos.y -= moveRight[1];
+            // entity.cPos.z -= moveRight[2];
+            entity.cPos.x += g.input.moveSpeed;
             break;
           }
         case 87:
           { //w key
-            entity.cPos.x -= moveForward[0];
-            entity.cPos.y -= moveForward[1];
-            entity.cPos.z += moveForward[2];
+            // entity.cPos.x -= moveForward[0];
+            // entity.cPos.y += moveForward[1];
+            // entity.cPos.z -= moveForward[2];
+            entity.cPos.z += g.input.moveSpeed;
 
             break;
           }
         case 83:
           { //s key
-            entity.cPos.x += moveForward[0];
-            entity.cPos.y += moveForward[1];
-            entity.cPos.z -= moveForward[2];
+            // entity.cPos.x += moveForward[0];
+            // entity.cPos.y -= moveForward[1];
+            // entity.cPos.z += moveForward[2];
+            entity.cPos.z -= g.input.moveSpeed;
             break;
           }
         case 32:
           { //space bar, rotate by ... degrees
-            entity.cPos.x += moveUp[0];
-            entity.cPos.y -= moveUp[1];
-            entity.cPos.z += moveUp[2];
+            // entity.cPos.x += moveUp[0];
+            // entity.cPos.y -= moveUp[1];
+            entity.cPos.y -= g.input.moveSpeed;
             break;
           }
         case 16:
           { //shift control
-            entity.cPos.x -= moveUp[0];
-            entity.cPos.y += moveUp[1];
-            entity.cPos.z -= moveUp[2];
+            // entity.cPos.x -= moveUp[0];
+            // entity.cPos.y += moveUp[1];
+            entity.cPos.y += g.input.moveSpeed;
             break;
           }
 
@@ -185,13 +189,13 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
     for (let i = 0; i < e.length; i++) { //calc distance to camera
       e[i].cMesh.camToCenter = pythag(
-      e[i].cPos.x-g.camera.x,
-      e[i].cPos.y-g.camera.y,
-      e[i].cPos.z-g.camera.z
-    )
-    // console.log(e[i].cMesh.camToCenter);
-    // console.log('----')
-  }
+        e[i].cPos.x - g.camera.x,
+        e[i].cPos.y - g.camera.y,
+        e[i].cPos.z - g.camera.z
+      )
+      // console.log(e[i].cMesh.camToCenter);
+      // console.log('----')
+    }
 
     if (e.length > 1) { //only sort if there are more than 2 entities
 
@@ -227,9 +231,9 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     }
 
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
-    let preProjectionMat = matMatComp(g.camera.rotationMatrix, worldTransMat1, g.camera.translationMatrix); //precalc camera for better perf
+    let preProjectionMat = matMatComp( g.camera.rotationMatrix,g.camera.scaleMatrix, g.camera.translationMatrix, worldTransMat1); //precalc camera for better perf
     // console.table(g.camera.translationMatrix);
-    let postProjectionMat = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix); //precalc these for better perf
+    let postProjectionMat =g.camera.centerMatrix //precalc these for better perf
 
     this.sortFacesByDistanceToPoint(entity);
 
@@ -245,84 +249,92 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       let v2Raw = entity.cMesh.vertsRotated[v2Index].slice();
       let v3Raw = entity.cMesh.vertsRotated[v3Index].slice();
 
-      //store distance of vectors in d vars
-      let d1 = entity.cMesh.camToVertsMag[v1Index];
-      let d2 = entity.cMesh.camToVertsMag[v2Index];
-      let d3 = entity.cMesh.camToVertsMag[v3Index];
 
-// console.log(entity.cMesh.camToFacesMag[i]);
-// console.log(d1);
-//  at distance from camera g.camera.fadeStart begin shrinking inwards until g.camera.fadeEnd distance
+        //store distance of vectors in d vars
+        let d1 = entity.cMesh.camToVertsMag[v1Index];
+        let d2 = entity.cMesh.camToVertsMag[v2Index];
+        let d3 = entity.cMesh.camToVertsMag[v3Index];
 
-let shrinkBy = 1;
-if ((entity.cMesh.camToFacesMag[i] > g.camera.fadeStart)){
-  let startAtZero = entity.cMesh.camToFacesMag[i]-g.camera.fadeStart;
-  shrinkBy = 1-(startAtZero/g.camera.fadeEnd); //1 at start, then 0
-  shrinkBy = constrain(shrinkBy,0,1);
-    // console.log(shrinkBy);
-  v1Raw = scalarVecMult(shrinkBy, v1Raw);
-  v1Raw[3] = wInit;
-  v2Raw = scalarVecMult(shrinkBy, v2Raw);
-  v2Raw[3] = wInit;
-  v3Raw = scalarVecMult(shrinkBy, v3Raw);
-  v3Raw[3] = wInit;
-}
+        // console.log(entity.cMesh.camToFacesMag[i]);
+        // console.log(d1);
+        //  at distance from camera g.camera.fadeStart begin shrinking inwards until g.camera.fadeEnd distance
+        let vAvg = meanVec(v1Raw,v2Raw,v3Raw);
+        vAvg.splice(3,1); //remove 4th dimension
+        let lightAmount = (dot(normalize(vAvg),g.camera.lightDir)+1)/2;
+// console.log(lightAmount)
+        let shrinkBy = 1;
+        if ((entity.cMesh.camToFacesMag[i] > g.camera.fadeStart)) {
+          let startAtZero = entity.cMesh.camToFacesMag[i] - g.camera.fadeStart;
+          shrinkBy = 1 - (startAtZero / g.camera.fadeEnd); //1 at start, then 0
+          shrinkBy = constrain(shrinkBy, 0, 1);
+          // console.log(shrinkBy);
+          v1Raw = scalarVecMult(shrinkBy, v1Raw);
+          v1Raw[3] = wInit;
+          v2Raw = scalarVecMult(shrinkBy, v2Raw);
+          v2Raw[3] = wInit;
+          v3Raw = scalarVecMult(shrinkBy, v3Raw);
+          v3Raw[3] = wInit;
+        }
+        // console.log(lightAmount);
 
 
 
+        //compose giant transformation matrices for each vector in order right to left
+        let m1 = matMatComp(postProjectionMat, diagMat(1 / d1), preProjectionMat);
+        let m2 = matMatComp(postProjectionMat, diagMat(1 / d2), preProjectionMat);
+        let m3 = matMatComp(postProjectionMat, diagMat(1 / d3), preProjectionMat);
 
-      //compose giant transformation matrices for each vector in order right to left
-      let m1 = matMatComp(postProjectionMat, diagMat(1 / d1), preProjectionMat);
-      let m2 = matMatComp(postProjectionMat, diagMat(1 / d2), preProjectionMat);
-      let m3 = matMatComp(postProjectionMat, diagMat(1 / d3), preProjectionMat);
+        //transform vectors using the appropriate matrices
+        let v1 = matVecMult(m1, v1Raw);
+        let v2 = matVecMult(m2, v2Raw);
+        let v3 = matVecMult(m3, v3Raw);
+        // console.log('=======COMPOSED__MATRICES==========')
+        // console.log(m1);
+        // console.log(m2);
+        // console.log(m3);
+        // console.log('=======VECTORS___TRANSFORMED==========');
 
-      //transform vectors using the appropriate matrices
-      let v1 = matVecMult(m1, v1Raw);
-      let v2 = matVecMult(m2, v2Raw);
-      let v3 = matVecMult(m3, v3Raw);
-      // console.log('=======COMPOSED__MATRICES==========')
-      // console.log(m1);
-      // console.log(m2);
-      // console.log(m3);
-      // console.log('=======VECTORS___TRANSFORMED==========');
+        // console.log(v1Raw);
+        // console.log('===========');
+        //draw resulting vectors on the screen using the appropriate color of the face
 
-      // console.log(v1Raw);
-      // console.log('===========');
-      //draw resulting vectors on the screen using the appropriate color of the face
+        // if (entity.cMesh.camToFaces[i][2] > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
+        if (shrinkBy > 0) {
+                // if (v1[2] > 0) {
+          // ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
+          ctx.fillStyle = cssRGBA([
+            entity.cMesh.faceColors[i][0]*Math.pow(shrinkBy, 3)*lightAmount,
+            entity.cMesh.faceColors[i][1]*Math.pow(shrinkBy, 3)*lightAmount,
+            entity.cMesh.faceColors[i][2]*Math.pow(shrinkBy, 3)*lightAmount,
+          1
+          ]);
+          // ctx.strokeStyle = cssRGBA([
+          //   bgColor[0]*lightAmount,
+          //   bgColor[1]*lightAmount,
+          //   bgColor[2]*lightAmount,
+          //   1 - shrinkBy]);
 
-      // if (entity.cMesh.camToFaces[i][2] > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
-      if (shrinkBy > 0){
-        // ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
-        ctx.fillStyle = cssRGBA([
-          entity.cMesh.faceColors[i][0],
-          entity.cMesh.faceColors[i][1],
-          entity.cMesh.faceColors[i][2],
-          Math.pow(shrinkBy,3)]
-        );
-        ctx.strokeStyle = cssRGBA([0,0,0,1-shrinkBy]);
+          //roudn to prevent subpixel rendering and improve performance
+          v1[0] = Math.round(v1[0]);
+          v1[1] = Math.round(v1[1]);
+          v2[0] = Math.round(v2[0]);
+          v2[1] = Math.round(v2[1]);
+          v3[0] = Math.round(v3[0]);
+          v3[1] = Math.round(v3[1]);
+          // console.log(v1);
+          // console.log(v2);
+          // console.log(v3);
 
-        //roudn to prevent subpixel rendering and improve performance
-        v1[0] = Math.round(v1[0]);
-        v1[1] = Math.round(v1[1]);
-        v2[0] = Math.round(v2[0]);
-        v2[1] = Math.round(v2[1]);
-        v3[0] = Math.round(v3[0]);
-        v3[1] = Math.round(v3[1]);
+          ctx.beginPath(v1[0], v1[1]);
+          ctx.lineTo(v2[0], v2[1]);
+          ctx.lineTo(v3[0], v3[1]);
+          ctx.lineTo(v1[0], v1[1]);
 
-        // console.log(v1);
-        // console.log(v2);
-        // console.log(v3);
-
-        ctx.beginPath(v1[0], v1[1]);
-        ctx.lineTo(v2[0], v2[1]);
-        ctx.lineTo(v3[0], v3[1]);
-        ctx.lineTo(v1[0], v1[1]);
-
-        ctx.fill();
-        ctx.stroke();
+          ctx.fill();
+          // ctx.stroke();
+        // }
       }
     }
-    // }
 
   }
 
@@ -335,7 +347,7 @@ if ((entity.cMesh.camToFacesMag[i] > g.camera.fadeStart)){
       g.camera.z
     ];
 
-    for (let i = 0; i < entity.cMesh.vertsRotated.length; i++){
+    for (let i = 0; i < entity.cMesh.vertsRotated.length; i++) {
       entity.cMesh.camToVerts[i] = [
         entity.cMesh.vertsRotated[i][0] + entity.cPos.x - g.camera.x,
         entity.cMesh.vertsRotated[i][1] + entity.cPos.y - g.camera.y,
@@ -343,25 +355,25 @@ if ((entity.cMesh.camToFacesMag[i] > g.camera.fadeStart)){
       ]
       // if (  entity.cMesh.camToVertsMag[i][2] > g.camera.clippingThreshold){ //only calculate mag if in front of camera
       entity.cMesh.camToVertsMag[i] = mag(entity.cMesh.camToVerts[i]);
-    // }
+      // }
       // console.log(entity.cMesh.camToVertsMag[i]);
     }
 
-    for (let i = 0; i < entity.cMesh.faces.length; i++){ //for evrey face calc avg distToCamera from the verts that comrpise it
+    for (let i = 0; i < entity.cMesh.faces.length; i++) { //for evrey face calc avg distToCamera from the verts that comrpise it
       // console.log(entity.cMesh.camToVerts);
       entity.cMesh.camToFaces[i] = meanVec(
-          entity.cMesh.camToVerts[ entity.cMesh.faces[i][0] ],
-          entity.cMesh.camToVerts[ entity.cMesh.faces[i][1] ],
-          entity.cMesh.camToVerts[ entity.cMesh.faces[i][2] ]
+        entity.cMesh.camToVerts[entity.cMesh.faces[i][0]],
+        entity.cMesh.camToVerts[entity.cMesh.faces[i][1]],
+        entity.cMesh.camToVerts[entity.cMesh.faces[i][2]]
       );
 
 
-    entity.cMesh.camToFacesMag[i] = mag(entity.cMesh.camToFaces[i]);
+      entity.cMesh.camToFacesMag[i] = mag(entity.cMesh.camToFaces[i]);
     }
 
-// console.log(entity.cMesh.camToFaces);
+    // console.log(entity.cMesh.camToFaces);
     for (let i = 1; i < entity.cMesh.camToFacesMag.length; i++) { //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
-// console.log('ah');
+      // console.log('ah');
       let j = i - 1;
       while (j >= 0) { //itterate backwards through array until find an element which is smaller then index
         if (entity.cMesh.camToFacesMag[j] > entity.cMesh.camToFacesMag[i]) { //swap

@@ -251,22 +251,16 @@ function scalarVecMult(scalar,v){ //scalar vector multiplication
 function mag(v){
   let sum = 0;
   for (let i = 0; i < v.length; i ++){
-    sum  += v[i]*v[i];
+    sum += Math.pow(v[i],2);
   }
   return Math.sqrt(sum);
 }
-function normalize(v){ //normalizes v
-  let mag = mag(v);
-  for (let i = 0; i < v.length; i++){
-    v[i] = v[i]/mag;
-  }
-}
 
-function returnNormalized(v){ //returns normalized version of v
-  let mag = mag(v);
+function normalize(v){ //normalizes v
+  let magnitude = mag(v);
   let newVec = new Array(v.length);
-  for (let i = 0; i < newVec.length; i++){
-    newVec[i] = v[i]/mag;
+  for (let i = 0; i < v.length; i++){
+    newVec[i] = v[i]/magnitude;
   }
   return newVec;
 }

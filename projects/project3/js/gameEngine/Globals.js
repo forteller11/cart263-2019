@@ -55,10 +55,11 @@ class gPhysicsConstants { //stores physics constants
       this.angleX = 0;
       this.angleY = 0;
       this.angleZ = 0;
+      this.lightDir = normalize([1,0,-2]);
       this.scaleAmount = pythag(window.innerWidth/2,window.innerHeight/2)*2;
       // this.scaleAmount = 0; //TEMPORARY REMOVE
       this.clippingThreshold  = -2; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
-      this.fadeStart = 70;
+      this.fadeStart = 90;
       this.fadeEnd = 100;
       this.rotateSpeed = Math.PI/120;
       this.forwardOrientation = [0, 0, 1, 1]; //determines forward direction
