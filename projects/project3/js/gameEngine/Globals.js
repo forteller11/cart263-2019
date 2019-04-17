@@ -8,6 +8,7 @@ class Globals{
     this.spawn = new gSpawnRate();
     this.camera = new gCamera();
     this.input = new gInput();
+    this.rotUI = new gRotationUserInterface();
   }
   update(){
     this.mouseEvents.update();
@@ -32,6 +33,8 @@ class gPhysicsConstants { //stores physics constants
   class gMouseEvents{ //tracks mouseEvents
     constructor(){
       this.click = false; //on initial click === true, then equals false
+      this.clickX; //x location for click
+      this.clickY; //y location for click
       this.down = false;
       this.x = 0;
       this.y = 0;
@@ -43,6 +46,18 @@ class gPhysicsConstants { //stores physics constants
         this.histY[i] = this.y;
       }
       this.sensitivity = (Math.PI*2)/window.innerWidth; //how much does movement of mouse in pixels correspond to angle change in radians?
+
+    }
+  }
+
+  class gRotationUserInterface{ //tracks mouseEvents
+    constructor(){
+      //where the UI element where start and interpolate back to (in world space, not pixel)
+    this.xBase = 0;
+    this.yBase = 0;
+    this.zBase = .5;
+    this.scale = 1;
+    this.sensitivity = 0.001;
 
     }
   }
@@ -61,8 +76,8 @@ class gPhysicsConstants { //stores physics constants
       this.backgroundScale = this.scaleAmount / 1.5;
       // this.scaleAmount = 0; //TEMPORARY REMOVE
       this.clippingThreshold  = -2; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
-      this.fadeStart = 90;
-      this.fadeEnd = 100;
+      this.fadeStart = 60;
+      this.fadeEnd = 15; //how much distance does it take after fadeStart to fade completely?
       this.rotateSpeed = Math.PI/120;
       this.forwardOrientation = [0, 0, 1, 1]; //determines forward direction
       this.rightOrientation = [1,0,0,1];

@@ -13,8 +13,8 @@ window.onload = preload;
 
 //text files to be loaded
 let request = [];
-let meshFileDirectory = ['1','2','3','4','5'];
-meshFileDirectory = ['5'];
+let meshFileDirectory = ['rotationUI','1','2','3','4','5','6'];
+// meshFileDirectory = ['rotationUI'];
 let meshFileParsedData = []; //to be loaded
 let requestComplete = 0;
 
@@ -54,6 +54,7 @@ function main() {
   ctx = createCanvas(window.innerWidth, window.innerHeight);
 
   createEntitiesFromBlueprint('player');
+  createEntitiesFromBlueprint('rotationUI');
   let ent = createEntitiesFromBlueprint('mesh', 5);
 
 

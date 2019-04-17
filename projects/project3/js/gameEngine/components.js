@@ -64,13 +64,9 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
   constructor(objBlob){
     super();
     this.name = 'cMesh';
-    this.scale = ran(.2,4);
     this.camToCenter = undefined; //how far is meshes distToCamera in worldview
 
     this.verts = objBlob.verts.slice();
-    for (let i = 0; i < this.verts.length; i++){
-      this.verts[i] = scalarVecMult(this.scale,this.verts[i]);
-    }
     this.vertsRotated = new Array(this.verts.length); //verts but rotated and also homo coords [x,y,z,w]
     this.vertNorms = objBlob.vertNorms.slice(); //arr of vertex normals
     this.camToVerts = new Array(this.verts.length); //vector       from camera to all vertexes
@@ -90,12 +86,29 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
 
     // console.log(this.verts)
   }
+  scale(amountToScale){
+    for (let i = 0; i < this.verts.length; i++){
+      this.verts[i] = scalarVecMult(amountToScale,this.verts[i]);
+    }
+  }
+  faceColor(color){
+    for (let i = 0; i < this.faceColors.length; i++) { //rgb
+      this.faceColors[i] = color;
+    }
+  }
 }
 
 class cPlayer extends Component { //input moves any entities with cPlayer, and transforms camera to their pos
   constructor(camera = false){
     super();
     this.name = 'cPlayer';
+  }
+}
+
+class cRotUI extends Component { //input moves any entities with cPlayer, and transforms camera to their pos
+  constructor(camera = false){
+    super();
+    this.name = 'cRotUI';
   }
 }
 

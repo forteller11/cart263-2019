@@ -99,9 +99,22 @@ function addComponentsBasedOnBlueprint(newEntity, blueprintName) {
 
           newEntity.addComponent(new cPos(0, ran(-posRange,posRange), ran(-posRange,posRange), ran(-posRange,posRange)));
           newEntity.addComponent(new cMesh(ranElementOfArray(meshFileParsedData)));
+          newEntity.cMesh.scale(ran(0.2,4));
+          // newEntity.cMesh.faceColor([255,255,255,1]);
           newEntity.addComponent(new cPhysics(1, ran(-velRange,velRange),ran(-velRange,velRange),ran(-velRange,velRange), ran(-rotRange,rotRange),ran(-rotRange,rotRange),ran(-rotRange,rotRange))); //static = true
           break;
         }
+        case 'rotationUI':
+          {
+            newEntity.addComponent(new cPos(0, g.rotUI.xBase, g.rotUI.yBase, g.rotUI.zBase));
+              newEntity.cPos.angleX = Math.PI/2;
+            newEntity.addComponent(new cMesh(meshFileParsedData[0]));
+            newEntity.cMesh.scale(g.rotUI.scale);
+            newEntity.cMesh.faceColor(bgColor);
+            newEntity.addComponent(new cPhysics(1, 0,0,0, 0,0,0)); //static = true
+            newEntity.addComponent(new cRotUI());
+            break;
+          }
         case 'player':
           {
             newEntity.addComponent(new cPos(0,0,0,0));

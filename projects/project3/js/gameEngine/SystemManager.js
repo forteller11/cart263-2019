@@ -6,30 +6,19 @@ class SystemManager {
     this.systems = []; //array of systems
     //if not pushed into system then this represents a subsystem whos update does
     //not occur on regular tick but rather is called as a cosequence of some event from another system
-    this.sVideoSpawner = new sVideoSpawner();
-    this.systems.push(this.sVideoSpawner);
 
-    this.sOverlap = new sOverlap();
-    this.systems.push(this.sOverlap);
 
-    this.sCollisionResolution = new sCollisionResolution(); //sub system, not responsible for own tick/update
 
+
+    console.log(sPhysicsTransform);
     this.sPhysicsTransform = new sPhysicsTransform();
     this.systems.push(this.sPhysicsTransform);
 
     this.sMove = new sMove();
     this.systems.push(this.sMove);
 
-    this.sDrag = new sDrag();
-    this.systems.push(this.sDrag);
-
-    this.sDraggable = new sDraggable();
-
-    this.sOutOfBoundsHandler = new sOutOfBoundsHandler();
-    this.systems.push(this.sOutOfBoundsHandler);
-
-    this.sImageTransform = new sImageTransform();
-    this.systems.push(this.sImageTransform);
+    this.sRotUI = new sRotUI();
+    this.systems.push(this.sRotUI);
 
     this.sRender = new sRender();
     this.systems.push(this.sRender);
