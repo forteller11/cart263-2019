@@ -231,7 +231,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     }
 
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
-    let preProjectionMat = matMatComp( g.camera.rotationMatrix,g.camera.scaleMatrix, g.camera.translationMatrix, worldTransMat1); //precalc camera for better perf
+    let preProjectionMat = matMatComp(g.camera.rotationMatrix, g.camera.scaleMatrix, g.camera.translationMatrix, worldTransMat1); //precalc camera for better perf
     // console.table(g.camera.translationMatrix);
     let postProjectionMat = g.camera.centerMatrix; //precalc these for better perf
 
@@ -250,97 +250,102 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       let v3Raw = entity.cMesh.vertsRotated[v3Index].slice();
 
 
-        //store distance of vectors in d vars
-        let d1 = entity.cMesh.camToVertsMag[v1Index];
-        let d2 = entity.cMesh.camToVertsMag[v2Index];
-        let d3 = entity.cMesh.camToVertsMag[v3Index];
+      //store distance of vectors in d vars
+      let d1 = entity.cMesh.camToVertsMag[v1Index];
+      let d2 = entity.cMesh.camToVertsMag[v2Index];
+      let d3 = entity.cMesh.camToVertsMag[v3Index];
 
-        // console.log(entity.cMesh.camToFacesMag[i]);
-        // console.log(d1);
-        //  at distance from camera g.camera.fadeStart begin shrinking inwards until g.camera.fadeEnd distance
-        let vAvg = meanVec(v1Raw,v2Raw,v3Raw);
-        vAvg.splice(3,1); //remove 4th dimension
-        let lightAmount = (dot(normalize(vAvg),g.camera.lightDir)+1)/2;
-// console.log(lightAmount)
-        let shrinkBy = 1;
-        if ((entity.cMesh.camToFacesMag[i] > g.camera.fadeStart)) {
-          let startAtZero = entity.cMesh.camToFacesMag[i] - g.camera.fadeStart;
-          shrinkBy = 1 - (startAtZero / g.camera.fadeEnd); //1 at start, then 0
-          shrinkBy = constrain(shrinkBy, 0, 1);
-          // console.log(shrinkBy);
-          v1Raw = scalarVecMult(shrinkBy, v1Raw);
-          v1Raw[3] = wInit;
-          v2Raw = scalarVecMult(shrinkBy, v2Raw);
-          v2Raw[3] = wInit;
-          v3Raw = scalarVecMult(shrinkBy, v3Raw);
-          v3Raw[3] = wInit;
-        }
-        // console.log(lightAmount);
+      // console.log(entity.cMesh.camToFacesMag[i]);
+      // console.log(d1);
+      //  at distance from camera g.camera.fadeStart begin shrinking inwards until g.camera.fadeEnd distance
+      let vAvg = meanVec(v1Raw, v2Raw, v3Raw);
+      vAvg.splice(3, 1); //remove 4th dimension
+      let lightAmount = (dot(normalize(vAvg), g.camera.lightDir) + 1) / 2;
+      // console.log(lightAmount)
+      let shrinkBy = 1;
+      if ((entity.cMesh.camToFacesMag[i] > g.camera.fadeStart)) {
+        let startAtZero = entity.cMesh.camToFacesMag[i] - g.camera.fadeStart;
+        shrinkBy = 1 - (startAtZero / g.camera.fadeEnd); //1 at start, then 0
+        shrinkBy = constrain(shrinkBy, 0, 1);
+        // console.log(shrinkBy);
+        v1Raw = scalarVecMult(shrinkBy, v1Raw);
+        v1Raw[3] = wInit;
+        v2Raw = scalarVecMult(shrinkBy, v2Raw);
+        v2Raw[3] = wInit;
+        v3Raw = scalarVecMult(shrinkBy, v3Raw);
+        v3Raw[3] = wInit;
+      }
+      // console.log(lightAmount);
 
 
 
-        //compose giant transformation matrices for each vector in order right to left
-        let m1 = matMatComp(postProjectionMat, diagMat(1 / d1), preProjectionMat);
-        let m2 = matMatComp(postProjectionMat, diagMat(1 / d2), preProjectionMat);
-        let m3 = matMatComp(postProjectionMat, diagMat(1 / d3), preProjectionMat);
+      //compose giant transformation matrices for each vector in order right to left
+      let m1 = matMatComp(postProjectionMat, diagMat(1 / d1), preProjectionMat);
+      let m2 = matMatComp(postProjectionMat, diagMat(1 / d2), preProjectionMat);
+      let m3 = matMatComp(postProjectionMat, diagMat(1 / d3), preProjectionMat);
 
-        //transform vectors using the appropriate matrices
-        let v1 = matVecMult(m1, v1Raw);
-        let v2 = matVecMult(m2, v2Raw);
-        let v3 = matVecMult(m3, v3Raw);
-        // console.log(v3[2]);
-        // console.log('=======COMPOSED__MATRICES==========')
-        // console.log(m1);
-        // console.log(m2);
-        // console.log(m3);
-        // console.log('=======VECTORS___TRANSFORMED==========');
+      //transform vectors using the appropriate matrices
+      let v1 = matVecMult(m1, v1Raw);
+      let v2 = matVecMult(m2, v2Raw);
+      let v3 = matVecMult(m3, v3Raw);
+      // console.log(v3[2]);
+      // console.log('=======COMPOSED__MATRICES==========')
+      // console.log(m1);
+      // console.log(m2);
+      // console.log(m3);
+      // console.log('=======VECTORS___TRANSFORMED==========');
 
-        // console.log(v1Raw);
-        // console.log('===========');
-        //draw resulting vectors on the screen using the appropriate color of the face
+      // console.log(v1Raw);
+      // console.log('===========');
+      //draw resulting vectors on the screen using the appropriate color of the face
 
-        // if (entity.cMesh.camToFaces[i][2] > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
-        if (shrinkBy > 0) {
+      // if (entity.cMesh.camToFaces[i][2] > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
+      if (shrinkBy > 0) {
 
-          // ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
-          ctx.fillStyle = cssRGBA([
-            entity.cMesh.faceColors[i][0]*Math.pow(shrinkBy, 3)*lightAmount,
-            entity.cMesh.faceColors[i][1]*Math.pow(shrinkBy, 3)*lightAmount,
-            entity.cMesh.faceColors[i][2]*Math.pow(shrinkBy, 3)*lightAmount,
+        // ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
+        ctx.fillStyle = cssRGBA([
+          entity.cMesh.faceColors[i][0] * Math.pow(shrinkBy, 3) * lightAmount,
+          entity.cMesh.faceColors[i][1] * Math.pow(shrinkBy, 3) * lightAmount,
+          entity.cMesh.faceColors[i][2] * Math.pow(shrinkBy, 3) * lightAmount,
           1
-          ]);
+        ]);
 
-          if (v1[2] < 0) {
-            let meanV = mean(v1,v2,v3);
-            let dist = pythag(meanV[0]-window.innerWidth/2,meanV[1]-window.innerHeight/2);
-            if (dist < g.camera.backgroundScale){
-              ctx.fillStyle = cssRGBA([0,0,0,1]);
-            }
-          }
-          // ctx.strokeStyle = cssRGBA([
-          //   bgColor[0]*lightAmount,
-          //   bgColor[1]*lightAmount,
-          //   bgColor[2]*lightAmount,
-          //   1 - shrinkBy]);
 
-          //roudn to prevent subpixel rendering and improve performance
-          v1[0] = Math.round(v1[0]);
-          v1[1] = Math.round(v1[1]);
-          v2[0] = Math.round(v2[0]);
-          v2[1] = Math.round(v2[1]);
-          v3[0] = Math.round(v3[0]);
-          v3[1] = Math.round(v3[1]);
-          // console.log(v1);
-          // console.log(v2);
-          // console.log(v3);
+        // ctx.strokeStyle = cssRGBA([
+        //   bgColor[0]*lightAmount,
+        //   bgColor[1]*lightAmount,
+        //   bgColor[2]*lightAmount,
+        //   1 - shrinkBy]);
 
-          ctx.beginPath(v1[0], v1[1]);
-          ctx.lineTo(v2[0], v2[1]);
-          ctx.lineTo(v3[0], v3[1]);
-          ctx.lineTo(v1[0], v1[1]);
+        //roudn to prevent subpixel rendering and improve performance
+        v1[0] = Math.round(v1[0]);
+        v1[1] = Math.round(v1[1]);
+        v2[0] = Math.round(v2[0]);
+        v2[1] = Math.round(v2[1]);
+        v3[0] = Math.round(v3[0]);
+        v3[1] = Math.round(v3[1]);
+        // console.log(v1);
+        // console.log(v2);
+        // console.log(v3);
+        if (v1[2] < 0) {
+          // ctx.fillStyle = cssRGBA([
+          //   entity.cMesh.faceColors[i][0] * Math.pow(shrinkBy, 3) * lightAmount,
+          //   entity.cMesh.faceColors[i][1] * Math.pow(shrinkBy, 3) * lightAmount,
+          //   entity.cMesh.faceColors[i][2] * Math.pow(shrinkBy, 3) * lightAmount,
+          //   1/v1[2]*-1
+          // ]);
+          // ctx.clip();
+          // ctx.arc(window.innerWidth / 2, window.innerHeight / 2, g.camera.backgroundScale, 0, Math.PI * 2);
+        }
+        ctx.beginPath(v1[0], v1[1]);
+        ctx.lineTo(v2[0], v2[1]);
+        ctx.lineTo(v3[0], v3[1]);
+        ctx.lineTo(v1[0], v1[1]);
 
-          ctx.fill();
-          // ctx.stroke();
+
+
+        ctx.fill();
+        // ctx.stroke();
 
       }
     }

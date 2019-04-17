@@ -49,7 +49,7 @@ function main() {
   g = new Globals(); //instatiates object which encaspulates globals in game (encapuslates 'singleton' components)
   systemManager = new SystemManager(); //instantiate object responsble for updating systems
 
-  bgColor = [ran(200,255), ran(200,255), ran(50), 0.4];
+  bgColor = [ran(200,255), ran(200,255), ran(50), 1];
   //create canvas
   ctx = createCanvas(window.innerWidth, window.innerHeight);
 
