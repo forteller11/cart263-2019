@@ -13,7 +13,8 @@ window.onload = preload;
 
 //text files to be loaded
 let request = [];
-let meshFileDirectory = ['0','1','2','3','4','5'];
+let meshFileDirectory = ['1','2','3','4','5'];
+meshFileDirectory = ['5'];
 let meshFileParsedData = []; //to be loaded
 let requestComplete = 0;
 
@@ -38,7 +39,7 @@ let g; //global object
 let systemManager;
 let globalEntityIdCounter = 0; //everytime an entity is created it is given a unique identifier
 let ctx;
-let debugMode = true;
+let debugMode = false;
 let debugOpacity = 0.2;
 let fps = 16.7;
 let bgColor;
@@ -48,12 +49,12 @@ function main() {
   g = new Globals(); //instatiates object which encaspulates globals in game (encapuslates 'singleton' components)
   systemManager = new SystemManager(); //instantiate object responsble for updating systems
 
-  bgColor = [ran(200,255), ran(200,255), ran(50), 0.7];
+  bgColor = [ran(200,255), ran(200,255), ran(50), 0.4];
   //create canvas
   ctx = createCanvas(window.innerWidth, window.innerHeight);
 
   createEntitiesFromBlueprint('player');
-  let ent = createEntitiesFromBlueprint('mesh', 20);
+  let ent = createEntitiesFromBlueprint('mesh', 5);
 
 
   update();

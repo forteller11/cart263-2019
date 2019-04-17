@@ -233,7 +233,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
     let preProjectionMat = matMatComp( g.camera.rotationMatrix,g.camera.scaleMatrix, g.camera.translationMatrix, worldTransMat1); //precalc camera for better perf
     // console.table(g.camera.translationMatrix);
-    let postProjectionMat =g.camera.centerMatrix //precalc these for better perf
+    let postProjectionMat = g.camera.centerMatrix; //precalc these for better perf
 
     this.sortFacesByDistanceToPoint(entity);
 
@@ -288,6 +288,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         let v1 = matVecMult(m1, v1Raw);
         let v2 = matVecMult(m2, v2Raw);
         let v3 = matVecMult(m3, v3Raw);
+        // console.log(v3[2]);
         // console.log('=======COMPOSED__MATRICES==========')
         // console.log(m1);
         // console.log(m2);
@@ -300,7 +301,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
         // if (entity.cMesh.camToFaces[i][2] > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
         if (shrinkBy > 0) {
-                // if (v1[2] > 0) {
+
           // ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
           ctx.fillStyle = cssRGBA([
             entity.cMesh.faceColors[i][0]*Math.pow(shrinkBy, 3)*lightAmount,
@@ -308,6 +309,14 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
             entity.cMesh.faceColors[i][2]*Math.pow(shrinkBy, 3)*lightAmount,
           1
           ]);
+
+          if (v1[2] < 0) {
+            let meanV = mean(v1,v2,v3);
+            let dist = pythag(meanV[0]-window.innerWidth/2,meanV[1]-window.innerHeight/2);
+            if (dist < g.camera.backgroundScale){
+              ctx.fillStyle = cssRGBA([0,0,0,1]);
+            }
+          }
           // ctx.strokeStyle = cssRGBA([
           //   bgColor[0]*lightAmount,
           //   bgColor[1]*lightAmount,
@@ -332,7 +341,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
           ctx.fill();
           // ctx.stroke();
-        // }
+
       }
     }
 

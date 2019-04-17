@@ -1,7 +1,9 @@
 function update(){
   ctx.fillStyle = cssRGBA(bgColor);
-  ctx.strokeStyle = cssRGBA(bgColor);
-  ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+  // ctx.strokeStyle = cssRGBA(bgColor);
+  ctx.arc(window.innerWidth/2,window.innerHeight/2,g.camera.backgroundScale,0,Math.PI * 2);
+  // ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+  ctx.fill()
 
   systemManager.update();
   // console.log(systemManager);
