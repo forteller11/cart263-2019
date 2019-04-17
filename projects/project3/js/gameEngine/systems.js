@@ -283,7 +283,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         v3Raw[3] = wInit;
       }
 
-      // console.log(lightAmount);
+
 
 
 
@@ -296,6 +296,22 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       let v1 = matVecMult(m1, v1Raw);
       let v2 = matVecMult(m2, v2Raw);
       let v3 = matVecMult(m3, v3Raw);
+
+      if (systemManager.entityHasComponent('cRotUI',entity,)){
+        let vArr = [v1,v2,v3];
+        for (let v of vArr){
+          // console.log(g.mouse.y)
+          let xDiff = g.mouse.x - v[0];
+          let yDiff = g.mouse.y - v[1];
+          let dist = pythag (xDiff,yDiff);
+          if (dist > g.rotUI.minAttractionDist){
+          let force = 1/dist;
+          v[0] += force * xDiff * g.rotUI.attractionForce;
+          v[1] += force * yDiff * g.rotUI.attractionForce;
+          console.log(force * xDiff * g.rotUI.attractionForce)
+        }
+        }
+      }
       // console.log(v3[2]);
       // console.log('=======COMPOSED__MATRICES==========')
       // console.log(m1);
