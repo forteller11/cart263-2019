@@ -54,27 +54,27 @@ function subVecs(v1,v2){
 
 function rotMatX(rad){ //rotates 3D vector
   return [
-    [1, 0, 0, 1],
-    [0, Math.cos(rad), Math.sin(rad), 1],
-    [0, -Math.sin(rad), Math.cos(rad), 1],
+    [1, 0, 0, 0],
+    [0, Math.cos(rad), Math.sin(rad), 0],
+    [0, -Math.sin(rad), Math.cos(rad), 0],
     [0, 0, 0, 1]
   ]
 }
 
 function rotMatY(rad){
   return [
-    [Math.cos(rad), 0, -Math.sin(rad), 1] ,
-    [0, 1, 0, 1] ,
-    [Math.sin( rad), 0, Math.cos(rad), 1],
+    [Math.cos(rad), 0, -Math.sin(rad), 0] ,
+    [0, 1, 0, 0] ,
+    [Math.sin( rad), 0, Math.cos(rad), 0],
     [0, 0, 0 , 1]
   ]
 }
 
 function rotMatZ(rad){
   return [
-    [Math.cos(rad), Math.sin(rad), 0, 1],
-    [-Math.sin(rad), Math.cos(rad), 0, 1],
-    [0, 0, 1, 1],
+    [Math.cos(rad), Math.sin(rad), 0, 0],
+    [-Math.sin(rad), Math.cos(rad), 0, 0],
+    [0, 0, 1, 0],
     [0, 0, 0, 1]
   ]
 }

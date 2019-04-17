@@ -83,16 +83,16 @@ class sMove extends System { //moves player entity given keyboard input and tran
           entity.cPos.angleY += g.camera.rotateSpeed;
           break;
         case 38: //up arrow
-          entity.cPos.angleX += g.camera.rotateSpeed;
-          break;
-        case 40: //down arrow
           entity.cPos.angleX -= g.camera.rotateSpeed;
           break;
+        case 40: //down arrow
+          entity.cPos.angleX += g.camera.rotateSpeed;
+          break;
         case 81: //Q
-          entity.cPos.angleZ -= g.camera.rotateSpeed;
+          entity.cPos.angleZ += g.camera.rotateSpeed;
           break;
         case 69: //E
-          entity.cPos.angleZ += g.camera.rotateSpeed;
+          entity.cPos.angleZ -= g.camera.rotateSpeed;
           break;
       }
       g.camera.angleX = entity.cPos.angleX;
@@ -105,7 +105,10 @@ class sMove extends System { //moves player entity given keyboard input and tran
         rotMatZ(g.camera.angleZ)
       );
 
-      // let moveForward = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.forwardOrientation));
+      let moveForward = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, [0,0,1,1]));
+      moveForward.splice(3,1);
+      console.log(moveForward);
+      console.table(g.camera.rotationMatrix)
       // let moveRight = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.rightOrientation));
       // let moveUp = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.upOrientation));
 
@@ -129,19 +132,20 @@ class sMove extends System { //moves player entity given keyboard input and tran
           }
         case 87:
           { //w key
-            // entity.cPos.x -= moveForward[0];
+
+            entity.cPos.z -= g.input.moveSpeed;
+            // entity.cPos.x += moveForward[0];
             // entity.cPos.y += moveForward[1];
             // entity.cPos.z -= moveForward[2];
-            entity.cPos.z += g.input.moveSpeed;
 
             break;
           }
         case 83:
           { //s key
-            // entity.cPos.x += moveForward[0];
+            entity.cPos.z += g.input.moveSpeed;
+            // entity.cPos.x -= moveForward[0];
             // entity.cPos.y -= moveForward[1];
             // entity.cPos.z += moveForward[2];
-            entity.cPos.z -= g.input.moveSpeed;
             break;
           }
         case 32:
@@ -336,15 +340,14 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
           // ]);
           // ctx.clip();
           // ctx.arc(window.innerWidth / 2, window.innerHeight / 2, g.camera.backgroundScale, 0, Math.PI * 2);
-        }
+
         ctx.beginPath(v1[0], v1[1]);
         ctx.lineTo(v2[0], v2[1]);
         ctx.lineTo(v3[0], v3[1]);
         ctx.lineTo(v1[0], v1[1]);
-
-
-
         ctx.fill();
+      }
+
         // ctx.stroke();
 
       }
