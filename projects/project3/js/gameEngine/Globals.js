@@ -55,12 +55,12 @@ class gPhysicsConstants { //stores physics constants
       //where the UI element where start and interpolate back to (in world space, not pixel)
     this.xBase = 0;
     this.yBase = 0;
-    this.zBase = .5;
+    this.zBase = 10;
 
     this.rotX = 0;
     this.rotY = 0;
     this.interpolationRate = 0.5;
-    this.scale = 1;
+    this.scale = 4;
     this.sensitivity = 0.001;
 
     }

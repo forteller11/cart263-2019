@@ -1,11 +1,11 @@
 function update(){
-  ctx.fillStyle = cssRGBA([255,255,255,55/255]);
+  ctx.fillStyle = cssRGBA([255,255,255,.5]);
   ctx.fillRect(window.innerWidth/2-window.innerHeight/2,0,window.innerHeight,window.innerHeight);
   // ctx.strokeStyle = cssRGBA(bgColor);
-    ctx.fillStyle = cssRGBA(bgColor);
-  ctx.arc(window.innerWidth/2,window.innerHeight/2,g.camera.backgroundScale,0,Math.PI * 2);
+    // ctx.fillStyle = cssRGBA(bgColor);
 
-  ctx.fill()
+    // ctx.arc(window.innerWidth/2,window.innerHeight/2,g.camera.backgroundScale,0,Math.PI * 2);
+  // ctx.fill()
 
   systemManager.update();
   // console.log(systemManager);

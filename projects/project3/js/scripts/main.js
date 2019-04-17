@@ -52,6 +52,7 @@ function main() {
   bgColor = [ran(200,255), ran(200,255), ran(50), 1];
   //create canvas
   ctx = createCanvas(window.innerWidth, window.innerHeight);
+  ctx.lineWidth = 1;
 
   createEntitiesFromBlueprint('player');
   createEntitiesFromBlueprint('rotationUI');

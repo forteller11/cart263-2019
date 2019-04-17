@@ -111,6 +111,7 @@ function addComponentsBasedOnBlueprint(newEntity, blueprintName) {
             newEntity.addComponent(new cMesh(meshFileParsedData[0]));
             newEntity.cMesh.scale(g.rotUI.scale);
             newEntity.cMesh.faceColor(bgColor);
+            newEntity.cMesh.shading = false;
             newEntity.addComponent(new cPhysics(1, 0,0,0, 0,0,0)); //static = true
             newEntity.addComponent(new cRotUI());
             break;

@@ -264,7 +264,10 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       //  at distance from camera g.camera.fadeStart begin shrinking inwards until g.camera.fadeEnd distance
       let vAvg = meanVec(v1Raw, v2Raw, v3Raw);
       vAvg.splice(3, 1); //remove 4th dimension
-      let lightAmount = (dot(normalize(vAvg), g.camera.lightDir) + 1) / 2;
+      let lightAmount = 1;
+      if (entity.cMesh.shading === true){
+      lightAmount = (dot(normalize(vAvg), g.camera.lightDir) + 1) / 2;
+      }
       // console.log(lightAmount)
       let shrinkBy = 1;
       if ((entity.cMesh.camToFacesMag[i] > g.camera.fadeStart)) {
@@ -279,6 +282,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         v3Raw = scalarVecMult(shrinkBy, v3Raw);
         v3Raw[3] = wInit;
       }
+
       // console.log(lightAmount);
 
 
@@ -314,6 +318,12 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
           1
         ]);
 
+        ctx.strokeStyle = cssRGBA([
+          entity.cMesh.faceColors[i][0] * Math.pow(shrinkBy, 3) * lightAmount,
+          entity.cMesh.faceColors[i][1] * Math.pow(shrinkBy, 3) * lightAmount,
+          entity.cMesh.faceColors[i][2] * Math.pow(shrinkBy, 3) * lightAmount,
+          1
+        ]);
 
         // ctx.strokeStyle = cssRGBA([
         //   bgColor[0]*lightAmount,
@@ -348,7 +358,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         ctx.fill();
         // }
 
-        // ctx.stroke();
+        ctx.stroke();
 
       }
     }
@@ -515,7 +525,9 @@ update() {
   super.update();
 }
 systemExecution(entity){
-  //keep ui in right place
+  entity.cPos.x = g.camera.x + g.rotUI.xBase;
+  entity.cPos.y = g.camera.y + g.rotUI.yBase;
+  entity.cPos.z = g.camera.z + g.rotUI.zBase;
 }
 
 }
