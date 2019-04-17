@@ -56,6 +56,10 @@ class gPhysicsConstants { //stores physics constants
     this.xBase = 0;
     this.yBase = 0;
     this.zBase = .5;
+
+    this.rotX = 0;
+    this.rotY = 0;
+    this.interpolationRate = 0.5;
     this.scale = 1;
     this.sensitivity = 0.001;
 

@@ -74,36 +74,36 @@ class sMove extends System { //moves player entity given keyboard input and tran
     //keyboard input for player movement
 
     for (let i = 0; i < g.input.keysDown.length; i++) { //for every key pressed this frame...
-      switch (g.input.keysDown[i]) {
-        //ROTATIONS
-        case 37: //left arrow
-          entity.cPos.angleY -= g.camera.rotateSpeed;
-          break;
-        case 39: //right arrow
-          entity.cPos.angleY += g.camera.rotateSpeed;
-          break;
-        case 38: //up arrow
-          entity.cPos.angleX -= g.camera.rotateSpeed;
-          break;
-        case 40: //down arrow
-          entity.cPos.angleX += g.camera.rotateSpeed;
-          break;
-        case 81: //Q
-          entity.cPos.angleZ += g.camera.rotateSpeed;
-          break;
-        case 69: //E
-          entity.cPos.angleZ -= g.camera.rotateSpeed;
-          break;
-      }
-      g.camera.angleX = entity.cPos.angleX;
-      g.camera.angleY = entity.cPos.angleY;
-      g.camera.angleZ = entity.cPos.angleZ;
-
-      g.camera.rotationMatrix = matMatComp(
-        rotMatX(g.camera.angleX),
-        rotMatY(g.camera.angleY),
-        rotMatZ(g.camera.angleZ)
-      );
+      // switch (g.input.keysDown[i]) {
+      //   //ROTATIONS
+      //   case 37: //left arrow
+      //     entity.cPos.angleY -= g.camera.rotateSpeed;
+      //     break;
+      //   case 39: //right arrow
+      //     entity.cPos.angleY += g.camera.rotateSpeed;
+      //     break;
+      //   case 38: //up arrow
+      //     entity.cPos.angleX -= g.camera.rotateSpeed;
+      //     break;
+      //   case 40: //down arrow
+      //     entity.cPos.angleX += g.camera.rotateSpeed;
+      //     break;
+      //   case 81: //Q
+      //     entity.cPos.angleZ += g.camera.rotateSpeed;
+      //     break;
+      //   case 69: //E
+      //     entity.cPos.angleZ -= g.camera.rotateSpeed;
+      //     break;
+      // }
+      // g.camera.angleX = entity.cPos.angleX;
+      // g.camera.angleY = entity.cPos.angleY;
+      // g.camera.angleZ = entity.cPos.angleZ;
+      //
+      // g.camera.rotationMatrix = matMatComp(
+      //   rotMatX(g.camera.angleX),
+      //   rotMatY(g.camera.angleY),
+      //   rotMatZ(g.camera.angleZ)
+      // );
 
       let moveForward = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, [0, 0, 1, 1]));
       moveForward.splice(3, 1);
@@ -495,20 +495,27 @@ class sInput extends System { //handles dragging behavior and transforming the e
 class sRotUI extends System { //handles dragging behavior and transforming the entity being dragged
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
-    this.requiredComponents = [];
+    this.requiredComponents = ['cRotUI'];
   }
 
 update() {
+  //interpolate back into place
+  g.rotUI.rotX = g.rotUI.rotX * g.rotUI.interpolationRate;
+  g.rotUI.rotY -= g.rotUI.rotY * g.rotUI.interpolationRate;
   //create rotation matrix based on mouse pos since last click
-      console.log('ahh');
   if (g.mouse.down === true){
-    let rotX = (g.mouse.clickY - g.mouse.y)*g.rotUI.sensitivity;
-    let rotY = (g.mouse.clickX - g.mouse.x)*g.rotUI.sensitivity;
-    g.camera.rotationMatrix = matMatComp(
-      rotMatX(-rotX),
-      rotMatY(rotY),
-    );
+    g.rotUI.rotX = (g.mouse.clickY - g.mouse.y)*g.rotUI.sensitivity;
+    g.rotUI.rotY = (g.mouse.clickX - g.mouse.x)*g.rotUI.sensitivity;
   }
+
+  g.camera.rotationMatrix = matMatComp(
+    rotMatX(-g.rotUI.rotX),
+    rotMatY( g.rotUI.rotY),
+  );
+  super.update();
+}
+systemExecution(entity){
+  //keep ui in right place
 }
 
 }
