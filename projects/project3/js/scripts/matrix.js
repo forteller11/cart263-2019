@@ -18,15 +18,6 @@ function matVecMult(mat, vec) { //matrix-Vector multiply
   return transformedVec;
 }
 
-// dot product of vec horz with vec vert in each segment,
-`
-[x1a,y1a]   [x1b,x2b]   == [1a*1b,1a*2b]
-[x2a,y2a]   [y1b,y2b]   == [2a*1b,2a*2b]
-
-first matrix rows are vec, 2nd collums are vec, dot v*v in and the result is the transformed matrix
-basically tra
-`
-
 function dot(v1, v2) { //dot product
   //each vec is 1D array
   let dotSum = 0;

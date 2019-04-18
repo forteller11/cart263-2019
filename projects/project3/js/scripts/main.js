@@ -56,7 +56,7 @@ function main() {
 
   createEntitiesFromBlueprint('player');
   createEntitiesFromBlueprint('rotationUI');
-  let ent = createEntitiesFromBlueprint('mesh', 30);
+  let ent = createEntitiesFromBlueprint('mesh', 50);
 
 
   update();
