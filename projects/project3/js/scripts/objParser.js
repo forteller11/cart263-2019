@@ -36,7 +36,6 @@ function convertObjFileToMeshBlob(obj) {
       if (currentWord === 'f') {
         currentDataType = 'face'
       }
-      // console.log(currentWord);
       currentWord = ''; //reset current word
 
     } else { //if not a space
@@ -50,6 +49,7 @@ function convertObjFileToMeshBlob(obj) {
     reducedFArr.push(fArr[i]-1); //make it start at 0
   }
 
+  //make faces 2D arrays where each index i === 1 face and j represents different indexes of the verts which make it up
   let fArr2D = new Array(reducedFArr.length/3);
   for (let i = 0; i < fArr2D.length; i ++){
     let ii = i*3;
@@ -60,7 +60,7 @@ function convertObjFileToMeshBlob(obj) {
       ]
   }
 
-  let vArr2D = new Array(vArr.length/3);
+  let vArr2D = new Array(vArr.length/3); //make 2D array where each i === a vert and j === [x,y,z] components
   for (let i = 0; i < vArr2D.length; i ++){
     let ii = i*3;
       vArr2D[i] = [

@@ -1,33 +1,25 @@
 'use strict';
+/*
+my implementation of a quick matrix / vector library where vectors are represented as
+1D arrays and matrices as 2D arrays (instead of objects) for performance and scalability purposes
+I removed alot of the error checking because I thought it might effect performance as
+this library is being used many times by all the vertices in a given scene so
+the functions tend to be barebrones.
 
+Note: I think matrices might be rotated 90* in these matrix functions as I wasn't comfortable
+with linear algebra, this doesn't effect end vectors because all functions account for this
+but it is a qirk worth mentioning */
 function matVecMult(mat, vec) { //matrix-Vector multiply
-  //matrix is 2D array
-  //vector is 1D array
-
   let transformedVec = new Array(vec.length).fill(0); //creates an array of vec length where all elements === 0
-  for (let i = 0; i < mat.length; i++) { //initialise vector output to have components === rows of matrix
-    transformedVec[i] = 0;
-  }
-
   for (let i = 0; i < mat.length; i++) { //rows of matrix
     for (let j = 0; j < mat[i].length; j++) { //collums of matrix
       transformedVec[i] += mat[i][j] * vec[j]; //vec matrix mult
     }
   }
-
   return transformedVec;
 }
 
-function dot(v1, v2) { //dot product
-  //each vec is 1D array
-  let dotSum = 0;
-  for (let i = 0; i < v1.length; i++) {
-    dotSum += v1[i] * v2[i];
-  }
-  return dotSum;
-}
-
-function addVecs(v1,v2){
+function addVecs(v1,v2){ //add like components of two vectors together
   let newV = new Array(v1.length);
   for (let i = 0; i < v1.length; i ++){
     newV[i] = v1[i] + v2[i];
@@ -35,7 +27,7 @@ function addVecs(v1,v2){
   return newV;
 }
 
-function subVecs(v1,v2){
+function subVecs(v1,v2){ //v1-v2 (subtract like components of two vectors)
   let newV = new Array(v1.length);
   for (let i = 0; i < v1.length; i ++){
     newV[i] = v1[i] - v2[i];
@@ -43,7 +35,7 @@ function subVecs(v1,v2){
   return newV;
 }
 
-function rotMatX(rad){ //rotates 3D vector
+function rotMatX(rad){ //rotates a homogenous (4D) vector along x-axis
   return [
     [1, 0, 0, 0],
     [0, Math.cos(rad), Math.sin(rad), 0],
@@ -52,7 +44,7 @@ function rotMatX(rad){ //rotates 3D vector
   ]
 }
 
-function rotMatY(rad){
+function rotMatY(rad){ //rotates a homogenous (4D) vector along y-axis
   return [
     [Math.cos(rad), 0, -Math.sin(rad), 0] ,
     [0, 1, 0, 0] ,
@@ -61,7 +53,7 @@ function rotMatY(rad){
   ]
 }
 
-function rotMatZ(rad){
+function rotMatZ(rad){ //rotates a homogenous (4D) vector along z-axis
   return [
     [Math.cos(rad), Math.sin(rad), 0, 0],
     [-Math.sin(rad), Math.cos(rad), 0, 0],
@@ -70,21 +62,10 @@ function rotMatZ(rad){
   ]
 }
 
-function homoFromEuclid(v){ //takes a 3D vector in euclidian space and adds a 1 making it a homogenous coord (still in euclid at that very value of w===1)
-  let newV = v.slice();
-  // console.log(newV);
-  newV.push(1);
-  // console.log(newV);
-  // console.log(v)
-  return newV;
-}
-
 function meanVec(...args){ //returns vector whose components are the mean of all the vectors put in as paramters
-  //where each argument is an array/vector of same length
+  //where each argument is an array/vector of same length, assumes equal length of all vectors
   let meanV = new Array(args[0].length).fill(0);
-  // console.log(args[2][2]);
   for (let i = 0; i < args[0].length; i ++){ //for every component of every vec
-
     for (let j = 0; j < args.length; j ++){ //cycle through all vectors
       meanV[i] += args[j][i];
     }
@@ -111,7 +92,6 @@ function nDiagMat(...args) { //returns diagonal matrix of n size
   } else {
     b = 1
   }
-
   let rows = [];
   let identityIndex = 0; //where to place 1
   for (let i = 0; i < n; i++) {
@@ -179,13 +159,10 @@ function transMat(...args) { //returns 4x4 translation matrix
 }
 
 function matMatComp(...args) { //composed n matrices together into a single transformation matrix
-  //composiiton matrix treats the latest elements as if they were transformed first args[length-1],args[length-2],args[length-3]...
-
+  //composiiton matrix treats the latest to arguments (farthest right) as if they were transformed first
   let mat1;
   let mat2;
   let composedMat = [];
-
-  //each index of argument will be a 2D array representing a matrix
 
   //initialise output matrix as 2D array
   for (let k = 0; k < args.length - 1; k++) {
@@ -239,7 +216,7 @@ function scalarVecMult(scalar,v){ //scalar vector multiplication
   return newVec;
 }
 
-function mag(v){
+function mag(v){ //returns magnitude of a vector
   let sum = 0;
   for (let i = 0; i < v.length; i ++){
     sum += Math.pow(v[i],2);
@@ -247,7 +224,7 @@ function mag(v){
   return Math.sqrt(sum);
 }
 
-function normalize(v){ //normalizes v
+function normalize(v){ //normalizes a vector
   let magnitude = mag(v);
   let newVec = new Array(v.length);
   for (let i = 0; i < v.length; i++){
