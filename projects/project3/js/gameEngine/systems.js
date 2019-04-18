@@ -299,17 +299,22 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 
       if (systemManager.entityHasComponent('cRotUI',entity,)){
         let vArr = [v1,v2,v3];
+        let distSum = 0;
         for (let v of vArr){
           // console.log(g.mouse.y)
           let xDiff = g.mouse.x - v[0];
           let yDiff = g.mouse.y - v[1];
           let dist = pythag (xDiff,yDiff);
-          if (dist > g.rotUI.minAttractionDist){
+          distSum+= dist;
           let force = 1/dist;
           v[0] += force * xDiff * g.rotUI.attractionForce;
           v[1] += force * yDiff * g.rotUI.attractionForce;
           // console.log(force * xDiff * g.rotUI.attractionForce)
         }
+        if (g.mouse.down){
+          lightAmount = 1+(1/(distSum/3)*50) + .1;
+        } else {
+          lightAmount = 1+(1/(distSum/3)*10);
         }
       }
       // console.log(v3[2]);
@@ -331,14 +336,14 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
           entity.cMesh.faceColors[i][0] * Math.pow(shrinkBy, 3) * lightAmount,
           entity.cMesh.faceColors[i][1] * Math.pow(shrinkBy, 3) * lightAmount,
           entity.cMesh.faceColors[i][2] * Math.pow(shrinkBy, 3) * lightAmount,
-          1
+          entity.cMesh.opacity
         ]);
 
         ctx.strokeStyle = cssRGBA([
           entity.cMesh.faceColors[i][0] * Math.pow(shrinkBy, 3) * lightAmount,
           entity.cMesh.faceColors[i][1] * Math.pow(shrinkBy, 3) * lightAmount,
           entity.cMesh.faceColors[i][2] * Math.pow(shrinkBy, 3) * lightAmount,
-          1
+          entity.cMesh.opacity
         ]);
 
         // ctx.strokeStyle = cssRGBA([
@@ -544,11 +549,14 @@ systemExecution(entity){
   // console.log(d)\
   if (g.mouse.down === true){
     entity.cMesh.scale(g.rotUI.scale);
-} else {
+} else { //scale size
     let d = pythag(g.mouse.x-window.innerWidth/2,g.mouse.y-window.innerHeight/2);
-    let s = (1/d)*window.innerHeight/2;
+    let s = (1/d)*(g.rotUI.scale*600);
+    let alpha = (s*50)-2;
+    alpha = constrain(alpha,0,1);
     console.log(s)
     s = constrain(s,0,g.rotUI.scale);
+        entity.cMesh.opacity = alpha;
     entity.cMesh.scale(s);
 }
   entity.cPos.x = g.camera.x + g.rotUI.xBase;

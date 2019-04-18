@@ -65,6 +65,7 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
     super();
     this.name = 'cMesh';
     this.camToCenter = undefined; //how far is meshes distToCamera in worldview
+    this.opacity = 1;
 
     this.verts = objBlob.verts.slice();
     this.vertStores = this.verts.slice();
