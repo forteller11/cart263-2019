@@ -67,6 +67,7 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
     this.camToCenter = undefined; //how far is meshes distToCamera in worldview
 
     this.verts = objBlob.verts.slice();
+    this.vertStores = this.verts.slice();
     this.vertsRotated = new Array(this.verts.length); //verts but rotated and also homo coords [x,y,z,w]
     this.vertNorms = objBlob.vertNorms.slice(); //arr of vertex normals
     this.camToVerts = new Array(this.verts.length); //vector       from camera to all vertexes
@@ -90,7 +91,7 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
   }
   scale(amountToScale){
     for (let i = 0; i < this.verts.length; i++){
-      this.verts[i] = scalarVecMult(amountToScale,this.verts[i]);
+      this.verts[i] = scalarVecMult(amountToScale,this.vertStores[i]);
     }
   }
   faceColor(color){

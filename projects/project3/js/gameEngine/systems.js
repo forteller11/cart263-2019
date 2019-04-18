@@ -308,7 +308,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
           let force = 1/dist;
           v[0] += force * xDiff * g.rotUI.attractionForce;
           v[1] += force * yDiff * g.rotUI.attractionForce;
-          console.log(force * xDiff * g.rotUI.attractionForce)
+          // console.log(force * xDiff * g.rotUI.attractionForce)
         }
         }
       }
@@ -541,6 +541,16 @@ update() {
   super.update();
 }
 systemExecution(entity){
+  // console.log(d)\
+  if (g.mouse.down === true){
+    entity.cMesh.scale(g.rotUI.scale);
+} else {
+    let d = pythag(g.mouse.x-window.innerWidth/2,g.mouse.y-window.innerHeight/2);
+    let s = (1/d)*window.innerHeight/2;
+    console.log(s)
+    s = constrain(s,0,g.rotUI.scale);
+    entity.cMesh.scale(s);
+}
   entity.cPos.x = g.camera.x + g.rotUI.xBase;
   entity.cPos.y = g.camera.y + g.rotUI.yBase;
   entity.cPos.z = g.camera.z + g.rotUI.zBase;

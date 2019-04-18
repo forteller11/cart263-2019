@@ -2,12 +2,13 @@ class Mesh {
   constructor(objBlob) {
     this.distToCamera = undefined; //how far is meshes distToCamera in worldview
 
-    this.verts = objBlob.verts; //array of vertexes in format x,y,z,x,y,z....
+    this.verts = objBlob.verts.slice(); //array of vertexes in format x,y,z,x,y,z....
+    this.vertStores = objBlob.verts.slice(); //array of vertexes in format x,y,z,x,y,z....
     this.vertsDistToCamera = []; //array of how far the vert is away from the camera [distForxyz,distForv2,v3,v4...]
 
     this.vertNorms = objBlob.vertNorms; //arr of vertex normals
 
-    this.faces = objBlob.faces; //arr with indexes of vertices which make up a face, each face has 3 vertices, a,b,c (mult by 3 to get exact index in vert array)
+    this.faces = objBlob.faces.slice(); //arr with indexes of vertices which make up a face, each face has 3 vertices, a,b,c (mult by 3 to get exact index in vert array)
     this.facesDistToCamera = [] //dist of face1, distOfFace2
     this.facesR = [];
     this.facesG = [];

@@ -63,7 +63,7 @@ class gPhysicsConstants { //stores physics constants
     this.scale = 4;
     this.sensitivity = 0.001;
 
-    this.attractionForce = 100;
+    this.attractionForce = 60;
     this.minAttractionDist = window.innerWidth*0.01;
 
     }
