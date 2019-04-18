@@ -59,6 +59,7 @@ class gPhysicsConstants { //stores physics constants
 
     this.rotX = 0;
     this.rotY = 0;
+    this.drag = false; //whether or not being dragged
     this.interpolationRate = 0.5;
     this.scale = this.zBase*.1;
     this.sensitivity = 0.001;
@@ -81,7 +82,7 @@ class gPhysicsConstants { //stores physics constants
       this.backgroundScale = this.scaleAmount / 1.5;
       // this.scaleAmount = 0; //TEMPORARY REMOVE
       this.clippingThreshold  = -2; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
-      this.fadeStart = 60;
+      this.fadeStart = 80;
       this.fadeEnd = 15; //how much distance does it take after fadeStart to fade completely?
       this.rotateSpeed = Math.PI/120;
       this.forwardOrientation = [0, 0, 1, 1]; //determines forward direction

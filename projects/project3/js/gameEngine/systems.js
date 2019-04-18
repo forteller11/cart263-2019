@@ -120,6 +120,7 @@ class sMove extends System { //moves player entity given keyboard input and tran
             // entity.cPos.y += moveRight[1];
             // entity.cPos.z += moveRight[2];
             entity.cPos.x -= g.input.moveSpeed;
+            g.rotUI.drag = false;
             break;
           }
         case 68:
@@ -128,12 +129,14 @@ class sMove extends System { //moves player entity given keyboard input and tran
             // entity.cPos.y -= moveRight[1];
             // entity.cPos.z -= moveRight[2];
             entity.cPos.x += g.input.moveSpeed;
+            g.rotUI.drag = false;
             break;
           }
         case 87:
           { //w key
 
             entity.cPos.z -= g.input.moveSpeed;
+            g.rotUI.drag = false;
             // entity.cPos.x += moveForward[0];
             // entity.cPos.y += moveForward[1];
             // entity.cPos.z -= moveForward[2];
@@ -143,6 +146,7 @@ class sMove extends System { //moves player entity given keyboard input and tran
         case 83:
           { //s key
             entity.cPos.z += g.input.moveSpeed;
+            g.rotUI.drag = false;
             // entity.cPos.x -= moveForward[0];
             // entity.cPos.y -= moveForward[1];
             // entity.cPos.z += moveForward[2];
@@ -153,6 +157,7 @@ class sMove extends System { //moves player entity given keyboard input and tran
             // entity.cPos.x += moveUp[0];
             // entity.cPos.y -= moveUp[1];
             entity.cPos.y -= g.input.moveSpeed;
+            g.rotUI.drag = false;
             break;
           }
         case 16:
@@ -160,6 +165,7 @@ class sMove extends System { //moves player entity given keyboard input and tran
             // entity.cPos.x -= moveUp[0];
             // entity.cPos.y += moveUp[1];
             entity.cPos.y += g.input.moveSpeed;
+            g.rotUI.drag = false;
             break;
           }
 
@@ -311,8 +317,8 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
           v[1] += force * yDiff * g.rotUI.attractionForce;
           // console.log(force * xDiff * g.rotUI.attractionForce)
         }
-        if (g.mouse.down){
-          lightAmount = 1+(1/(distSum/3)*50) + .1;
+        if (g.rotUI.drag){
+          lightAmount = 1+(1/(distSum/3)*50) + .2;
         } else {
           lightAmount = 1+(1/(distSum/3)*10);
         }
@@ -527,6 +533,16 @@ class sRotUI extends System { //handles dragging behavior and transforming the e
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
     this.requiredComponents = ['cRotUI'];
+    body.addEventListener('mousedown',()=>{ //collision detection
+      let distToCenter = pythag(g.mouse.x-window.innerWidth/2,g.mouse.y-window.innerHeight/2);
+      if (distToCenter < g.rotUI.scale*g.camera.scaleAmount*2.26){
+        g.rotUI.drag = true;
+        console.log('ahh');
+      }
+    });
+    body.addEventListener('mouseup',()=>{
+      g.rotUI.drag = false;
+    });
   }
 
 update() {
@@ -534,7 +550,7 @@ update() {
   g.rotUI.rotX = g.rotUI.rotX * g.rotUI.interpolationRate;
   g.rotUI.rotY -= g.rotUI.rotY * g.rotUI.interpolationRate;
   //create rotation matrix based on mouse pos since last click
-  if (g.mouse.down === true){
+  if (g.rotUI.drag === true){
     g.rotUI.rotX = (g.mouse.clickY - g.mouse.y)*g.rotUI.sensitivity;
     g.rotUI.rotY = (g.mouse.clickX - g.mouse.x)*g.rotUI.sensitivity;
   }
@@ -547,14 +563,14 @@ update() {
 }
 systemExecution(entity){
   // console.log(d)\
-  if (g.mouse.down === true){
+  if (g.rotUI.drag === true){
     entity.cMesh.scale(g.rotUI.scale);
 } else { //scale size
-    let d = pythag(g.mouse.x-window.innerWidth/2,g.mouse.y-window.innerHeight/2);
+    let d = pythag(g.mouse.x-window.innerWidth/2,g.mouse.y-window.innerHeight/2); //dist to center
     let s = (1/d)*(g.rotUI.scale*600);
-    let alpha = (s*50)-2;
+    let alpha = (s*38)-2;
     alpha = constrain(alpha,0,1);
-    console.log(s)
+    // console.log(s)
     s = constrain(s,0,g.rotUI.scale);
         entity.cMesh.opacity = alpha;
     entity.cMesh.scale(s);
