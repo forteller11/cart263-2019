@@ -4,8 +4,6 @@ class Globals{
   constructor(){
     this.physics = new gPhysicsConstants();
     this.mouse = new gMouseEvents();
-    this.drag = new gDragData();
-    this.spawn = new gSpawnRate();
     this.camera = new gCamera();
     this.input = new gInput();
     this.rotUI = new gRotationUserInterface();
@@ -20,11 +18,11 @@ class gPhysicsConstants { //stores physics constants
     this.name = 'cPhysicsConstants';
     this.maxPolarVel = Math.PI/4//max/min polar velocity
     this.cartesianDrag = 0.98; //rate at which linear vel approaches 0
-    this.polarDrag = .996; //rate at which rotational vel approaches 0
+    this.polarDrag = .998; //rate at which rotational vel approaches 0
     this.angularVelEffectOnLinear = 10; //how much angle vel effects resultant post collision linear vel
     this.rotationTransferOnCollision = .2;
     this.windX = 0;
-    this.windY = 0;
+    this.windY = .001;
     this.windZ = 0;
   }
 }
@@ -60,7 +58,7 @@ class gPhysicsConstants { //stores physics constants
     this.rotX = 0;
     this.rotY = 0;
     this.drag = false; //whether or not being dragged
-    this.interpolationRate = 0.5;
+    this.interpolationRate = 0.1;
     this.scale = this.zBase*.1;
     this.sensitivity = 0.001;
     this.attractionForce = 60;
@@ -101,29 +99,13 @@ class gPhysicsConstants { //stores physics constants
       this.centerMatrix = transMat(window.innerWidth/2, window.innerHeight/2,0);
 
       this.scaleMatrix = diagMat(this.scaleAmount, this.scaleAmount, this.scaleAmount, 1);
-console.log(this.scaleMatrix);
-    //z == up direction
-    }
 
+    }
   }
 
   class gInput{ //tracks keyboard input
     constructor(){
-      this.keysDown = [] //array of keyCodes of keys currentdown
-      this.moveSpeed = .3;
-    }
-  }
-
-  class gDragData{
-    constructor(){
-      this.dragOffsetX = null;
-      this.dragOffsetY = null;
-      this.dragEntityRef = null;
-    }
-  }
-
-  class gSpawnRate{
-    constructor(){
-      this.rate = 1/(60*20) //avg every 5 s;
+      this.keysDown = [] //array of keyCodes of keys currentdown that update loop
+      this.moveSpeed = .6;
     }
   }

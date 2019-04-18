@@ -59,6 +59,64 @@ class sPhysicsTransform extends System { //applys drags and phy constants (gravi
 
 }
 
+class sInput extends System { //handles tracking keyboard and mouse input and storing them in g.mouse and g.Input
+  constructor(arrayOfRelevantEntities) {
+    super(arrayOfRelevantEntities);
+    this.requiredComponents = [];
+
+    document.addEventListener('keydown', (e) => { //n mouse click
+      let redundant = false; //is key already in keyPressed
+      for (let i = 0; i < g.input.keysDown.length; i++) {
+        if (e.keyCode === g.input.keysDown[i]) {
+          redundant = true;
+          break;
+        }
+      }
+
+      if (redundant === false) { //if key is not currently in keysDown array push it
+        g.input.keysDown.push(e.keyCode);
+      }
+    });
+
+    document.addEventListener('keyup', (e) => { //n mouse click
+      for (let i = 0; i < g.input.keysDown.length; i++) {
+        if (e.keyCode === g.input.keysDown[i]) {
+          g.input.keysDown.splice(i, 1)
+          break;
+        }
+      }
+    });
+
+    document.addEventListener('mousedown', (e) => { //n mouse click
+      g.mouse.down = true;
+      g.mouse.clickX = e.clientX;
+      g.mouse.clickY = e.clientY;
+    });
+
+    document.addEventListener('mousemove', (e) => { //update mouse pos
+      g.mouse.x = e.clientX;
+      g.mouse.y = e.clientY;
+    });
+
+    document.addEventListener('mouseup', (e) => { // on release of mouse
+      g.mouse.down = false;
+    });
+
+  } //END OF CONSTRUCTOR
+
+  update() {
+    if (g.mouse.histX.length < g.mouse.histMaxLength) { //store mouse positions every frame
+      g.mouse.histX.push(g.mouse.x);
+      g.mouse.histY.push(g.mouse.y);
+    } else { //remove oldest, add newest pos
+      g.mouse.histX.splice(0, 1);
+      g.mouse.histY.splice(0, 1);
+      g.mouse.histX.push(g.mouse.x);
+      g.mouse.histY.push(g.mouse.y);
+    }
+}
+}
+
 class sMove extends System { //moves player entity given keyboard input and translates camera to that position
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
@@ -67,119 +125,54 @@ class sMove extends System { //moves player entity given keyboard input and tran
   }
 
   systemExecution(entity) { //move player according to inputs, translate camera to player pos
-    //mouse input for player movement
-
-    // const deltaMouseX = g.mouse.histX[g.mouse.histX.length - 1] - g.mouse.histX[g.mouse.histX.length - 2];
-    // const deltaMouseY = g.mouse.histY[g.mouse.histY.length - 1] - g.mouse.histY[g.mouse.histY.length - orientation  console.log(`${Math.round(g.camera.angleX*100)/100}, ${Math.round(g.camera.angleY*100/100)}, ${Math.round(g.camera.angleZ*100/100)} `);
-    //keyboard input for player movement
-
+    //using keyboard input to move the player and camera matrix
     for (let i = 0; i < g.input.keysDown.length; i++) { //for every key pressed this frame...
-      // switch (g.input.keysDown[i]) {
-      //   //ROTATIONS
-      //   case 37: //left arrow
-      //     entity.cPos.angleY -= g.camera.rotateSpeed;
-      //     break;
-      //   case 39: //right arrow
-      //     entity.cPos.angleY += g.camera.rotateSpeed;
-      //     break;
-      //   case 38: //up arrow
-      //     entity.cPos.angleX -= g.camera.rotateSpeed;
-      //     break;
-      //   case 40: //down arrow
-      //     entity.cPos.angleX += g.camera.rotateSpeed;
-      //     break;
-      //   case 81: //Q
-      //     entity.cPos.angleZ += g.camera.rotateSpeed;
-      //     break;
-      //   case 69: //E
-      //     entity.cPos.angleZ -= g.camera.rotateSpeed;
-      //     break;
-      // }
-      // g.camera.angleX = entity.cPos.angleX;
-      // g.camera.angleY = entity.cPos.angleY;
-      // g.camera.angleZ = entity.cPos.angleZ;
-      //
-      // g.camera.rotationMatrix = matMatComp(
-      //   rotMatX(g.camera.angleX),
-      //   rotMatY(g.camera.angleY),
-      //   rotMatZ(g.camera.angleZ)
-      // );
-
-      let moveForward = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, [0, 0, 1, 1]));
-      moveForward.splice(3, 1);
-      console.log(moveForward);
-      console.table(g.camera.rotationMatrix)
-      // let moveRight = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.rightOrientation));
-      // let moveUp = scalarVecMult(g.input.moveSpeed, matVecMult(g.camera.rotationMatrix, g.camera.upOrientation));
-
       switch (g.input.keysDown[i]) {
         //MOVEMENT
         case 65:
           { //a key
-            // entity.cPos.x -= moveRight[0];
-            // entity.cPos.y += moveRight[1];
-            // entity.cPos.z += moveRight[2];
             entity.cPos.x -= g.input.moveSpeed;
             g.rotUI.drag = false;
             break;
           }
         case 68:
           { //d key
-            // entity.cPos.x += moveRight[0];
-            // entity.cPos.y -= moveRight[1];
-            // entity.cPos.z -= moveRight[2];
             entity.cPos.x += g.input.moveSpeed;
             g.rotUI.drag = false;
             break;
           }
         case 87:
           { //w key
-
             entity.cPos.z -= g.input.moveSpeed;
             g.rotUI.drag = false;
-            // entity.cPos.x += moveForward[0];
-            // entity.cPos.y += moveForward[1];
-            // entity.cPos.z -= moveForward[2];
-
             break;
           }
         case 83:
           { //s key
             entity.cPos.z += g.input.moveSpeed;
             g.rotUI.drag = false;
-            // entity.cPos.x -= moveForward[0];
-            // entity.cPos.y -= moveForward[1];
-            // entity.cPos.z += moveForward[2];
             break;
           }
         case 32:
-          { //space bar, rotate by ... degrees
-            // entity.cPos.x += moveUp[0];
-            // entity.cPos.y -= moveUp[1];
+          { //space bar,
             entity.cPos.y -= g.input.moveSpeed;
             g.rotUI.drag = false;
             break;
           }
         case 16:
           { //shift control
-            // entity.cPos.x -= moveUp[0];
-            // entity.cPos.y += moveUp[1];
             entity.cPos.y += g.input.moveSpeed;
             g.rotUI.drag = false;
             break;
           }
-
       }
-
     }
     //move camera to player position and angle
     g.camera.x = entity.cPos.x;
     g.camera.y = entity.cPos.y;
     g.camera.z = entity.cPos.z;
     g.camera.translationMatrix = transMat(-g.camera.x, -g.camera.y, -g.camera.z);
-
   }
-
 }
 
 class sRender extends System { //applys drags and phy constants (gravity if applicable)
@@ -248,25 +241,27 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     this.sortFacesByDistanceToPoint(entity);
 
     for (let i = 0; i < entity.cMesh.faces.length; i++) {
-      // homogenize coords from [x,y,z] to [x,y,z,w];
-      const wInit = 1;
-
       const v1Index = entity.cMesh.faces[i][0];
       const v2Index = entity.cMesh.faces[i][1];
       const v3Index = entity.cMesh.faces[i][2];
+
+      //store distance of vectors in d vars
+         let d1 = entity.cMesh.camToVertsMag[v1Index];
+         let d2 = entity.cMesh.camToVertsMag[v2Index];
+         let d3 = entity.cMesh.camToVertsMag[v3Index];
+
+  if (min(d1,d2,d3) > g.camera.fadeStart+g.camera.fadeEnd){ //if faded, don't calculate meshes or draw
+    break;
+  }
+
+      // homogenize coords from [x,y,z] to [x,y,z,w];
+      const wInit = 1;
+
 
       let v1Raw = entity.cMesh.vertsRotated[v1Index].slice();
       let v2Raw = entity.cMesh.vertsRotated[v2Index].slice();
       let v3Raw = entity.cMesh.vertsRotated[v3Index].slice();
 
-
-      //store distance of vectors in d vars
-      let d1 = entity.cMesh.camToVertsMag[v1Index];
-      let d2 = entity.cMesh.camToVertsMag[v2Index];
-      let d3 = entity.cMesh.camToVertsMag[v3Index];
-
-      // console.log(entity.cMesh.camToFacesMag[i]);
-      // console.log(d1);
       //  at distance from camera g.camera.fadeStart begin shrinking inwards until g.camera.fadeEnd distance
       let vAvg = meanVec(v1Raw, v2Raw, v3Raw);
       vAvg.splice(3, 1); //remove 4th dimension
@@ -288,10 +283,6 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         v3Raw = scalarVecMult(shrinkBy, v3Raw);
         v3Raw[3] = wInit;
       }
-
-
-
-
 
       //compose giant transformation matrices for each vector in order right to left
       let m1 = matMatComp(postProjectionMat, diagMat(1 / d1), preProjectionMat);
@@ -323,40 +314,16 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
           lightAmount = 1+(1/(distSum/3)*10);
         }
       }
-      // console.log(v3[2]);
-      // console.log('=======COMPOSED__MATRICES==========')
-      // console.log(m1);
-      // console.log(m2);
-      // console.log(m3);
-      // console.log('=======VECTORS___TRANSFORMED==========');
 
-      // console.log(v1Raw);
-      // console.log('===========');
-      //draw resulting vectors on the screen using the appropriate color of the face
-
-      // if (entity.cMesh.camToFaces[i][2] > g.camera.clippingThreshold) { //if in front of camera draw, if behind, don't draw
       if (shrinkBy > 0) {
 
-        // ctx.fillStyle = cssRGBA(entity.cMesh.faceColors[i]);
-        ctx.fillStyle = cssRGBA([
-          entity.cMesh.faceColors[i][0] * Math.pow(shrinkBy, 3) * lightAmount,
-          entity.cMesh.faceColors[i][1] * Math.pow(shrinkBy, 3) * lightAmount,
-          entity.cMesh.faceColors[i][2] * Math.pow(shrinkBy, 3) * lightAmount,
-          entity.cMesh.opacity
-        ]);
+        let r = entity.cMesh.faceColors[i][0] * Math.pow(shrinkBy, 3) * lightAmount;
+        let g = entity.cMesh.faceColors[i][1] * Math.pow(shrinkBy, 3) * lightAmount;
+        let b = entity.cMesh.faceColors[i][2] * Math.pow(shrinkBy, 3) * lightAmount;
+        let a = entity.cMesh.opacity;
 
-        ctx.strokeStyle = cssRGBA([
-          entity.cMesh.faceColors[i][0] * Math.pow(shrinkBy, 3) * lightAmount,
-          entity.cMesh.faceColors[i][1] * Math.pow(shrinkBy, 3) * lightAmount,
-          entity.cMesh.faceColors[i][2] * Math.pow(shrinkBy, 3) * lightAmount,
-          entity.cMesh.opacity
-        ]);
-
-        // ctx.strokeStyle = cssRGBA([
-        //   bgColor[0]*lightAmount,
-        //   bgColor[1]*lightAmount,
-        //   bgColor[2]*lightAmount,
-        //   1 - shrinkBy]);
+        ctx.fillStyle = cssRGBA([r,g,b,a]);
+        ctx.strokeStyle = cssRGBA([r,g,b,a]);
 
         //roudn to prevent subpixel rendering and improve performance
         v1[0] = Math.round(v1[0]);
@@ -365,26 +332,13 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         v2[1] = Math.round(v2[1]);
         v3[0] = Math.round(v3[0]);
         v3[1] = Math.round(v3[1]);
-        // console.log(v1);
-        // console.log(v2);
-        // console.log(v3);
-        // if (v1[2] < 0) {
-        // ctx.fillStyle = cssRGBA([
-        //   entity.cMesh.faceColors[i][0] * Math.pow(shrinkBy, 3) * lightAmount,
-        //   entity.cMesh.faceColors[i][1] * Math.pow(shrinkBy, 3) * lightAmount,
-        //   entity.cMesh.faceColors[i][2] * Math.pow(shrinkBy, 3) * lightAmount,
-        //   1/v1[2]*-1
-        // ]);
-        // ctx.clip();
-        // ctx.arc(window.innerWidth / 2, window.innerHeight / 2, g.camera.backgroundScale, 0, Math.PI * 2);
 
         ctx.beginPath(v1[0], v1[1]);
         ctx.lineTo(v2[0], v2[1]);
         ctx.lineTo(v3[0], v3[1]);
         ctx.lineTo(v1[0], v1[1]);
-        ctx.fill();
-        // }
 
+        ctx.fill();
         ctx.stroke();
 
       }
@@ -470,66 +424,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
 }
 
 
-class sInput extends System { //handles dragging behavior and transforming the entity being dragged
-  constructor(arrayOfRelevantEntities) {
-    super(arrayOfRelevantEntities);
-    this.requiredComponents = [];
-
-    document.addEventListener('keydown', (e) => { //n mouse click
-      let redundant = false; //is key already in keyPressed
-      for (let i = 0; i < g.input.keysDown.length; i++) {
-        if (e.keyCode === g.input.keysDown[i]) {
-          redundant = true;
-          break;
-        }
-      }
-
-      if (redundant === false) { //if key is not currently in keysDown array push it
-        g.input.keysDown.push(e.keyCode);
-      }
-    });
-
-    document.addEventListener('keyup', (e) => { //n mouse click
-      for (let i = 0; i < g.input.keysDown.length; i++) {
-        if (e.keyCode === g.input.keysDown[i]) {
-          g.input.keysDown.splice(i, 1)
-          break;
-        }
-      }
-    });
-
-    document.addEventListener('mousedown', (e) => { //n mouse click
-      g.mouse.down = true;
-      g.mouse.clickX = e.clientX;
-      g.mouse.clickY = e.clientY;
-    });
-
-    document.addEventListener('mousemove', (e) => { //update mouse pos
-      g.mouse.x = e.clientX;
-      g.mouse.y = e.clientY;
-    });
-
-    document.addEventListener('mouseup', (e) => { // on release of mouse
-      g.mouse.down = false;
-    });
-
-  } //END OF CONSTRUCTOR
-
-  update() {
-    if (g.mouse.histX.length < g.mouse.histMaxLength) { //store mouse positions every frame
-      g.mouse.histX.push(g.mouse.x);
-      g.mouse.histY.push(g.mouse.y);
-    } else { //remove oldest, add newest pos
-      g.mouse.histX.splice(0, 1);
-      g.mouse.histY.splice(0, 1);
-      g.mouse.histX.push(g.mouse.x);
-      g.mouse.histY.push(g.mouse.y);
-    }
-}
-
-}
-
-class sRotUI extends System { //handles dragging behavior and transforming the entity being dragged
+class sRotUI extends System { //handles the dragging, position, size and rotation of UI element asides from mesh warping (which occurs in render system)
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
     this.requiredComponents = ['cRotUI'];
@@ -547,7 +442,7 @@ class sRotUI extends System { //handles dragging behavior and transforming the e
 
 update() {
   //interpolate back into place
-  g.rotUI.rotX = g.rotUI.rotX * g.rotUI.interpolationRate;
+  g.rotUI.rotX -= g.rotUI.rotX * g.rotUI.interpolationRate;
   g.rotUI.rotY -= g.rotUI.rotY * g.rotUI.interpolationRate;
   //create rotation matrix based on mouse pos since last click
   if (g.rotUI.drag === true){

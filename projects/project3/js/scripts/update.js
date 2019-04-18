@@ -1,6 +1,6 @@
 function update(){
   ctx.fillStyle = cssRGBA([255,255,255,.5]);
-  ctx.fillRect(window.innerWidth/2-window.innerHeight/2,0,window.innerHeight,window.innerHeight);
+  ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
   // ctx.strokeStyle = cssRGBA(bgColor);
     // ctx.fillStyle = cssRGBA(bgColor);
 

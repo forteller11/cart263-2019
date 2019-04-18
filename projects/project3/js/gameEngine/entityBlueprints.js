@@ -93,9 +93,9 @@ function addComponentsBasedOnBlueprint(newEntity, blueprintName) {
       }
       case 'mesh':
         {
-          const rotRange = .2;
-          const posRange = 10;
-          const velRange = .5;
+          const rotRange = .1;
+          const posRange = 30;
+          const velRange = 1;
 
           newEntity.addComponent(new cPos(0, ran(-posRange,posRange), ran(-posRange,posRange), ran(-posRange,posRange)));
           newEntity.addComponent(new cMesh(ranElementOfArray(meshFileParsedData)));
