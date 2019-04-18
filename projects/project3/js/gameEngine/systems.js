@@ -182,7 +182,8 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     //also uses cCamera
   }
   update() {
-
+    //compute all matrices independant of entities once for performance
+    g.camera.transScaleRotMatrix = matMatComp(g.camera.rotationMatrix, g.camera.scaleMatrix, g.camera.translationMatrix);
     this.sortEntitiesByDistToCamera()
     super.update(); //system execution (on every entity)
   }
@@ -196,8 +197,6 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         e[i].cPos.y - g.camera.y,
         e[i].cPos.z - g.camera.z
       )
-      // console.log(e[i].cMesh.camToCenter);
-      // console.log('----')
     }
 
     if (e.length > 1) { //only sort if there are more than 2 entities
@@ -228,17 +227,17 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
     )
 
     for (let i = 0; i < entity.cMesh.verts.length; i++) { //rotate all verts by rotation matrix
-      let vHomo = entity.cMesh.verts[i].slice();
-      vHomo.push(1); //make homo coordinate [x,y,z,w]
-      entity.cMesh.vertsRotated[i] = matVecMult(rotationMatXYZ, vHomo); //multiply vertex by rotation matrix
+      let v = entity.cMesh.verts[i].slice();
+      v.push(1); //make homo coordinate [x,y,z,w] where w is always 1 to pick up the origin
+      entity.cMesh.vertsRotated[i] = matVecMult(rotationMatXYZ, v); //multiply vertex by rotation matrix
     }
 
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
-    let preProjectionMat = matMatComp(g.camera.rotationMatrix, g.camera.scaleMatrix, g.camera.translationMatrix, worldTransMat1); //precalc camera for better perf
-    // console.table(g.camera.translationMatrix);
-    let postProjectionMat = g.camera.centerMatrix; //precalc these for better perf
+    //translate entities based on their position, based on the camera position, scale them, rotate the world around the camera position
+    let preProjectionMat = matMatComp(g.camera.transScaleRotMatrix , worldTransMat1);
+    let postProjectionMat = g.camera.centerMatrix; //centers the image at 0,0 after projection matrix is applied
 
-    this.sortFacesByDistanceToPoint(entity);
+    this.sortFacesByDistanceToPoint(entity); //sort all faces by their distance to the camera for a primitive zbuffering / occulusion solution
 
     for (let i = 0; i < entity.cMesh.faces.length; i++) {
       const v1Index = entity.cMesh.faces[i][0];
@@ -246,30 +245,28 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       const v3Index = entity.cMesh.faces[i][2];
 
       //store distance of vectors in d vars
-         let d1 = entity.cMesh.camToVertsMag[v1Index];
-         let d2 = entity.cMesh.camToVertsMag[v2Index];
-         let d3 = entity.cMesh.camToVertsMag[v3Index];
-
-  if (min(d1,d2,d3) > g.camera.fadeStart+g.camera.fadeEnd){ //if faded, don't calculate meshes or draw
+       let d1 = entity.cMesh.camToVertsMag[v1Index];
+      let d2 = entity.cMesh.camToVertsMag[v2Index];
+        let d3 = entity.cMesh.camToVertsMag[v3Index];
+//if beyond distance at which mesh is completely faded don't do any calculations or drawing
+  if (min(d1,d2,d3) > g.camera.fadeStart+g.camera.fadeEnd){
     break;
   }
-
-      // homogenize coords from [x,y,z] to [x,y,z,w];
-      const wInit = 1;
-
+      const wInit = 1; //w always = w
 
       let v1Raw = entity.cMesh.vertsRotated[v1Index].slice();
       let v2Raw = entity.cMesh.vertsRotated[v2Index].slice();
       let v3Raw = entity.cMesh.vertsRotated[v3Index].slice();
 
-      //  at distance from camera g.camera.fadeStart begin shrinking inwards until g.camera.fadeEnd distance
+      //calculate light based off normal of face (currently faulty)
       let vAvg = meanVec(v1Raw, v2Raw, v3Raw);
       vAvg.splice(3, 1); //remove 4th dimension
       let lightAmount = 1;
       if (entity.cMesh.shading === true){
       lightAmount = (dot(normalize(vAvg), g.camera.lightDir) + 1) / 2;
       }
-      // console.log(lightAmount)
+      // at distance from camera g.camera.fadeStart begin shrinking inwards until g.camera.fadeEnd distance
+      let fS = g.camera.fadeStart;
       let shrinkBy = 1;
       if ((entity.cMesh.camToFacesMag[i] > g.camera.fadeStart)) {
         let startAtZero = entity.cMesh.camToFacesMag[i] - g.camera.fadeStart;
@@ -294,11 +291,12 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       let v2 = matVecMult(m2, v2Raw);
       let v3 = matVecMult(m3, v3Raw);
 
-      if (systemManager.entityHasComponent('cRotUI',entity,)){
+      if (systemManager.entityHasComponent('cRotUI',entity,)){ //if entity is the UI element....
+        //warp meshes so they are attracted to the mouse pointer
         let vArr = [v1,v2,v3];
         let distSum = 0;
+
         for (let v of vArr){
-          // console.log(g.mouse.y)
           let xDiff = g.mouse.x - v[0];
           let yDiff = g.mouse.y - v[1];
           let dist = pythag (xDiff,yDiff);
@@ -306,26 +304,39 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
           let force = 1/dist;
           v[0] += force * xDiff * g.rotUI.attractionForce;
           v[1] += force * yDiff * g.rotUI.attractionForce;
-          // console.log(force * xDiff * g.rotUI.attractionForce)
         }
-        if (g.rotUI.drag){
+
+        if (g.rotUI.drag){ //if currently rotating using the UI brighten the UI
           lightAmount = 1+(1/(distSum/3)*50) + .2;
-        } else {
+        } else { //otherwise slightly increase brightness nearer to the mouse
           lightAmount = 1+(1/(distSum/3)*10);
         }
       }
 
       if (shrinkBy > 0) {
 
-        let r = entity.cMesh.faceColors[i][0] * Math.pow(shrinkBy, 3) * lightAmount;
-        let g = entity.cMesh.faceColors[i][1] * Math.pow(shrinkBy, 3) * lightAmount;
-        let b = entity.cMesh.faceColors[i][2] * Math.pow(shrinkBy, 3) * lightAmount;
-        let a = entity.cMesh.opacity;
+        //if mesh is fading have it turn black
+        let r;
+        let g;
+        let b;
+        let a;
+
+        if (entity.cMesh.camToFacesMag[i] > fS){ //if beginning to fade darken shape progressively
+          r = entity.cMesh.faceColors[i][0] * Math.pow(shrinkBy, 3) * lightAmount;
+          g = entity.cMesh.faceColors[i][1] * Math.pow(shrinkBy, 3) * lightAmount;
+          b = entity.cMesh.faceColors[i][2] * Math.pow(shrinkBy, 3) * lightAmount;
+          a = entity.cMesh.opacity;
+       } else { //otherwise colour according to face color with light (calculating powers are costly)
+          r = entity.cMesh.faceColors[i][0] * lightAmount;
+          g = entity.cMesh.faceColors[i][1] * lightAmount;
+          b = entity.cMesh.faceColors[i][2] * lightAmount;
+          a = entity.cMesh.opacity;
+        }
 
         ctx.fillStyle = cssRGBA([r,g,b,a]);
         ctx.strokeStyle = cssRGBA([r,g,b,a]);
 
-        //roudn to prevent subpixel rendering and improve performance
+        //round x,y values to prevent subpixel rendering and improve performance
         v1[0] = Math.round(v1[0]);
         v1[1] = Math.round(v1[1]);
         v2[0] = Math.round(v2[0]);
@@ -333,6 +344,7 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         v3[0] = Math.round(v3[0]);
         v3[1] = Math.round(v3[1]);
 
+        //draw path between all 3 verts of current face
         ctx.beginPath(v1[0], v1[1]);
         ctx.lineTo(v2[0], v2[1]);
         ctx.lineTo(v3[0], v3[1]);
@@ -393,14 +405,9 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
           entity.cMesh.faces[j] = facesStore;
 
           //camToFaceMag swap
-          // console.log(entity.cMesh.camToFacesMag[i]);
-          // console.log(entity.cMesh.camToFacesMag[j]);
           let camToFacesMagStore = entity.cMesh.camToFacesMag[i];
           entity.cMesh.camToFacesMag[i] = entity.cMesh.camToFacesMag[j];
           entity.cMesh.camToFacesMag[j] = camToFacesMagStore;
-          // console.log(entity.cMesh.camToFacesMag[i]);
-          // console.log(entity.cMesh.camToFacesMag[j]);
-          // console.log('===============');
 
           //camToFace swap
           let camToFacesStore = entity.cMesh.camToFaces[i].slice();

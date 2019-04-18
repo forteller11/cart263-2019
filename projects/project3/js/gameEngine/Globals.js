@@ -82,10 +82,6 @@ class gPhysicsConstants { //stores physics constants
       this.clippingThreshold  = -2; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
       this.fadeStart = 80;
       this.fadeEnd = 15; //how much distance does it take after fadeStart to fade completely?
-      this.rotateSpeed = Math.PI/120;
-      this.forwardOrientation = [0, 0, 1, 1]; //determines forward direction
-      this.rightOrientation = [1,0,0,1];
-      this.upOrientation = [0,1,0,1];
       //rotation of camera
       this.rotationMatrix = matMatComp(
         rotMatX(this.angleX),
@@ -97,9 +93,10 @@ class gPhysicsConstants { //stores physics constants
       this.translationMatrix = transMat(this.x, -this.y, this.z); //rotation
       //use at end to center in screen coords
       this.centerMatrix = transMat(window.innerWidth/2, window.innerHeight/2,0);
-
+      //scales shapes up
       this.scaleMatrix = diagMat(this.scaleAmount, this.scaleAmount, this.scaleAmount, 1);
-
+      //combined translate/rotate/scale matrix
+      this.transScaleRotMatrix = matMatComp(this.rotationMatrix, this.scaleMatrix, this.translationMatrix);
     }
   }
 
