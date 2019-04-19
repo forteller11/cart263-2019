@@ -38,7 +38,7 @@ let globalEntityIdCounter = 0; //everytime an entity is created it is given a un
 let ctx; //canvas context
 let debugMode = false;
 let debugOpacity = 0.2;
-let fps = 60;
+let fps = 16.7;
 let bgColor; //color of yellow UI element
 
 function main() {
@@ -53,7 +53,7 @@ function main() {
 
   createEntitiesFromBlueprint('player');
   // createEntitiesFromBlueprint('rotationUI');
-  createEntitiesFromBlueprint('mesh', 10);
+  createEntitiesFromBlueprint('mesh', 50);
 
   update();
   setInterval(update, fps); //begin update loop in which all systems update / act on all their relevant entities

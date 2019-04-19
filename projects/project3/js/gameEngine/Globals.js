@@ -61,7 +61,7 @@ class gPhysicsConstants { //stores physics constants
     this.interpolationRate = 0.1;
     this.scale = this.zBase*.1;
     this.sensitivity = 0.001;
-    this.attractionForce = 20;
+    this.attractionForce = 10;
 
     }
   }

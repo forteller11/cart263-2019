@@ -223,10 +223,11 @@ class sRender extends System {
       entity.cMesh.camToVertsMag[i] = mag(entity.cMesh.camToVerts[i]); //calc distance to camera
 
       vert = matVecMult(diagMat(1 / entity.cMesh.camToVertsMag[i]), vert); //projection matrix using calculated dist to camera
-
+      let shrinkBy = 1;
       if ((entity.cMesh.camToVertsMag[i] > g.camera.fadeStart)) { //fade vert down if far away
         let startAtZero = entity.cMesh.camToVertsMag[i] - g.camera.fadeStart;
-        let shrinkBy = 1 - (startAtZero / g.camera.fadeEnd); //1 at start, then 0
+        shrinkBy = 1 - (startAtZero / g.camera.fadeEnd); //1 at start, then 0
+
         shrinkBy = constrain(shrinkBy, 0, 1);
 
         vert = scalarVecMult(shrinkBy, vert);
@@ -240,41 +241,22 @@ class sRender extends System {
       // console.log(vert);
 
       // if (systemManager.entityHasComponent('cRotUI', entity, )) { //if entity is the UI element....
-        //warp meshes so they are attracted to the mouse pointer
-        let distSum = 0;
+      //warp meshes so they are attracted to the mouse pointer
+      let distSum = 0;
 
-          let xDiff = g.mouse.x - vert[0];
-          let yDiff = g.mouse.y - vert[1];
-            let distToMouse = pythag(xDiff, yDiff);
-          let force = 1 / distToMouse;
-          vert[0] += force * xDiff * g.rotUI.attractionForce;
-          vert[1] += force * yDiff * g.rotUI.attractionForce;
+      let xDiff = g.mouse.x - vert[0];
+      let yDiff = g.mouse.y - vert[1];
+      let distToMouse = pythag(xDiff, yDiff);
+      let force = 1 / distToMouse;
+      vert[0] += force * xDiff * g.rotUI.attractionForce;
+      vert[1] += force * yDiff * g.rotUI.attractionForce;
 
 
-        // if (g.rotUI.drag) { //if currently rotating using the UI brighten the UI
-        //   lightAmount = (1 + (1 / distToMouse ) * 50) + .2;
-        // } else { //otherwise slightly increase brightness nearer to the mouse
-        //   lightAmount = (1 + (1 / distToMouse ) * 10);
-        // }
-      // }
 
-      // //compose giant transformation matrices for each vertex in order right to left
-      // let transformationMatrix = matMatComp(postProjectionMat, diagMat(1 / entity.cMesh.camToVertsMag[i]), preProjectionMat);
-      //
-      // entity.cMesh.vertsTransformed[i] = matVecMult(transformationMatrix, vert); //multiply vertex by rotation matrix
-      //
-      // // if ((entity.cMesh.camToVertsMag[i] > g.camera.fadeStart)) { //fade vert down if far away
-      //   let startAtZero = entity.cMesh.camToVertsMag[i] - g.camera.fadeStart;
-      //   let shrinkBy = 1 - (startAtZero / g.camera.fadeEnd); //1 at start, then 0
-      //   shrinkBy = constrain(shrinkBy, 0, 1);
-      //
-      //   vert = scalarVecMult(shrinkBy, vert);
-      //   let dx = vert[0] - g.camera.centerMatrix[0][3]; //dist x to center
-      //   let dy = vert[1] - g.camera.centerMatrix[1][3]; //dist y to center
-      //   vert[0] = dx*shrinkBy + g.camera.centerMatrix[0][3];
-      //   vert[1] = dy*shrinkBy + g.camera.centerMatrix[1][3];
+      let mouseInfluence =  ((1 / distToMouse) * 200)-1;
+      mouseInfluence = constrain(mouseInfluence,-1,.7);
+      entity.cMesh.shading[i] = mean(shrinkBy + mouseInfluence);
 
-      // }
 
 
     }
@@ -301,74 +283,33 @@ class sRender extends System {
       let v2 = entity.cMesh.vertsTransformed[v2Index].slice();
       let v3 = entity.cMesh.vertsTransformed[v3Index].slice();
 
-      const wInit = 1; //w always = w
-
-      let lightAmount = 1;
-      //calc normal
-      let p1 = normalize(subVecs(v2, v1).splice(1,3));
-      let p2 = normalize(subVecs(v3, v1).splice(1,3));
-      let surfaceNorm = crossEuclid(p1, p2);
-      //calculate light based off normal of face (currently faulty)
-      let vAvg = meanVec(v1, v2, v3);
-      vAvg.splice(3,1); //remove 4th dimension
-      let camArr = [g.mouse.x, g.mouse.y, 20];
-      let vToCam = subVecs(camArr, vAvg);
-      vToCam = normalize(vToCam);
-      if (entity.cMesh.shading === true) {
-        lightAmount = (dot(surfaceNorm, vToCam) + 1) / 2;
-      }
+      let shading = mean(entity.cMesh.shading[v1Index], entity.cMesh.shading[v2Index], entity.cMesh.shading[v3Index]);
+      let r = entity.cMesh.faceColors[i][0] * shading;
+      let gg= entity.cMesh.faceColors[i][1] * shading;
+      let b = entity.cMesh.faceColors[i][2] * shading;
+      let a = entity.cMesh.opacity;
 
 
-      // at distance from camera g.camera.fadeStart begin shrinking inwards until g.camera.fadeEnd distance
-      let fS = g.camera.fadeStart;
-      let shrinkBy = 1;
-      if ((entity.cMesh.camToFacesMag[i] > g.camera.fadeStart)) {
-        let startAtZero = entity.cMesh.camToFacesMag[i] - g.camera.fadeStart;
-        shrinkBy = 1 - (startAtZero / g.camera.fadeEnd); //1 at start, then 0
-        shrinkBy = constrain(shrinkBy, 0, 1);
-      }
+      ctx.fillStyle = cssRGBA([r, gg, b, a]);
+      ctx.strokeStyle = cssRGBA([r, gg, b, a]);
 
-      if (shrinkBy > 0) {
+      //round x,y values to prevent subpixel rendering and improve performance
+      v1[0] = Math.round(v1[0]);
+      v1[1] = Math.round(v1[1]);
+      v2[0] = Math.round(v2[0]);
+      v2[1] = Math.round(v2[1]);
+      v3[0] = Math.round(v3[0]);
+      v3[1] = Math.round(v3[1]);
 
-        //if mesh is fading have it turn black
-        let r;
-        let g;
-        let b;
-        let a;
+      //draw path between all 3 verts of current face
+      ctx.beginPath(v1[0], v1[1]);
+      ctx.lineTo(v2[0], v2[1]);
+      ctx.lineTo(v3[0], v3[1]);
+      ctx.lineTo(v1[0], v1[1]);
 
-        if (entity.cMesh.camToFacesMag[i] > fS) { //if beginning to fade darken shape progressively
-          r = entity.cMesh.faceColors[i][0] * Math.pow(shrinkBy, 3) * lightAmount;
-          g = entity.cMesh.faceColors[i][1] * Math.pow(shrinkBy, 3) * lightAmount;
-          b = entity.cMesh.faceColors[i][2] * Math.pow(shrinkBy, 3) * lightAmount;
-          a = entity.cMesh.opacity;
-        } else { //otherwise colour according to face color with light (calculating powers are costly)
-          r = entity.cMesh.faceColors[i][0] * lightAmount;
-          g = entity.cMesh.faceColors[i][1] * lightAmount;
-          b = entity.cMesh.faceColors[i][2] * lightAmount;
-          a = entity.cMesh.opacity;
-        }
+      ctx.fill();
+      ctx.stroke();
 
-        ctx.fillStyle = cssRGBA([r, g, b, a]);
-        ctx.strokeStyle = cssRGBA([r, g, b, a]);
-
-        //round x,y values to prevent subpixel rendering and improve performance
-        v1[0] = Math.round(v1[0]);
-        v1[1] = Math.round(v1[1]);
-        v2[0] = Math.round(v2[0]);
-        v2[1] = Math.round(v2[1]);
-        v3[0] = Math.round(v3[0]);
-        v3[1] = Math.round(v3[1]);
-
-        //draw path between all 3 verts of current face
-        ctx.beginPath(v1[0], v1[1]);
-        ctx.lineTo(v2[0], v2[1]);
-        ctx.lineTo(v3[0], v3[1]);
-        ctx.lineTo(v1[0], v1[1]);
-
-        ctx.fill();
-        ctx.stroke();
-
-      }
     }
 
   }
@@ -439,13 +380,18 @@ class sRotUI extends System { //handles the dragging, position, size and rotatio
     super(arrayOfRelevantEntities);
     this.requiredComponents = ['cRotUI'];
     body.addEventListener('mousedown', () => { //collision detection
-      let distToCenter = pythag(g.mouse.x - window.innerWidth / 2, g.mouse.y - window.innerHeight / 2);
-      if (distToCenter < g.rotUI.scale * g.camera.scaleAmount * 2.26) {
+      // let distToCenter = pythag(g.mouse.x - window.innerWidth / 2, g.mouse.y - window.innerHeight / 2);
+      // if (distToCenter < g.rotUI.scale * g.camera.scaleAmount * 2.26) {
         g.rotUI.drag = true;
         console.log('ahh');
-      }
+      // }
     });
+    
     body.addEventListener('mouseup', () => {
+      g.rotUI.drag = false;
+    });
+
+    body.addEventListener('mouseleave', () => {
       g.rotUI.drag = false;
     });
   }
