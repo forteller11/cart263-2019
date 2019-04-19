@@ -219,26 +219,27 @@ function scalarVecMult(scalar,v){ //scalar vector multiplication
 function mag(v){ //returns magnitude of a vector
   let sum = 0;
   for (let i = 0; i < v.length; i ++){
-    sum += Math.pow(v[i],2);
+    sum += Math.pow(v[i], 2);
   }
   return Math.sqrt(sum);
 }
 
 function normalize(v){ //normalizes a vector
+  let unitVec = new Array(v.length);
   let magnitude = mag(v);
-  let newVec = new Array(v.length);
-  for (let i = 0; i < v.length; i++){
-    newVec[i] = v[i]/magnitude;
+  for (let i = 0; i < unitVec.length; i++){
+    unitVec[i] = v[i]/magnitude;
   }
-  return newVec;
+  return unitVec;
 }
 
-function crossEucledian(v1,v2){ //returns cross product********
+function crossEuclid(v1,v2){ //returns cross product********
   //NOTE: returns vector perpindicular in euclidian space (cross in 3D) not using w dimension!
-  return
-  [
-    v1[1] * v2[2] - v1[2] * v2[1], //y1 z2 - y2 z1
-    v1[2] * v2[0] - v1[0] * v2[2], //x1 z2 - x2 z1
-    v1[0] * v2[1] - v1[1] * v2[0]
-  ]
+  let cross =   [
+      v1[1] * v2[2] - v1[2] * v2[1], //y1 z2 - y2 z1
+      v1[2] * v2[0] - v1[0] * v2[2], //x1 z2 - x2 z1
+      v1[0] * v2[1] - v1[1] * v2[0]
+    ]
+  return cross;
+
 }

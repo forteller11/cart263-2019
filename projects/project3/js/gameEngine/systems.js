@@ -304,11 +304,18 @@ class sRender extends System {
       const wInit = 1; //w always = w
 
       let lightAmount = 1;
+      //calc normal
+      let p1 = normalize(subVecs(v2, v1).splice(1,3));
+      let p2 = normalize(subVecs(v3, v1).splice(1,3));
+      let surfaceNorm = crossEuclid(p1, p2);
       //calculate light based off normal of face (currently faulty)
       let vAvg = meanVec(v1, v2, v3);
-      vAvg.splice(3, 1); //remove 4th dimension
+      vAvg.splice(3,1); //remove 4th dimension
+      let camArr = [g.mouse.x, g.mouse.y, 20];
+      let vToCam = subVecs(camArr, vAvg);
+      vToCam = normalize(vToCam);
       if (entity.cMesh.shading === true) {
-        lightAmount = (dot(normalize(vAvg), g.camera.lightDir) + 1) / 2;
+        lightAmount = (dot(surfaceNorm, vToCam) + 1) / 2;
       }
 
 

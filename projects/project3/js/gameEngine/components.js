@@ -52,10 +52,6 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
 
     this.shading = true;
 
-    console.table(this.faces);
-    console.table(this.verts);
-
-    // console.log(this.verts)
   }
   scale(amountToScale){
     for (let i = 0; i < this.verts.length; i++){
