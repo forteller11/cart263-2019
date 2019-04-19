@@ -53,7 +53,7 @@ function addComponentsBasedOnBlueprint(newEntity, blueprintName) {
           newEntity.addComponent(new cMesh(ranElementOfArray(meshFileParsedData)));
           newEntity.cMesh.scale(ran(0.2,4));
           // newEntity.cMesh.faceColor([255,255,255,1]);
-          newEntity.addComponent(new cPhysics(1, ran(-velRange,velRange),ran(-velRange,velRange),ran(-velRange,velRange), ran(-rotRange,rotRange),ran(-rotRange,rotRange),ran(-rotRange,rotRange))); //static = true
+          newEntity.addComponent(new cPhysics(2, ran(-velRange,velRange),ran(-velRange,velRange),ran(-velRange,velRange), ran(-rotRange,rotRange),ran(-rotRange,rotRange),ran(-rotRange,rotRange))); //static = true
           break;
         }
         case 'rotationUI':
@@ -64,7 +64,8 @@ function addComponentsBasedOnBlueprint(newEntity, blueprintName) {
             newEntity.cMesh.scale(g.rotUI.scale);
             newEntity.cMesh.faceColor(bgColor);
             newEntity.cMesh.shading = false;
-            newEntity.addComponent(new cPhysics(1, 0,0,0, 0,0,0)); //static = true
+            newEntity.addComponent(new cPhysics(0, 0,0,0, 0,0,0)); //static = true
+
             newEntity.addComponent(new cRotUI());
             break;
           }

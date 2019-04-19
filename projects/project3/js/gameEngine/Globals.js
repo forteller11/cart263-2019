@@ -61,7 +61,7 @@ class gPhysicsConstants { //stores physics constants
     this.interpolationRate = 0.1;
     this.scale = this.zBase*.1;
     this.sensitivity = 0.001;
-    this.attractionForce = 60;
+    this.attractionForce = 20;
 
     }
   }
@@ -76,16 +76,16 @@ class gPhysicsConstants { //stores physics constants
       this.angleZ = 0;
       this.lightDir = normalize([1,0,-2]);
       // this.scaleAmount = pythag(window.innerWidth/2,window.innerHeight/2)*1;
-      this.scaleAmount = window.innerHeight/2;
+      this.scaleAmount = window.innerHeight/1.5;
       this.backgroundScale = this.scaleAmount / 1.5;
       // this.scaleAmount = 0; //TEMPORARY REMOVE
       this.clippingThreshold  = -2; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
-      this.fadeStart = 100;
-      this.fadeEnd = 100; //how much distance does it take after fadeStart to fade completely?
+      this.fadeStart = window.innerWidth/5;
+      this.fadeEnd = window.innerHeight/15; //how much distance does it take after fadeStart to fade completely?
       //rotation of camera
       this.rotationMatrix = matMatComp(
         rotMatX(this.angleX),
-        rotMatY(this.angleY),
+        rotMatY(-this.angleY),
         rotMatZ(this.angleZ)
       );
 

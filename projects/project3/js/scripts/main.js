@@ -52,7 +52,7 @@ function main() {
   bgColor = [255, 172, 20, 1];
 
   createEntitiesFromBlueprint('player');
-  createEntitiesFromBlueprint('rotationUI');
+  // createEntitiesFromBlueprint('rotationUI');
   createEntitiesFromBlueprint('mesh', 50);
 
   update();
