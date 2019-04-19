@@ -19,46 +19,6 @@ class System { //base functionality for all systems
 }
 
 
-class sPhysicsTransform extends System { //applys drags and phy constants (gravity if applicable)
-  constructor(arrayOfRelevantEntities) {
-    super(arrayOfRelevantEntities);
-    this.requiredComponents = ['cPos', 'cPhysics'];
-  }
-
-  systemExecution(entity) {
-    if (debugMode) {
-      ctx.strokeRect(entity.cPos.x, entity.cPos.y, 2, 2);
-    }
-    entity.cPos.angleX += entity.cPhysics.angularVel.x;
-    entity.cPos.angleY += entity.cPhysics.angularVel.y;
-    entity.cPos.angleZ += entity.cPhysics.angularVel.z;
-
-    entity.cPhysics.angularVel.mult(g.physics.polarDrag);
-
-    if (entity.cPhysics.inert) { //if a inert entity
-      entity.cPhysics.x = 0;
-      entity.cPhysics.y = 0;
-      entity.cPhysics.z = 0;
-      // entity.cPhysics.angularVel = 0;
-
-    } else {
-      //apply wind
-      entity.cPhysics.vel.x += g.physics.windX;
-      entity.cPhysics.vel.y += g.physics.windY;
-      entity.cPhysics.vel.z += g.physics.windZ;
-
-      //transform position based on velocties
-      entity.cPos.x += entity.cPhysics.vel.x;
-      entity.cPos.y += entity.cPhysics.vel.y;
-      entity.cPos.z += entity.cPhysics.vel.z;
-
-      //apply drag and constrain velocties
-      entity.cPhysics.vel.mult(g.physics.cartesianDrag);
-    }
-  }
-
-}
-
 class sInput extends System { //handles tracking keyboard and mouse input and storing them in g.mouse and g.Input
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
@@ -175,7 +135,24 @@ class sMove extends System { //moves player entity given keyboard input and tran
   }
 }
 
-class sRender extends System { //applys drags and phy constants (gravity if applicable)
+/*
+this is the system responsible for taking meshes' data and drawing them on the screen
+it works in five main steps:
+
+1: I sort all the faces of a mesh so the faces farthest array are first in the array
+this means once the system uses html canvas to literally draw/rasterize the image
+it faces that are nearer to the camera overlap and obscure faces that are farther away
+(primitive type of z buffering);
+
+2: i set up all transformation matrices and precompute as many as I can
+
+3: i transform all vertexes
+
+4: i perform any lighting calculations
+
+5: go through and 3 vertexes of each face and draw the transformed verts on the screen
+*/
+class sRender extends System {
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
     this.requiredComponents = ['cPos', 'cMesh'];
@@ -220,22 +197,40 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
   systemExecution(entity) { //for every mesh, then translate based and around cam
 
     //calculated rotated verts
-    let rotationMatXYZ = matMatComp(
+    let rotationMatModel = matMatComp(
       rotMatX(entity.cPos.angleX),
       rotMatY(entity.cPos.angleY),
       rotMatZ(entity.cPos.angleZ)
     )
-
-    for (let i = 0; i < entity.cMesh.verts.length; i++) { //rotate all verts by rotation matrix
-      let v = entity.cMesh.verts[i].slice();
-      v.push(1); //make homo coordinate [x,y,z,w] where w is always 1 to pick up the origin
-      entity.cMesh.vertsRotated[i] = matVecMult(rotationMatXYZ, v); //multiply vertex by rotation matrix
-    }
-
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
     //translate entities based on their position, based on the camera position, scale them, rotate the world around the camera position
     let preProjectionMat = matMatComp(g.camera.transScaleRotMatrix , worldTransMat1);
     let postProjectionMat = g.camera.centerMatrix; //centers the image at 0,0 after projection matrix is applied
+
+    for (let i = 0; i < entity.cMesh.verts.length; i++) { //transform all vertexes and store them in ..vertsTransformed 2D array
+
+      let vert = entity.cMesh.verts[i].slice(); //copy vertex in "vert" variable
+      vert.push(1); //make homo coordinate [x,y,z,w] where w is always 1 to pick up the origin
+
+      entity.cMesh.vertsTransformed[i] = matVecMult(rotationMatModel, vert);
+
+      //calculate vector to camera
+      // console.log(entity.cMesh.vertsTransformed)
+        entity.cMesh.camToVerts[i] = [
+          entity.cMesh.vertsTransformed[i][0] + entity.cPos.x - g.camera.x,
+          entity.cMesh.vertsTransformed[i][1] + entity.cPos.y - g.camera.y,
+          entity.cMesh.vertsTransformed[i][2] + entity.cPos.z - g.camera.z
+        ]
+        //calculate distance to camera
+        entity.cMesh.camToVertsMag[i] = mag(entity.cMesh.camToVerts[i]);
+
+      //compose giant transformation matrices for each vertex in order right to left
+      let transformationMatrix = matMatComp(postProjectionMat, diagMat(1 / entity.cMesh.camToVertsMag[i]), preProjectionMat);
+
+      entity.cMesh.vertsTransformed[i] = matVecMult(transformationMatrix, vert); //multiply vertex by rotation matrix
+
+
+    }
 
     this.sortFacesByDistanceToPoint(entity); //sort all faces by their distance to the camera for a primitive zbuffering / occulusion solution
 
@@ -245,26 +240,32 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       const v3Index = entity.cMesh.faces[i][2];
 
       //store distance of vectors in d vars
-       let d1 = entity.cMesh.camToVertsMag[v1Index];
+      let d1 = entity.cMesh.camToVertsMag[v1Index];
       let d2 = entity.cMesh.camToVertsMag[v2Index];
-        let d3 = entity.cMesh.camToVertsMag[v3Index];
+      let d3 = entity.cMesh.camToVertsMag[v3Index];
+
+      //transform vectors using the appropriate matrices
+      let v1 = entity.cMesh.vertsTransformed[v1Index].slice();
+      let v2 = entity.cMesh.vertsTransformed[v2Index].slice();
+      let v3 = entity.cMesh.vertsTransformed[v3Index].slice();
+
 //if beyond distance at which mesh is completely faded don't do any calculations or drawing
-  if (min(d1,d2,d3) > g.camera.fadeStart+g.camera.fadeEnd){
+  if (min(entity.cMesh.camToVertsMag[v1Index], entity.cMesh.camToVertsMag[v2Index], entity.cMesh.camToVertsMag[v3Index]) > g.camera.fadeStart+g.camera.fadeEnd){
     break;
   }
+
+
       const wInit = 1; //w always = w
 
-      let v1Raw = entity.cMesh.vertsRotated[v1Index].slice();
-      let v2Raw = entity.cMesh.vertsRotated[v2Index].slice();
-      let v3Raw = entity.cMesh.vertsRotated[v3Index].slice();
-
-      //calculate light based off normal of face (currently faulty)
-      let vAvg = meanVec(v1Raw, v2Raw, v3Raw);
-      vAvg.splice(3, 1); //remove 4th dimension
       let lightAmount = 1;
+      //calculate light based off normal of face (currently faulty)
+      let vAvg = meanVec(v1, v2, v3);
+      vAvg.splice(3, 1); //remove 4th dimension
       if (entity.cMesh.shading === true){
       lightAmount = (dot(normalize(vAvg), g.camera.lightDir) + 1) / 2;
       }
+
+
       // at distance from camera g.camera.fadeStart begin shrinking inwards until g.camera.fadeEnd distance
       let fS = g.camera.fadeStart;
       let shrinkBy = 1;
@@ -272,24 +273,14 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
         let startAtZero = entity.cMesh.camToFacesMag[i] - g.camera.fadeStart;
         shrinkBy = 1 - (startAtZero / g.camera.fadeEnd); //1 at start, then 0
         shrinkBy = constrain(shrinkBy, 0, 1);
-        // console.log(shrinkBy);
-        v1Raw = scalarVecMult(shrinkBy, v1Raw);
-        v1Raw[3] = wInit;
-        v2Raw = scalarVecMult(shrinkBy, v2Raw);
-        v2Raw[3] = wInit;
-        v3Raw = scalarVecMult(shrinkBy, v3Raw);
-        v3Raw[3] = wInit;
+
+        v1 = scalarVecMult(shrinkBy, v1);
+        v1[3] = wInit;
+        v2 = scalarVecMult(shrinkBy, v2);
+        v2[3] = wInit;
+        v3 = scalarVecMult(shrinkBy, v3);
+        v3[3] = wInit;
       }
-
-      //compose giant transformation matrices for each vector in order right to left
-      let m1 = matMatComp(postProjectionMat, diagMat(1 / d1), preProjectionMat);
-      let m2 = matMatComp(postProjectionMat, diagMat(1 / d2), preProjectionMat);
-      let m3 = matMatComp(postProjectionMat, diagMat(1 / d3), preProjectionMat);
-
-      //transform vectors using the appropriate matrices
-      let v1 = matVecMult(m1, v1Raw);
-      let v2 = matVecMult(m2, v2Raw);
-      let v3 = matVecMult(m3, v3Raw);
 
       if (systemManager.entityHasComponent('cRotUI',entity,)){ //if entity is the UI element....
         //warp meshes so they are attracted to the mouse pointer
@@ -366,18 +357,6 @@ class sRender extends System { //applys drags and phy constants (gravity if appl
       g.camera.y,
       g.camera.z
     ];
-
-    for (let i = 0; i < entity.cMesh.vertsRotated.length; i++) {
-      entity.cMesh.camToVerts[i] = [
-        entity.cMesh.vertsRotated[i][0] + entity.cPos.x - g.camera.x,
-        entity.cMesh.vertsRotated[i][1] + entity.cPos.y - g.camera.y,
-        entity.cMesh.vertsRotated[i][2] + entity.cPos.z - g.camera.z
-      ]
-      // if (  entity.cMesh.camToVertsMag[i][2] > g.camera.clippingThreshold){ //only calculate mag if in front of camera
-      entity.cMesh.camToVertsMag[i] = mag(entity.cMesh.camToVerts[i]);
-      // }
-      // console.log(entity.cMesh.camToVertsMag[i]);
-    }
 
     for (let i = 0; i < entity.cMesh.faces.length; i++) { //for evrey face calc avg distToCamera from the verts that comrpise it
       // console.log(entity.cMesh.camToVerts);
@@ -482,4 +461,43 @@ systemExecution(entity){
   entity.cPos.z = g.camera.z + g.rotUI.zBase;
 }
 
+}
+
+class sPhysicsTransform extends System { //applys drags and phy constants (gravity if applicable)
+  constructor(arrayOfRelevantEntities) {
+    super(arrayOfRelevantEntities);
+    this.requiredComponents = ['cPos', 'cPhysics'];
+  }
+
+  systemExecution(entity) {
+    if (debugMode) {
+      ctx.strokeRect(entity.cPos.x, entity.cPos.y, 2, 2);
+    }
+    entity.cPos.angleX += entity.cPhysics.angularVel.x;
+    entity.cPos.angleY += entity.cPhysics.angularVel.y;
+    entity.cPos.angleZ += entity.cPhysics.angularVel.z;
+
+    entity.cPhysics.angularVel.mult(g.physics.polarDrag);
+
+    if (entity.cPhysics.inert) { //if a inert entity
+      entity.cPhysics.x = 0;
+      entity.cPhysics.y = 0;
+      entity.cPhysics.z = 0;
+      // entity.cPhysics.angularVel = 0;
+
+    } else {
+      //apply wind
+      entity.cPhysics.vel.x += g.physics.windX;
+      entity.cPhysics.vel.y += g.physics.windY;
+      entity.cPhysics.vel.z += g.physics.windZ;
+
+      //transform position based on velocties
+      entity.cPos.x += entity.cPhysics.vel.x;
+      entity.cPos.y += entity.cPhysics.vel.y;
+      entity.cPos.z += entity.cPhysics.vel.z;
+
+      //apply drag and constrain velocties
+      entity.cPhysics.vel.mult(g.physics.cartesianDrag);
+    }
+  }
 }
