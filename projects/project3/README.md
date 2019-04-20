@@ -4,15 +4,15 @@ Charly Yan Miller
 ---------------------------
 Instructions:
 ------------
-  MOVEMENT:
-    w - forwards
-    a - left
-    s - backwards
-    d - right
-    lShift - down
-    spacebar - up
+  MOVEMENT:  
+    w - forwards  
+    a - left  
+    s - backwards  
+    d - right  
+    lShift - down  
+    spacebar - up  
 
-  ROTATION:
+  ROTATION:  
     click and drag
 ------------
 
