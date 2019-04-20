@@ -170,6 +170,9 @@ class sRender extends System {
     insertion sort implementation which using distance of an entity.cPos to camera
     to sort the sRender's relevantEntities array; this is done so entities occlude eachother
     semi realistically (entities closer to the camera will obscure entities behind it)
+    insertion sort is used because it is relatively simple and works in linear time
+    for already sorted arrays, as entities' positions won't change drastically every frame
+    this will mean the algorithim will often execute in near linear time
     */
 
     let e = this.relevantEntities; //pointer
@@ -215,9 +218,9 @@ class sRender extends System {
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z);
 
     //matrix that translates from model to world position, then translates to camera position
-    let preProjectionMat = matMatComp(g.camera.cameraTranslationMat, worldTransMat1,rotationMatModel);
+    let preProjectionMat = matMatComp(g.camera.cameraTranslationMat, worldTransMat1, rotationMatModel);
 
-//transform all vertexes by matrices and store them in ..vertsTransformed 2D array
+    //transform all vertexes by matrices and store them in ..vertsTransformed 2D array
     for (let i = 0; i < entity.cMesh.verts.length; i++) {
 
       let vert = entity.cMesh.verts[i].slice(); //copy vertex in "vert" variable
@@ -250,83 +253,24 @@ class sRender extends System {
 
       vert = matVecMult(g.camera.screenTranslationMat, vert); //translate to center of screen and scale
 
-      //make verts warp towards mouse position
+      //calculate distance to mouse
       let xDiff = g.mouse.x - vert[0];
       let yDiff = g.mouse.y - vert[1];
       let distToMouse = pythag(xDiff, yDiff);
+
+      //warp verts towards mouse position, this warping/force increases as the mouse gets closer to a given vertex
       let force = 1 / distToMouse;
       vert[0] += force * xDiff * g.rotUI.attractionForce;
       vert[1] += force * yDiff * g.rotUI.attractionForce;
 
       //make verts become lit up by the mouse (based on distance To Mouse)
-      let mouseLightInfluence =  ((1 / distToMouse) * 200)-1;
-      mouseLightInfluence = constrain(mouseLightInfluence,-1,.7);
+      let mouseLightInfluence = ((1 / distToMouse) * 200) - 1;
+      mouseLightInfluence = constrain(mouseLightInfluence, -1, .7);
       entity.cMesh.shading[i] = mean(shrinkBy + mouseLightInfluence);
 
-      entity.cMesh.vertsTransformed[i] = vert; //store all these transformations 
+      entity.cMesh.vertsTransformed[i] = vert; //store all these transformations
     }
 
-    this.sortFacesByDistanceToPoint(entity); //sort all faces by their distance to the camera for a primitive zbuffering / occulusion solution
-
-    for (let i = 0; i < entity.cMesh.faces.length; i++) {
-      const v1Index = entity.cMesh.faces[i][0];
-      const v2Index = entity.cMesh.faces[i][1];
-      const v3Index = entity.cMesh.faces[i][2];
-
-      //if beyond distance at which mesh is completely faded don't do any calculations or drawing
-      if (min(entity.cMesh.camToVertsMag[v1Index], entity.cMesh.camToVertsMag[v2Index], entity.cMesh.camToVertsMag[v3Index]) > g.camera.fadeStart + g.camera.fadeEnd) {
-        break;
-      }
-
-      //store distance of vectors in d vars
-      let d1 = entity.cMesh.camToVertsMag[v1Index];
-      let d2 = entity.cMesh.camToVertsMag[v2Index];
-      let d3 = entity.cMesh.camToVertsMag[v3Index];
-
-      //transform vectors using the appropriate matrices
-      let v1 = entity.cMesh.vertsTransformed[v1Index].slice();
-      let v2 = entity.cMesh.vertsTransformed[v2Index].slice();
-      let v3 = entity.cMesh.vertsTransformed[v3Index].slice();
-
-      let shading = mean(entity.cMesh.shading[v1Index], entity.cMesh.shading[v2Index], entity.cMesh.shading[v3Index]);
-      let r = entity.cMesh.faceColors[i][0] * shading;
-      let gg= entity.cMesh.faceColors[i][1] * shading;
-      let b = entity.cMesh.faceColors[i][2] * shading;
-      let a = entity.cMesh.opacity;
-
-
-      ctx.fillStyle = cssRGBA([r, gg, b, a]);
-      ctx.strokeStyle = cssRGBA([r, gg, b, a]);
-
-      //round x,y values to prevent subpixel rendering and improve performance
-      v1[0] = Math.round(v1[0]);
-      v1[1] = Math.round(v1[1]);
-      v2[0] = Math.round(v2[0]);
-      v2[1] = Math.round(v2[1]);
-      v3[0] = Math.round(v3[0]);
-      v3[1] = Math.round(v3[1]);
-
-      //draw path between all 3 verts of current face
-      ctx.beginPath(v1[0], v1[1]);
-      ctx.lineTo(v2[0], v2[1]);
-      ctx.lineTo(v3[0], v3[1]);
-      ctx.lineTo(v1[0], v1[1]);
-
-      ctx.fill();
-      ctx.stroke();
-
-    }
-
-  }
-
-
-  sortFacesByDistanceToPoint(entity) {
-    //calculate vector and dist from camera to every point and face
-    let camPos = [
-      g.camera.x,
-      g.camera.y,
-      g.camera.z
-    ];
 
     for (let i = 0; i < entity.cMesh.faces.length; i++) { //for evrey face calc avg distToCamera from the verts that comrpise it
       // console.log(entity.cMesh.camToVerts);
@@ -340,14 +284,14 @@ class sRender extends System {
       entity.cMesh.camToFacesMag[i] = mag(entity.cMesh.camToFaces[i]);
     }
 
-    // console.log(entity.cMesh.camToFaces);
+    /*sort all faces within current mesh with insertion sort so that the farther away
+    a face is from camera the earlier it appears in the faces array (for occulusion purposes)
+    */
     for (let i = 1; i < entity.cMesh.camToFacesMag.length; i++) { //sorts from largest to smallest: insertion sort (very quick for  smaller arrays and already heavily sorted arr (linear speed for fully sorted)) (?)
-      // console.log('ah');
       let j = i - 1;
-      while (j >= 0) { //itterate backwards through array until find an element which is smaller then index
+      while (j >= 0) { //itterate backwards through the array
+        //look for an element which is larger then current index
         if (entity.cMesh.camToFacesMag[j] > entity.cMesh.camToFacesMag[i]) { //swap
-
-
           //faces swap
           let facesStore = entity.cMesh.faces[i].slice();
           entity.cMesh.faces[i] = entity.cMesh.faces[j];
@@ -367,29 +311,75 @@ class sRender extends System {
           let faceColorsStore = entity.cMesh.faceColors[i].slice();
           entity.cMesh.faceColors[i] = entity.cMesh.faceColors[j];
           entity.cMesh.faceColors[j] = faceColorsStore;
-
           break;
         }
-
         j--;
       }
     }
 
-  }
+    /*
+    cycle through all faces of entity, find the vertexes they point to, set appropriate
+    fill/stroke styles, draw them on the screen
+    */
+    for (let i = 0; i < entity.cMesh.faces.length; i++) {
 
+      //indices to vertices of current face
+      const v1Index = entity.cMesh.faces[i][0];
+      const v2Index = entity.cMesh.faces[i][1];
+      const v3Index = entity.cMesh.faces[i][2];
+
+      //if beyond distance at which mesh is completely faded don't do any calculations or drawing
+      if (min(entity.cMesh.camToVertsMag[v1Index], entity.cMesh.camToVertsMag[v2Index], entity.cMesh.camToVertsMag[v3Index]) > g.camera.fadeStart + g.camera.fadeEnd) {
+        break;
+      }
+
+      //pointers to transformed vectors
+      let v1 = entity.cMesh.vertsTransformed[v1Index];
+      let v2 = entity.cMesh.vertsTransformed[v2Index];
+      let v3 = entity.cMesh.vertsTransformed[v3Index];
+
+      //set fill/stoke colors
+      let shading = mean(entity.cMesh.shading[v1Index], entity.cMesh.shading[v2Index], entity.cMesh.shading[v3Index]);
+      let r = entity.cMesh.faceColors[i][0] * shading;
+      let gg = entity.cMesh.faceColors[i][1] * shading;
+      let b = entity.cMesh.faceColors[i][2] * shading;
+      let a = entity.cMesh.opacity;
+
+
+      ctx.fillStyle = cssRGBA([r, gg, b, a]); //lines from mesh data
+      ctx.strokeStyle = cssRGBA([0, 0, 0, 1]); //black lines
+      ctx.lineWidth = mapFromRanges(entity.cMesh.camToFacesMag[i], 0, g.camera.fadeStart + g.camera.fadeEnd, 3, 0); //increase line width the closer the face is to camera
+
+      //round x,y values to prevent subpixel rendering and improve performance
+      v1[0] = Math.round(v1[0]);
+      v1[1] = Math.round(v1[1]);
+      v2[0] = Math.round(v2[0]);
+      v2[1] = Math.round(v2[1]);
+      v3[0] = Math.round(v3[0]);
+      v3[1] = Math.round(v3[1]);
+
+      //draw path between all 3 verts of current face
+      ctx.beginPath(v1[0], v1[1]);
+      ctx.lineTo(v2[0], v2[1]);
+      ctx.lineTo(v3[0], v3[1]);
+      ctx.lineTo(v1[0], v1[1]);
+      ctx.closePath();
+
+      ctx.fill();
+      ctx.stroke();
+
+    }
+
+  }
 }
 
 
-class sRotUI extends System { //handles the dragging, position, size and rotation of UI element asides from mesh warping (which occurs in render system)
+class sRotUI extends System { //handles the rotation through dragging
   constructor(arrayOfRelevantEntities) {
     super(arrayOfRelevantEntities);
     this.requiredComponents = ['cRotUI'];
     body.addEventListener('mousedown', () => { //collision detection
-      // let distToCenter = pythag(g.mouse.x - window.innerWidth / 2, g.mouse.y - window.innerHeight / 2);
-      // if (distToCenter < g.rotUI.scale * g.camera.scaleAmount * 2.26) {
-        g.rotUI.drag = true;
-
-      // }
+      g.rotUI.drag = true;
     });
 
     body.addEventListener('mouseup', () => {
@@ -402,38 +392,23 @@ class sRotUI extends System { //handles the dragging, position, size and rotatio
   }
 
   update() {
-    //interpolate back into place
+    //interpolate back to 0
     g.rotUI.rotX -= g.rotUI.rotX * g.rotUI.interpolationRate;
     g.rotUI.rotY -= g.rotUI.rotY * g.rotUI.interpolationRate;
-    //create rotation matrix based on mouse pos since last click
+
+    //if dragging, set rotation x,y values based on difference between original mouse click position and current mouse position
     if (g.rotUI.drag === true) {
       g.rotUI.rotX = (g.mouse.clickY - g.mouse.y) * g.rotUI.sensitivity;
       g.rotUI.rotY = (g.mouse.clickX - g.mouse.x) * g.rotUI.sensitivity;
     }
 
+    //create rotation matrix based on the above calculated values
     g.camera.rotationMatrix = matMatComp(
       rotMatX(-g.rotUI.rotX),
       rotMatY(-g.rotUI.rotY),
     );
+
     super.update();
-  }
-  systemExecution(entity) {
-    // console.log(d)\
-    if (g.rotUI.drag === true) {
-      entity.cMesh.scale(g.rotUI.scale);
-    } else { //scale size
-      let d = pythag(g.mouse.x - window.innerWidth / 2, g.mouse.y - window.innerHeight / 2); //dist to center
-      let s = (1 / d) * (g.rotUI.scale * 600);
-      let alpha = (s * 38) - 2;
-      alpha = constrain(alpha, 0, 1);
-      // console.log(s)
-      s = constrain(s, 0, g.rotUI.scale);
-      entity.cMesh.opacity = alpha;
-      entity.cMesh.scale(s);
-    }
-    entity.cPos.x = g.camera.x + g.rotUI.xBase;
-    entity.cPos.y = g.camera.y + g.rotUI.yBase;
-    entity.cPos.z = g.camera.z + g.rotUI.zBase;
   }
 
 }
