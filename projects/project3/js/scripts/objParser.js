@@ -1,5 +1,6 @@
 'use strict';
-//parses obj and converts to file format
+//parses .obj file and converts to usable blob
+//assumes faces are comprised of exactly three vertexes
 function convertObjFileToMeshBlob(obj) {
   //initialize vars
   let vArr = []; //vertices

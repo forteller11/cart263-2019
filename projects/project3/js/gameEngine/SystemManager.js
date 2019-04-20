@@ -4,13 +4,7 @@ class SystemManager {
 
   constructor() {
     this.systems = []; //array of systems
-    //if not pushed into system then this represents a subsystem whos update does
-    //not occur on regular tick but rather is called as a cosequence of some event from another system
 
-
-
-
-    console.log(sPhysicsTransform);
     this.sPhysicsTransform = new sPhysicsTransform();
     this.systems.push(this.sPhysicsTransform);
 
@@ -26,14 +20,12 @@ class SystemManager {
     this.sRender = new sRender();
     this.systems.push(this.sRender);
 
-
   }
 
   update() {
     for (let system of this.systems){ //update all systems (some of them contain virtual update methods)
       system.update();
     }
-
   }
 
   entityHasComponent(component, entity) { //does entity have this component?

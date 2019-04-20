@@ -17,12 +17,12 @@ class gPhysicsConstants { //stores physics constants
   constructor(){
     this.name = 'cPhysicsConstants';
     this.maxPolarVel = Math.PI/4//max/min polar velocity
-    this.cartesianDrag = 0.98; //rate at which linear vel approaches 0
-    this.polarDrag = .998; //rate at which rotational vel approaches 0
+    this.cartesianDrag = 0.99; //rate at which linear vel approaches 0
+    this.polarDrag = .999; //rate at which rotational vel approaches 0
     this.angularVelEffectOnLinear = 10; //how much angle vel effects resultant post collision linear vel
     this.rotationTransferOnCollision = .2;
     this.windX = 0;
-    this.windY = .001;
+    this.windY = 0;
     this.windZ = 0;
   }
 }
@@ -76,12 +76,12 @@ class gPhysicsConstants { //stores physics constants
       this.angleZ = 0;
       this.lightDir = normalize([1,0,-2]);
       // this.scaleAmount = pythag(window.innerWidth/2,window.innerHeight/2)*1;
-      this.scaleAmount = window.innerHeight/1.5;
+      this.scaleAmount = window.innerHeight*.9;
       this.backgroundScale = this.scaleAmount / 1.5;
       // this.scaleAmount = 0; //TEMPORARY REMOVE
       this.clippingThreshold  = -2; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
-      this.fadeStart = window.innerWidth/4;
-      this.fadeEnd = window.innerHeight/15; //how much distance does it take after fadeStart to fade completely?
+      this.fadeStart = window.innerWidth/2.5;
+      this.fadeEnd = window.innerHeight/10; //how much distance does it take after fadeStart to fade completely?
 
       //rotation of camera
       this.rotationMatrix = matMatComp(

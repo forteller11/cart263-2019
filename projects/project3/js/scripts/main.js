@@ -1,10 +1,17 @@
 /*
-project3
+project3: ludic sphere
 Charly Yan Miller
 Exploring shapes in 360*
 
+preload: loads all .obj files, parses them;
 
-https://hackernoon.com/programmers-guide-to-homogeneous-coordinates-73cbfd2bcc65
+main: sets up entity system component relationship, spawns meshes and players,
+begins update loop
+
+The way the ECS paradigm works is that every entity contains various components
+which store data, this data is acted upon by appropriate systems
+for this project the main focus was rendering, and therefore most of the time was
+spent of the rendering system and the mesh component which is used by the rendering system
 */
 
 'use strict';
@@ -48,11 +55,10 @@ function main() {
 
     //create canvas
   ctx = createCanvas(window.innerWidth, window.innerHeight);
-  ctx.lineWidth = 1;
   bgColor = [255, 192, 40, 1];
 
   createEntitiesFromBlueprint('player');
-  // createEntitiesFromBlueprint('rotationUI');
+
   createEntitiesFromBlueprint('mesh', 50);
 
   update();
