@@ -47,11 +47,11 @@ function addComponentsBasedOnBlueprint(newEntity, blueprintName) {
         {
           const rotRange = .1;
           const posRange = 150;
-          const velRange = .6;
+          const velRange = 2;
 
           newEntity.addComponent(new cPos(0, ran(-posRange,posRange), ran(-posRange,posRange), ran(-posRange,posRange)));
           newEntity.addComponent(new cMesh(ranElementOfArray(meshFileParsedData)));
-          newEntity.cMesh.scale(ran(1,8));
+          newEntity.cMesh.scale(ran(3,10));
           // newEntity.cMesh.faceColor([255,255,255,1]);
           newEntity.addComponent(new cPhysics(2, ran(-velRange,velRange),ran(-velRange,velRange),ran(-velRange,velRange), ran(-rotRange,rotRange),ran(-rotRange,rotRange),ran(-rotRange,rotRange))); //static = true
           break;
