@@ -11,9 +11,9 @@ Instructions:
     spacebar - up
 
   ROTATION:
-    click and drag yellow
-    circle to rotate/look
-    around while stationary
+    click and drag
+------------
+
 --------------------------
 
 I wanted to reattempt the sort of non-narrative walking simulator (/tech demo?)

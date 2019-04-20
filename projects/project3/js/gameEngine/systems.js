@@ -340,21 +340,7 @@ class sRender extends System {
       let a = entity.cMesh.opacity;
       ctx.fillStyle = cssRGBA([r, gg, b, a]); //lines from mesh data
 
-      //set line color to black,
-      let lineValueR = 0;
-      let lineValueG = 0;
-      let lineValueB = 0;
-      if (g.rotUI.drag){ //unless currently dragging, then increasingly set it to megenta the closer the face is to the original drag position
-        let meanX = mean(v1[0],v2[0],v3[0]);
-        let meanY = mean(v1[1],v2[1],v3[1]);
-        let mouseDistToLine = pythag(g.mouse.clickX-meanX,g.mouse.clickY-meanY); //store pythag
-        let coloredness = mapFromRanges(mouseDistToLine,0,window.innerWidth/2,1,0);
-        lineValueR = coloredness*200;
-        lineValueB = coloredness*255;
-      }
-      ctx.strokeStyle = cssRGBA([lineValueR, lineValueG, lineValueB, 1]); //black lines
-      ctx.lineWidth = mapFromRanges(entity.cMesh.camToFacesMag[i], 0, g.camera.fadeStart + g.camera.fadeEnd, 3, 0); //increase line width the closer the face is to camera
-
+      // ctx.lineWidth = lw;
       //round x,y values to prevent subpixel rendering and improve performance
       v1[0] = Math.round(v1[0]);
       v1[1] = Math.round(v1[1]);
@@ -371,7 +357,24 @@ class sRender extends System {
       ctx.closePath();
 
       ctx.fill();
-      ctx.stroke();
+
+      if (entity.cMesh.camToFacesMag[i] < g.camera.fadeStart){ //only draw lines if not beginning to warp towards center of screen
+        //set line color to black,
+        let lineValueR = 0;
+        let lineValueG = 0;
+        let lineValueB = 0;
+        if (g.rotUI.drag){ //unless currently dragging, then increasingly set it to megenta the closer the face is to the original drag position
+          let meanX = mean(v1[0],v2[0],v3[0]);
+          let meanY = mean(v1[1],v2[1],v3[1]);
+          let mouseDistToLine = pythag(g.mouse.clickX-meanX,g.mouse.clickY-meanY); //store pythag
+          let coloredness = mapFromRanges(mouseDistToLine,0,window.innerWidth/2,1,0);
+          lineValueR = coloredness*200;
+          lineValueB = coloredness*255;
+        }
+        ctx.strokeStyle = cssRGBA([lineValueR, lineValueG, lineValueB, 1]); //black lines
+        ctx.lineWidth = mapFromRanges(entity.cMesh.camToFacesMag[i], 0, g.camera.fadeStart, 3, 0);
+        ctx.stroke();
+      }
 
     }
 

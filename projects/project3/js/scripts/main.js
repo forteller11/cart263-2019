@@ -12,7 +12,7 @@ window.onload = preload;
 
 //text files to be loaded
 let request = [];
-let meshFileDirectory = ['rotationUI','1','2','3','4','5','6']; //array of all files to load in index/assets/_____.obj
+let meshFileDirectory = ['1','2','3','4','5','8']; //array of all files to load in index/assets/_____.obj
 let meshFileParsedData = []; //where to store the parsed blobs from each .obj file
 let requestComplete = 0; //how many files have currently been completed/parsed
 
