@@ -20,11 +20,13 @@ class SystemManager {
     this.sRotUI = new sRotUI();
     this.systems.push(this.sRotUI);
 
+    this.sInput = new sInput(); //have this last because it's update needs to come after all other systems have executed
+    this.systems.push(this.sInput);
+
     this.sRender = new sRender();
     this.systems.push(this.sRender);
 
-    this.sInput = new sInput(); //have this last because it's update needs to come after all other systems have executed
-    this.systems.push(this.sInput);
+
   }
 
   update() {

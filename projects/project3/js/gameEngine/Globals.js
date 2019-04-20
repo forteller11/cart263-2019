@@ -60,7 +60,7 @@ class gPhysicsConstants { //stores physics constants
     this.drag = false; //whether or not being dragged
     this.interpolationRate = 0.1;
     this.scale = this.zBase*.1;
-    this.sensitivity = 0.001;
+    this.sensitivity = 0.003;
     this.attractionForce = 10;
 
     }
@@ -80,8 +80,9 @@ class gPhysicsConstants { //stores physics constants
       this.backgroundScale = this.scaleAmount / 1.5;
       // this.scaleAmount = 0; //TEMPORARY REMOVE
       this.clippingThreshold  = -2; //FOV kinda: 1 = 90*, 0 = 180; -1 = 360;
-      this.fadeStart = window.innerWidth/5;
+      this.fadeStart = window.innerWidth/4;
       this.fadeEnd = window.innerHeight/15; //how much distance does it take after fadeStart to fade completely?
+
       //rotation of camera
       this.rotationMatrix = matMatComp(
         rotMatX(this.angleX),
@@ -95,8 +96,10 @@ class gPhysicsConstants { //stores physics constants
       this.centerMatrix = transMat(window.innerWidth/2, window.innerHeight/2,0);
       //scales shapes up
       this.scaleMatrix = diagMat(this.scaleAmount, this.scaleAmount, this.scaleAmount, 1);
-      //combined translate/rotate/scale matrix
-      this.transScaleRotMatrix = matMatComp(this.rotationMatrix, this.scaleMatrix, this.translationMatrix);
+
+      this.cameraTranslationMat = undefined;
+      this.screenTranslationMat = undefined;
+
     }
   }
 

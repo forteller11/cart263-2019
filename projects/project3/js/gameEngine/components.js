@@ -47,7 +47,7 @@ class cMesh extends Component { //stores verts,faces,distances,colors of a mesh.
 
     this.faceColors = new Array(this.faces.length);
     for (let i = 0; i < this.faces.length; i++) { //rgb
-      this.faceColors[i] = [ran(255),ran(255),ran(255),1];
+      this.faceColors[i] = [ran(40,255),ran(220),ran(40,255),1];
     }
 
     this.shading = new Array(this.verts.length);

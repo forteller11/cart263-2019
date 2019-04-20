@@ -137,20 +137,19 @@ class sMove extends System { //moves player entity given keyboard input and tran
 
 /*
 this is the system responsible for taking meshes' data and drawing them on the screen
-it works in five main steps:
+it works in four main steps:
 
-1: I sort all the faces of a mesh so the faces farthest array are first in the array
-this means once the system uses html canvas to literally draw/rasterize the image
-it faces that are nearer to the camera overlap and obscure faces that are farther away
-(primitive type of z buffering);
+sort all entities by distance so that entities farthest to the camera are stored
+at the start of the array; this is done so entities obscure eachother
+semi-realistically as entities nearest to the camera will be drawn over faces far away
 
-2: i set up all transformation matrices and precompute as many as I can
+transform all vertexes by matrices, warp verts by distance to mouse, calculate lighting data
 
-3: i transform all vertexes
+sort all vertexes by their distance to camera so that faces furthest away
+are stored at the start of the array;
 
-4: i perform any lighting calculations
+draw these vertexes to the screen using above calculate data
 
-5: go through and 3 vertexes of each face and draw the transformed verts on the screen
 */
 class sRender extends System {
   constructor(arrayOfRelevantEntities) {
@@ -159,15 +158,21 @@ class sRender extends System {
     //also uses cCamera
   }
   update() {
-    //compute all matrices independant of entities once for performance
-    g.camera.preProjectionMat = matMatComp(g.camera.rotationMatrix, g.camera.translationMatrix);
-    g.camera.postProjectionMat = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix); //centers the image at 0,0 after projection matrix is applied
+    //precompute all matrices independant of specefic entities
+    g.camera.cameraTranslationMat = matMatComp(g.camera.rotationMatrix, g.camera.translationMatrix); //translates entities based on camera position then rotates entities based on camera angle
+    g.camera.screenTranslationMat = matMatComp(g.camera.centerMatrix, g.camera.scaleMatrix); //scales entities, then centers them in middle of screen
     this.sortEntitiesByDistToCamera()
     super.update(); //system execution (on every entity)
   }
 
   sortEntitiesByDistToCamera() {
-    let e = this.relevantEntities;
+    /*
+    insertion sort implementation which using distance of an entity.cPos to camera
+    to sort the sRender's relevantEntities array; this is done so entities occlude eachother
+    semi realistically (entities closer to the camera will obscure entities behind it)
+    */
+
+    let e = this.relevantEntities; //pointer
 
     for (let i = 0; i < e.length; i++) { //calc distance to camera
       e[i].cMesh.camToCenter = pythag(
@@ -179,11 +184,12 @@ class sRender extends System {
 
     if (e.length > 1) { //only sort if there are more than 2 entities
 
-      for (let i = 1; i < e.length; i++) {
+      for (let i = 1; i < e.length; i++) { //cycle through each element of array
         let j = i - 1;
-        while (j >= 0) {
+        while (j >= 0) { //from current index cycle backwards through the array until it reaches the start
+          //comparing until it finds an element larger than current index,
           if (e[j].cMesh.camToCenter < e[i].cMesh.camToCenter) {
-            //swap
+            //then swap elements and break out of loop
             let eStore = e[i];
             e[i] = e[j];
             e[j] = eStore;
@@ -195,25 +201,29 @@ class sRender extends System {
     }
   }
 
-  systemExecution(entity) { //for every mesh, then translate based and around cam
+  systemExecution(entity) { //for every mesh...
 
-    //calculated rotated verts
+    //precompute all matrices which don't rely on info from individual vertexes (everything but the projection matrix)
+    //calculated rotation matrix for model
     let rotationMatModel = matMatComp(
       rotMatX(entity.cPos.angleX),
       rotMatY(entity.cPos.angleY),
       rotMatZ(entity.cPos.angleZ)
     )
-    let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z); //translates from model to world coordinates
-    //translate entities based on their position, based on the camera position, scale them, rotate the world around the camera position
-    let preProjectionMat = matMatComp(g.camera.preProjectionMat, worldTransMat1);
 
-    for (let i = 0; i < entity.cMesh.verts.length; i++) { //transform all vertexes and store them in ..vertsTransformed 2D array
+    //matrix that translates from model to world coordinates
+    let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z);
+
+    //matrix that translates from model to world position, then translates to camera position
+    let preProjectionMat = matMatComp(g.camera.cameraTranslationMat, worldTransMat1,rotationMatModel);
+
+//transform all vertexes by matrices and store them in ..vertsTransformed 2D array
+    for (let i = 0; i < entity.cMesh.verts.length; i++) {
 
       let vert = entity.cMesh.verts[i].slice(); //copy vertex in "vert" variable
       vert.push(1); //make homo coordinate [x,y,z,w] where w is always 1 to pick up the origin
 
-      let rotateWorldPositionMatrix = matMatComp(preProjectionMat, rotationMatModel);
-      vert = matVecMult(rotateWorldPositionMatrix, vert);
+      vert = matVecMult(preProjectionMat, vert); //transform by pre projection matrix
 
       entity.cMesh.camToVerts[i] = [ //calc vector to camera
         vert[0] + entity.cPos.x - g.camera.x,
@@ -222,7 +232,10 @@ class sRender extends System {
       ];
       entity.cMesh.camToVertsMag[i] = mag(entity.cMesh.camToVerts[i]); //calc distance to camera
 
-      vert = matVecMult(diagMat(1 / entity.cMesh.camToVertsMag[i]), vert); //projection matrix using calculated dist to camera
+      //transform by projection matrix which warp verts farther away from the camera center of the screen (logorithimic)
+      vert = matVecMult(diagMat(1 / entity.cMesh.camToVertsMag[i]), vert);
+
+      //calculate fade effect which makes verts quickly dissappear into center of screen between distances fadeStart and fadeEnd (linear)
       let shrinkBy = 1;
       if ((entity.cMesh.camToVertsMag[i] > g.camera.fadeStart)) { //fade vert down if far away
         let startAtZero = entity.cMesh.camToVertsMag[i] - g.camera.fadeStart;
@@ -231,19 +244,13 @@ class sRender extends System {
         shrinkBy = constrain(shrinkBy, 0, 1);
 
         vert = scalarVecMult(shrinkBy, vert);
-        vert[3] = 1;
+        vert[3] = 1; //reset w to 1
 
       }
 
-      vert = matVecMult(g.camera.postProjectionMat, vert);
-      entity.cMesh.vertsTransformed[i] = vert;
+      vert = matVecMult(g.camera.screenTranslationMat, vert); //translate to center of screen and scale
 
-      // console.log(vert);
-
-      // if (systemManager.entityHasComponent('cRotUI', entity, )) { //if entity is the UI element....
-      //warp meshes so they are attracted to the mouse pointer
-      let distSum = 0;
-
+      //make verts warp towards mouse position
       let xDiff = g.mouse.x - vert[0];
       let yDiff = g.mouse.y - vert[1];
       let distToMouse = pythag(xDiff, yDiff);
@@ -251,14 +258,12 @@ class sRender extends System {
       vert[0] += force * xDiff * g.rotUI.attractionForce;
       vert[1] += force * yDiff * g.rotUI.attractionForce;
 
+      //make verts become lit up by the mouse (based on distance To Mouse)
+      let mouseLightInfluence =  ((1 / distToMouse) * 200)-1;
+      mouseLightInfluence = constrain(mouseLightInfluence,-1,.7);
+      entity.cMesh.shading[i] = mean(shrinkBy + mouseLightInfluence);
 
-
-      let mouseInfluence =  ((1 / distToMouse) * 200)-1;
-      mouseInfluence = constrain(mouseInfluence,-1,.7);
-      entity.cMesh.shading[i] = mean(shrinkBy + mouseInfluence);
-
-
-
+      entity.cMesh.vertsTransformed[i] = vert; //store all these transformations 
     }
 
     this.sortFacesByDistanceToPoint(entity); //sort all faces by their distance to the camera for a primitive zbuffering / occulusion solution
@@ -383,10 +388,10 @@ class sRotUI extends System { //handles the dragging, position, size and rotatio
       // let distToCenter = pythag(g.mouse.x - window.innerWidth / 2, g.mouse.y - window.innerHeight / 2);
       // if (distToCenter < g.rotUI.scale * g.camera.scaleAmount * 2.26) {
         g.rotUI.drag = true;
-        console.log('ahh');
+
       // }
     });
-    
+
     body.addEventListener('mouseup', () => {
       g.rotUI.drag = false;
     });
