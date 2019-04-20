@@ -92,37 +92,31 @@ class sMove extends System { //moves player entity given keyboard input and tran
         case 65:
           { //a key
             entity.cPos.x -= g.input.moveSpeed;
-            g.rotUI.drag = false;
             break;
           }
         case 68:
           { //d key
             entity.cPos.x += g.input.moveSpeed;
-            g.rotUI.drag = false;
             break;
           }
         case 87:
           { //w key
             entity.cPos.z -= g.input.moveSpeed;
-            g.rotUI.drag = false;
             break;
           }
         case 83:
           { //s key
             entity.cPos.z += g.input.moveSpeed;
-            g.rotUI.drag = false;
             break;
           }
         case 32:
           { //space bar,
             entity.cPos.y -= g.input.moveSpeed;
-            g.rotUI.drag = false;
             break;
           }
         case 16:
           { //shift control
             entity.cPos.y += g.input.moveSpeed;
-            g.rotUI.drag = false;
             break;
           }
       }
@@ -218,7 +212,7 @@ class sRender extends System {
     let worldTransMat1 = transMat(entity.cPos.x, entity.cPos.y, entity.cPos.z);
 
     //matrix that translates from model to world position, then translates to camera position
-    let preProjectionMat = matMatComp(g.camera.cameraTranslationMat, worldTransMat1, rotationMatModel);
+    let preProjectionMat = matMatComp( g.camera.cameraTranslationMat, worldTransMat1, rotationMatModel);
 
     //transform all vertexes by matrices and store them in ..vertsTransformed 2D array
     for (let i = 0; i < entity.cMesh.verts.length; i++) {
@@ -344,10 +338,21 @@ class sRender extends System {
       let gg = entity.cMesh.faceColors[i][1] * shading;
       let b = entity.cMesh.faceColors[i][2] * shading;
       let a = entity.cMesh.opacity;
-
-
       ctx.fillStyle = cssRGBA([r, gg, b, a]); //lines from mesh data
-      ctx.strokeStyle = cssRGBA([0, 0, 0, 1]); //black lines
+
+      //set line color to black,
+      let lineValueR = 0;
+      let lineValueG = 0;
+      let lineValueB = 0;
+      if (g.rotUI.drag){ //unless currently dragging, then increasingly set it to megenta the closer the face is to the original drag position
+        let meanX = mean(v1[0],v2[0],v3[0]);
+        let meanY = mean(v1[1],v2[1],v3[1]);
+        let mouseDistToLine = pythag(g.mouse.clickX-meanX,g.mouse.clickY-meanY); //store pythag
+        let coloredness = mapFromRanges(mouseDistToLine,0,window.innerWidth/2,1,0);
+        lineValueR = coloredness*200;
+        lineValueB = coloredness*255;
+      }
+      ctx.strokeStyle = cssRGBA([lineValueR, lineValueG, lineValueB, 1]); //black lines
       ctx.lineWidth = mapFromRanges(entity.cMesh.camToFacesMag[i], 0, g.camera.fadeStart + g.camera.fadeEnd, 3, 0); //increase line width the closer the face is to camera
 
       //round x,y values to prevent subpixel rendering and improve performance

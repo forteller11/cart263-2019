@@ -58,7 +58,7 @@ class gPhysicsConstants { //stores physics constants
     this.rotX = 0;
     this.rotY = 0;
     this.drag = false; //whether or not being dragged
-    this.interpolationRate = 0.06;
+    this.interpolationRate = 0.1;
     this.scale = this.zBase*.1;
     this.sensitivity = 0.003;
     this.attractionForce = 10;
