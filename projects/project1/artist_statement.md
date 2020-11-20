@@ -1,5 +1,5 @@
-textboxes – artist statement
-Charly Yan Miller
+###### textboxes – artist statement
+###### Charly Yan Miller
 
 A blank webpage fills the player’s view. In the center: a textbox contains the words “shout into the void”. The player can decide to move around this space if they choose using the mouse to click where they want to travel or the arrows keys to inch left, right, up or down. Without any other text in the scene, however, there is nothing to measure the textbox’s movement against and experientially the act is rendered meaningless.
 
