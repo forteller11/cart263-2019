@@ -78,6 +78,11 @@ class SystemManager {
     }
   }
 
+  /*this scales linearly with number of entities and and systems which is pretty inefficient,
+    this could be achieved in constant time using a hashtable, 
+    but at the time of writing the algo I was not comfortable with hashtables
+    and there is are a trivial number of entities and systems anyways so it doesn't matter.
+    */
   removeEntity(entity) { //remove this entity from all sytems
     if ( debugMode)console.log('entity removed!');
     for (let i = 0; i < this.systems.length; i++) {
@@ -89,13 +94,7 @@ class SystemManager {
         }
       }
     }
-    /*this algorithim scales linearly with number of entities and also linearly
-    with number of systems which is pretty inefficient,
-    this could be achieved in constant time wish hashing but I don't think JS
-     lends itself to hashtables and i am not comfortable with this way of storing acessing vars
-     and in this particular project there is a trival number of systems and entities
-     so I will worry about fixing it in future itterations
-    */
+    
   }
 
 }
